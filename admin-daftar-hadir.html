@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Daftar Hadir - Admin Panel</title>
 
+    <!-- Bootstrap & Icons -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -16,14 +17,13 @@
 
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
-
       :root[data-theme="light"] {
         --bg-main: #f8f9fa;
-        --bg-sidebar: #ffffff;
+        --bg-sidebar: #fff;
         --text-primary: #212529;
         --text-secondary: #6c757d;
         --border-color: #dee2e6;
-        --card-bg: #ffffff;
+        --card-bg: #fff;
       }
       :root[data-theme="dark"] {
         --bg-main: #1a202c;
@@ -33,7 +33,6 @@
         --border-color: #4a5568;
         --card-bg: #2d3748;
       }
-
       body {
         display: flex;
         min-height: 100vh;
@@ -50,7 +49,6 @@
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         display: flex;
         flex-direction: column;
-        transition: background 0.3s;
       }
       .sidebar .nav-link {
         color: var(--text-secondary);
@@ -74,7 +72,6 @@
         color: #3b82f6;
         font-weight: 600;
       }
-
       .main-content-wrapper {
         margin-left: 260px;
         width: calc(100% - 260px);
@@ -86,10 +83,6 @@
         background: var(--card-bg);
         border-bottom: 1px solid var(--border-color);
       }
-      .main-content {
-        flex-grow: 1;
-      }
-
       .card {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
@@ -105,7 +98,6 @@
         --bs-table-striped-bg: rgba(0, 0, 0, 0.02);
         --bs-table-hover-bg: rgba(0, 0, 0, 0.04);
       }
-
       .signature-thumbnail {
         width: 100px;
         height: 50px;
@@ -118,7 +110,6 @@
       [data-theme="dark"] .signature-thumbnail {
         background: #4a5568;
       }
-
       .footer-professional {
         background: #3b82f6;
         color: #e5e7eb;
@@ -133,77 +124,18 @@
         display: flex;
         align-items: center;
       }
-      .footer-professional .footer-title .bi {
-        margin-right: 0.5rem;
-        font-size: 1.2rem;
-      }
       .footer-professional .footer-links {
         list-style: none;
         padding-left: 0;
-      }
-      .footer-professional .footer-links li {
-        margin-bottom: 0.75rem;
-      }
-      .footer-professional .footer-links a,
-      .footer-professional .contact-item {
-        color: #e5e7eb;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-      }
-      .footer-professional .footer-links a:hover {
-        color: #fff;
-      }
-      .footer-professional .contact-item .bi {
-        margin-right: 0.5rem;
-      }
-      .footer-professional .social-icons a {
-        color: #e5e7eb;
-        font-size: 1.2rem;
-        margin-right: 1rem;
-      }
-      .footer-professional .social-icons a:hover {
-        color: #fff;
       }
       .footer-professional .footer-divider {
         border-top: 1px solid #4b92f7;
         margin-top: 2rem;
         margin-bottom: 1.5rem;
       }
-      .footer-professional .copyright {
-        font-size: 0.875rem;
-      }
-
-      /* === PRINT: KOP SURAT + layout A4 rapi === */
-      .print-kop {
-        display: none;
-      }
-      .print-kop .kop-title {
-        font-size: 20px;
-        font-weight: 700;
-        letter-spacing: 0.4px;
-      }
-      .print-kop .kop-subtitle {
-        font-size: 20px;
-        font-weight: 800;
-        text-transform: uppercase;
-      }
-      .print-kop .kop-address {
-        font-size: 12px;
-        margin-top: 4px;
-        line-height: 1.35;
-      }
-      .print-kop .kop-lines {
-        border-top: 3px solid #000;
-        border-bottom: 1px solid #000;
-        height: 6px;
-        margin-top: 8px;
-        margin-bottom: 16px;
-      }
       .print-title {
         display: none;
       }
-
       @media print {
         @page {
           size: A4 portrait;
@@ -214,44 +146,18 @@
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
         }
-
-        /* sembunyikan elemen layar */
         nav,
         .top-header,
         .footer-professional,
         #toolbar,
-        #theme-toggle {
+        #theme-toggle,
+        #search-row {
           display: none !important;
         }
-
-        /* buang margin kiri dari layout sidebar */
         .main-content-wrapper {
           margin-left: 0 !important;
           width: 100% !important;
         }
-        .main-content {
-          padding: 0 !important;
-        }
-
-        /* tampilkan kop + judul cetak */
-        .print-kop {
-          display: block !important;
-          color: #000 !important;
-        }
-        .print-title {
-          display: block !important;
-          font-size: 22px;
-          font-weight: 700;
-          margin: 12px 0 8px;
-        }
-        .print-count {
-          color: #555;
-          font-weight: 500;
-          margin-left: 8px;
-          font-size: 16px;
-        }
-
-        /* tabel cetak rapi + header berulang tiap halaman */
         .card {
           border: none !important;
           box-shadow: none !important;
@@ -282,12 +188,17 @@
           height: 28px !important;
           width: auto;
         }
+        .print-title {
+          display: block !important;
+          font-size: 22px;
+          font-weight: 700;
+          margin: 12px 0 8px;
+        }
       }
     </style>
   </head>
   <body>
     <script>
-      // tema awal dari localStorage
       (function () {
         const t = localStorage.getItem("theme") || "dark";
         document.documentElement.setAttribute("data-theme", t);
@@ -329,47 +240,16 @@
 
       <!-- MAIN -->
       <main class="main-content p-4">
-        <!-- KOP SURAT (muncul saat PRINT) -->
-        <div class="print-kop">
-          <table style="width: 100%">
-            <tr>
-              <td style="width: 100px; vertical-align: top">
-                <!-- ganti src jika file logo berbeda -->
-                <img
-                  src="assets/img/logo-hst.png"
-                  alt="Logo HST"
-                  style="width: 88px; height: auto"
-                />
-              </td>
-              <td style="text-align: center">
-                <div class="kop-title">
-                  PEMERINTAH KABUPATEN HULU SUNGAI TENGAH
-                </div>
-                <div class="kop-subtitle">DINAS KOMUNIKASI DAN INFORMATIKA</div>
-                <div class="kop-address">
-                  Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai,
-                  Kalimantan Selatan 71351<br />
-                  Telepon (0517) 3791750, Faksimile (0517) 3791750<br />
-                  Laman: diskominfo.hstkab.go.id, Pos-el diskominfo@hstkab.go.id
-                </div>
-                <div class="kop-lines"></div>
-              </td>
-            </tr>
-          </table>
-        </div>
-
         <!-- Toolbar -->
         <div id="toolbar" class="mb-4">
           <a
             href="admin-manajemen-acara.html"
             class="btn btn-outline-secondary mb-3"
+            ><i class="bi bi-arrow-left"></i> Kembali</a
           >
-            <i class="bi bi-arrow-left"></i> Kembali
-          </a>
-
           <div class="row g-3 align-items-end">
             <div class="col-md-5">
-              <label class="form-label">Acara</label>
+              <label class="form-label" for="event-select">Acara</label>
               <select id="event-select" class="form-select"></select>
               <div class="small text-secondary mt-2" id="event-meta"></div>
             </div>
@@ -389,12 +269,46 @@
           </div>
         </div>
 
-        <!-- Judul (khusus muncul saat print) -->
+        <!-- Pencarian & Pagination -->
+        <div id="search-row" class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="search-input" class="form-label">Cari peserta</label>
+            <input
+              id="search-input"
+              class="form-control"
+              placeholder="Ketik nama, instansi, atau jabatan..."
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="page-size" class="form-label">Tampil per halaman</label>
+            <select id="page-size" class="form-select">
+              <option value="10">10</option>
+              <option value="25" selected>25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <div class="col-md-3 d-flex align-items-end justify-content-md-end">
+            <div class="btn-group" role="group" aria-label="Pagination">
+              <button id="btn-prev" class="btn btn-outline-secondary">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <span id="page-info" class="btn btn-outline-secondary disabled"
+                >Hal 1/1</span
+              >
+              <button id="btn-next" class="btn btn-outline-secondary">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Judul (khusus saat print) -->
         <h2 class="print-title">
           Daftar Hadir <span id="print-count" class="print-count"></span>
         </h2>
 
-        <!-- Card Daftar Hadir (juga area cetak) -->
+        <!-- Card Daftar Hadir -->
         <div class="card border-0 shadow-sm">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -405,7 +319,7 @@
             </div>
             <div class="table-responsive">
               <table class="table table-hover align-middle">
-                <thead class="table-light">
+                <thead>
                   <tr>
                     <th style="width: 60px">#</th>
                     <th>Nama Lengkap</th>
@@ -425,44 +339,6 @@
       <!-- FOOTER -->
       <footer class="footer-professional">
         <div class="container">
-          <div class="row">
-            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-              <h5 class="footer-title">
-                <i class="bi bi-geo-alt-fill"></i>Kantor Kami
-              </h5>
-              <p>
-                Jl. Antasari, Barabai,<br />Kab. Hulu Sungai Tengah,<br />Kalimantan
-                Selatan
-              </p>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-              <h5 class="footer-title">Sitemap</h5>
-              <ul class="footer-links">
-                <li><a href="#">Beranda</a></li>
-                <li><a href="#">Daftar Acara</a></li>
-                <li><a href="#">Login Admin</a></li>
-              </ul>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5 class="footer-title">Kontak Kami</h5>
-              <div class="contact-item mb-2">
-                <i class="bi bi-envelope-fill"></i
-                ><span>diskominfo@hstkab.go.id</span>
-              </div>
-              <div class="contact-item">
-                <i class="bi bi-telephone-fill"></i><span>(0517) 21111</span>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-              <h5 class="footer-title">Media Sosial</h5>
-              <div class="social-icons">
-                <a href="#"><i class="bi bi-facebook"></i></a>
-                <a href="#"><i class="bi bi-twitter-x"></i></a>
-                <a href="#"><i class="bi bi-instagram"></i></a>
-                <a href="#"><i class="bi bi-youtube"></i></a>
-              </div>
-            </div>
-          </div>
           <div class="footer-divider"></div>
           <div class="text-center copyright">
             &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai
@@ -501,11 +377,14 @@
       </div>
     </div>
 
-    <!-- JS -->
+    <!-- JS: urutan wajib -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./assets/js/absensipro.js?v=4"></script>
+    <script src="./assets/js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./assets/js/absensipro.js"></script>
+
+    <!-- Script halaman -->
     <script>
-      // Tahun & toggle tema
       document.getElementById("copyright-year").textContent =
         new Date().getFullYear();
       const htmlEl = document.documentElement,
@@ -525,52 +404,48 @@
       });
       updateIcon();
 
-      // ====== AbsensiPro: data & render ======
-      if (!window.AbsensiPro) {
-        alert(
-          "absensipro.js tidak ditemukan. Pastikan path './assets/js/absensipro.js?v=4' benar."
-        );
+      // helper escape
+      function esc(s) {
+        return String(s ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
       }
-      AbsensiPro.seedIfEmpty();
 
+      // elemen
       const $select = document.getElementById("event-select");
       const $meta = document.getElementById("event-meta");
       const $tbody = document.getElementById("tbody");
       const $count = document.getElementById("count");
       const $printCount = document.getElementById("print-count");
+      const $search = document.getElementById("search-input");
+      const $pageSize = document.getElementById("page-size");
+      const $btnPrev = document.getElementById("btn-prev");
+      const $btnNext = document.getElementById("btn-next");
+      const $pageInfo = document.getElementById("page-info");
 
-      function resolveEvent() {
-        let eventId = new URLSearchParams(location.search).get("event");
-        let ev = eventId ? AbsensiPro.getEvent(eventId) : null;
-        if (!ev) {
-          const list = AbsensiPro.listEvents();
-          ev = list.find((e) => e.status === "active") || list[0];
-          if (ev) {
-            const url = new URL(location.href);
-            url.searchParams.set("event", ev.id);
-            history.replaceState({}, "", url.toString());
-          }
-        }
-        return ev;
-      }
+      let APS = null,
+        sourceList = [],
+        filteredList = [],
+        page = 1,
+        currentEvent = null;
+      let unsubscribeRealtime = null;
 
-      function fillEventSelect(currentId) {
-        const events = AbsensiPro.listEvents();
-        $select.innerHTML = events
-          .map(
-            (e) =>
-              `<option value="${e.id}" ${
-                e.id === currentId ? "selected" : ""
-              }>${e.title}</option>`
-          )
-          .join("");
-      }
+      // tunggu AbsensiPro siap
+      (function waitAbsensiPro() {
+        if (window.AbsensiPro) {
+          APS = window.AbsensiPro;
+          init();
+        } else setTimeout(waitAbsensiPro, 50);
+      })();
 
       function toCSVWithBOM(rows, headers) {
-        const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-        const head = headers.map(esc).join(",");
+        const escCSV = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+        const head = headers.map(escCSV).join(",");
         const body = rows
-          .map((r) => headers.map((h) => esc(r[h])).join(","))
+          .map((r) => headers.map((h) => escCSV(r[h])).join(","))
           .join("\n");
         return "\uFEFF" + head + "\n" + body;
       }
@@ -584,122 +459,233 @@
         URL.revokeObjectURL(url);
       }
 
-      function render() {
-        const ev = resolveEvent();
-        if (!ev) {
-          $meta.textContent = "Acara tidak ditemukan.";
-          $tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary">Tidak ada data.</td></tr>`;
-          $count.textContent = 0;
-          if ($printCount) $printCount.textContent = "";
+      async function fillEventSelect(currentId) {
+        const events = await APS.listEvents();
+        if (!events.length) {
+          $select.innerHTML = `<option value="">(belum ada acara)</option>`;
           return;
         }
+        $select.innerHTML = events
+          .map(
+            (e) =>
+              `<option value="${esc(e.id)}" ${
+                e.id === currentId ? "selected" : ""
+              }>${esc(e.title)}</option>`
+          )
+          .join("");
+        if (!currentId) {
+          $select.value = events[0].id;
+        }
+      }
 
-        // meta + select
-        $meta.innerHTML = `
-          <span class="me-3"><i class="bi bi-calendar-event"></i> ${AbsensiPro.fmtDT(
-            ev.datetime
-          )}</span>
-          <span class="me-3"><i class="bi bi-geo-alt"></i> ${ev.location}</span>
-          <span class="badge ${
-            ev.status === "done"
-              ? "text-bg-success"
-              : ev.status === "active"
-              ? "text-bg-primary"
-              : "text-bg-secondary"
-          }">${ev.status}</span>
-        `;
-        fillEventSelect(ev.id);
+      function applySearch(opts = {}) {
+        const keepPage = !!opts.keepPage;
+        const q = ($search.value || "").toLowerCase().trim();
+        filteredList = q
+          ? sourceList.filter(
+              (a) =>
+                (a.name || "").toLowerCase().includes(q) ||
+                (a.instansi || "").toLowerCase().includes(q) ||
+                (a.jabatan || "").toLowerCase().includes(q)
+            )
+          : sourceList.slice();
+        if (!keepPage) page = 1;
+        renderTable();
+      }
 
-        // table
-        const list = AbsensiPro.listAttendees(ev.id);
-        $count.textContent = list.length;
-        if ($printCount) $printCount.textContent = `${list.length} peserta`;
+      function getPageData() {
+        const size = parseInt($pageSize.value, 10) || 25;
+        const total = filteredList.length;
+        const totalPages = Math.max(1, Math.ceil(total / size));
+        if (page > totalPages) page = totalPages;
+        const start = (page - 1) * size,
+          end = start + size;
+        return {
+          size,
+          total,
+          totalPages,
+          rows: filteredList.slice(start, end),
+          startIndex: start,
+        };
+      }
+      function updatePaginationUI(totalPages, total) {
+        $pageInfo.textContent = `Hal ${page}/${totalPages} · ${total} entri`;
+        $btnPrev.disabled = page <= 1;
+        $btnNext.disabled = page >= totalPages;
+      }
 
-        if (list.length === 0) {
+      function renderTable() {
+        const { rows, totalPages, startIndex } = getPageData();
+        $count.textContent = filteredList.length;
+        if ($printCount)
+          $printCount.textContent = `${filteredList.length} peserta`;
+        if (rows.length === 0) {
           $tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary">Belum ada peserta hadir.</td></tr>`;
         } else {
-          $tbody.innerHTML = list
-            .map(
-              (a, i) => `
-            <tr>
-              <td>${i + 1}</td>
-              <td>${a.name || "-"}</td>
-              <td>${a.instansi || "-"}</td>
-              <td>${a.jabatan || "-"}</td>
-              <td>${a.ts ? new Date(a.ts).toLocaleString("id-ID") : "-"}</td>
-              <td>${
-                a.signatureDataUrl
-                  ? `<img class="signature-thumbnail" src="${a.signatureDataUrl}" alt="ttd" />`
-                  : "-"
-              }</td>
-            </tr>
-          `
-            )
+          $tbody.innerHTML = rows
+            .map((a, i) => {
+              const tsText = a.ts
+                ? new Date(a.ts).toLocaleString("id-ID")
+                : "-";
+              const ttd = a.signatureDataUrl
+                ? `<img class="signature-thumbnail" src="${esc(
+                    a.signatureDataUrl
+                  )}" alt="ttd" />`
+                : "-";
+              return `<tr><td>${startIndex + i + 1}</td><td>${esc(
+                a.name
+              )}</td><td>${esc(a.instansi)}</td><td>${esc(
+                a.jabatan
+              )}</td><td>${esc(tsText)}</td><td>${ttd}</td></tr>`;
+            })
             .join("");
         }
+        updatePaginationUI(totalPages, filteredList.length);
+      }
 
-        // preview tanda tangan
-        document.querySelectorAll(".signature-thumbnail").forEach((img) => {
-          img.addEventListener("click", () => {
-            document.getElementById("modalSignatureImage").src = img.src;
+      async function render() {
+        // putuskan realtime lama (jika ada)
+        if (typeof unsubscribeRealtime === "function") {
+          try {
+            unsubscribeRealtime();
+          } catch {}
+          unsubscribeRealtime = null;
+        }
+
+        try {
+          await APS.seedIfEmpty();
+          await fillEventSelect(null);
+
+          const evId = $select.value;
+          if (!evId) {
+            $meta.textContent = "Acara tidak ditemukan atau kosong.";
+            return;
+          }
+
+          const ev = await APS.getEvent(evId);
+          currentEvent = ev;
+
+          $meta.innerHTML = `
+            <span class="me-3"><i class="bi bi-calendar-event"></i> ${esc(
+              APS.fmtDT(ev?.datetime || "")
+            )}</span>
+            <span class="me-3"><i class="bi bi-geo-alt"></i> ${esc(
+              ev?.location || ""
+            )}</span>
+            <span class="badge ${
+              ev?.status === "done"
+                ? "text-bg-success"
+                : ev?.status === "active"
+                ? "text-bg-primary"
+                : "text-bg-secondary"
+            }">${esc(ev?.status || "")}</span>
+          `;
+
+          sourceList = await APS.listAttendees(evId);
+          applySearch({ keepPage: false });
+
+          // delegation preview ttd
+          $tbody.onclick = (e) => {
+            const img = e.target.closest(".signature-thumbnail");
+            if (!img) return;
+            document.getElementById("modalSignatureImage").src =
+              img.getAttribute("src");
             new bootstrap.Modal(
               document.getElementById("signatureModal")
             ).show();
+          };
+
+          // toolbar
+          document.getElementById("btn-export").onclick = () => {
+            const headers = [
+              "name",
+              "instansi",
+              "jabatan",
+              "email",
+              "phone",
+              "ts",
+            ];
+            const rows = sourceList.map((a) => ({
+              name: a.name || "",
+              instansi: a.instansi || "",
+              jabatan: a.jabatan || "",
+              email: a.email || "",
+              phone: a.phone || "",
+              ts: a.ts ? new Date(a.ts).toISOString() : "",
+            }));
+            const csv = toCSVWithBOM(rows, headers);
+            download(`absensi-${evId}.csv`, csv);
+          };
+          document.getElementById("btn-print").onclick = () => window.print();
+          document.getElementById("btn-copy").onclick = async () => {
+            const base = location.pathname.replace(/[^/]+$/, "");
+            const url = `${
+              location.origin
+            }${base}form-kehadiran.html?event=${encodeURIComponent(evId)}`;
+            await navigator.clipboard.writeText(url);
+            alert("Link form telah disalin:\n" + url);
+          };
+
+          // === NEW: Realtime — peserta baru langsung tampil ===
+          unsubscribeRealtime = APS.onAttendeeInserted(evId, (row) => {
+            const item = {
+              id: row.id,
+              name: row.name,
+              instansi: row.instansi,
+              jabatan: row.jabatan,
+              email: row.email,
+              phone: row.phone,
+              ts: row.ts,
+              signatureDataUrl: row.signature_url || null,
+            };
+            sourceList.push(item);
+
+            // masukkan ke filter saat ini jika cocok
+            const q = ($search.value || "").toLowerCase().trim();
+            if (
+              !q ||
+              (item.name || "").toLowerCase().includes(q) ||
+              (item.instansi || "").toLowerCase().includes(q) ||
+              (item.jabatan || "").toLowerCase().includes(q)
+            ) {
+              filteredList.push(item);
+            }
+            renderTable();
           });
-        });
-        // preview tanda tangan (event delegation)
-        $tbody.onclick = (e) => {
-          const img = e.target.closest(".signature-thumbnail");
-          if (!img) return;
-
-          document.getElementById("modalSignatureImage").src = img.src;
-          const modal = new bootstrap.Modal(
-            document.getElementById("signatureModal")
-          );
-          modal.show();
-        };
-
-        // tombol
-        document.getElementById("btn-export").onclick = () => {
-          const headers = [
-            "name",
-            "instansi",
-            "jabatan",
-            "email",
-            "phone",
-            "ts",
-          ];
-          const rows = list.map((a) => ({
-            name: a.name || "",
-            instansi: a.instansi || "",
-            jabatan: a.jabatan || "",
-            email: a.email || "",
-            phone: a.phone || "",
-            ts: a.ts || "",
-          }));
-          const csv = toCSVWithBOM(rows, headers);
-          download(`absensi-${ev.id}.csv`, csv);
-        };
-        document.getElementById("btn-print").onclick = () => window.print();
-        document.getElementById("btn-copy").onclick = async () => {
-          const base = location.pathname.replace(/[^/]+$/, "");
-          const url = `${
-            location.origin
-          }${base}form-kehadiran.html?event=${encodeURIComponent(ev.id)}`;
-          await navigator.clipboard.writeText(url);
-          alert("Link form telah disalin:\n" + url);
-        };
+        } catch (err) {
+          console.error(err);
+          $meta.textContent = "Terjadi kesalahan saat memuat data.";
+          $tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error render.</td></tr>`;
+        }
       }
 
-      $select.addEventListener("change", (e) => {
-        const id = e.target.value;
-        const url = new URL(location.href);
-        url.searchParams.set("event", id);
-        history.replaceState({}, "", url.toString());
-        render();
-      });
+      function init() {
+        // listener
+        $select.addEventListener("change", render);
+        $btnPrev.addEventListener("click", () => {
+          if (page > 1) {
+            page--;
+            renderTable();
+          }
+        });
+        $btnNext.addEventListener("click", () => {
+          const { totalPages } = getPageData();
+          if (page < totalPages) {
+            page++;
+            renderTable();
+          }
+        });
+        $pageSize.addEventListener("change", () => {
+          page = 1;
+          renderTable();
+        });
+        $search.addEventListener("input", () =>
+          applySearch({ keepPage: false })
+        );
 
-      render();
+        // pertama kali
+        render();
+      }
     </script>
   </body>
 </html>
