@@ -14,7 +14,6 @@
     />
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
-
       :root[data-theme="light"] {
         --bg-main: #f8f9fa;
         --bg-sidebar: #ffffff;
@@ -23,7 +22,6 @@
         --border-color: #dee2e6;
         --card-bg: #ffffff;
       }
-
       :root[data-theme="dark"] {
         --bg-main: #1a202c;
         --bg-sidebar: #2d3748;
@@ -32,7 +30,6 @@
         --border-color: #4a5568;
         --card-bg: #2d3748;
       }
-
       body {
         display: flex;
         min-height: 100vh;
@@ -64,25 +61,15 @@
         margin-right: 12px;
         font-size: 1.1rem;
       }
-      .sidebar .nav-link:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-        color: var(--text-primary);
-      }
       .sidebar .nav-link.active {
         color: #3b82f6;
         font-weight: 600;
-      }
-      [data-theme="light"] .sidebar .nav-link:hover {
-        background-color: rgba(0, 0, 0, 0.05);
       }
       .main-content-wrapper {
         margin-left: 260px;
         width: calc(100% - 260px);
         display: flex;
         flex-direction: column;
-        flex-grow: 1;
-      }
-      .main-content {
         flex-grow: 1;
       }
       .top-header {
@@ -108,47 +95,6 @@
         padding-bottom: 1.5rem;
         font-size: 0.95rem;
       }
-      .footer-professional .footer-title {
-        color: white;
-        font-weight: 600;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-      }
-      .footer-professional .footer-title .bi {
-        margin-right: 0.5rem;
-        font-size: 1.2rem;
-      }
-      .footer-professional .footer-links {
-        list-style: none;
-        padding-left: 0;
-      }
-      .footer-professional .footer-links li {
-        margin-bottom: 0.75rem;
-      }
-      .footer-professional .footer-links a,
-      .footer-professional .contact-item {
-        color: #e5e7eb;
-        text-decoration: none;
-        transition: color 0.3s;
-        display: flex;
-        align-items: center;
-      }
-      .footer-professional .footer-links a:hover {
-        color: white;
-      }
-      .footer-professional .contact-item .bi {
-        margin-right: 0.5rem;
-      }
-      .footer-professional .social-icons a {
-        color: #e5e7eb;
-        font-size: 1.2rem;
-        margin-right: 1rem;
-        transition: color 0.3s;
-      }
-      .footer-professional .social-icons a:hover {
-        color: white;
-      }
       .footer-professional .footer-divider {
         border-top: 1px solid #4b92f7;
         margin-top: 2rem;
@@ -158,20 +104,25 @@
         font-size: 0.875rem;
       }
     </style>
+
+    <!-- Supabase SDK + config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
   </head>
   <body>
     <script>
       (function () {
-        const theme = localStorage.getItem("theme") || "dark";
-        document.documentElement.setAttribute("data-theme", theme);
+        const t = localStorage.getItem("theme") || "dark";
+        document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
 
+    <!-- Sidebar -->
     <nav class="sidebar">
       <div class="p-4"><h4 class="fw-bold">AbsensiPro</h4></div>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" href="#"
+          <a class="nav-link" href="admin-dashboard.html"
             ><i class="bi bi-speedometer2"></i> Dashboard</a
           >
         </li>
@@ -182,7 +133,6 @@
         </li>
       </ul>
       <div class="p-3 mt-auto">
-        <!-- tambahkan id agar tombol benar2 diproses logout -->
         <a href="#" id="btn-logout" class="btn btn-outline-danger w-100"
           ><i class="bi bi-box-arrow-right"></i> Logout</a
         >
@@ -199,21 +149,26 @@
         <span class="ms-3">Selamat datang, Hakiem</span>
       </header>
 
-      <main class="main-content p-4">
+      <main class="p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h1 class="h2 fw-bold">Manajemen Acara</h1>
-          <button class="btn btn-primary">
+          <button class="btn btn-primary" id="btn-add">
             <i class="bi bi-plus-circle me-2"></i>Tambah Acara Baru
           </button>
         </div>
+
         <div class="card border-0 shadow-sm">
           <div class="card-body">
-            <div class="mb-3">
+            <div class="mb-3 d-flex gap-2">
               <input
+                id="search"
                 type="text"
                 class="form-control"
-                placeholder="Cari acara..."
+                placeholder="Cari judul/lokasi..."
               />
+              <button id="btn-refresh" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
             </div>
             <div class="table-responsive">
               <table class="table table-hover align-middle">
@@ -222,102 +177,14 @@
                     <th>Judul Acara</th>
                     <th>Tanggal & Waktu</th>
                     <th>Lokasi</th>
-                    <th>Peserta</th>
                     <th>Status</th>
-                    <th>Aksi</th>
+                    <th style="width: 220px">Aksi</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="tbody-events">
                   <tr>
-                    <td>Sosialisasi Peraturan Menteri PPN</td>
-                    <td>30 Agu 2025, 09:00 WIB</td>
-                    <td>Aula Bappeda</td>
-                    <td>78</td>
-                    <td>
-                      <span class="badge rounded-pill text-bg-success"
-                        >Selesai</span
-                      >
-                    </td>
-                    <td>
-                      <a
-                        href="#"
-                        class="btn btn-sm btn-info"
-                        title="Lihat Absensi"
-                        ><i class="bi bi-people-fill"></i
-                      ></a>
-                      <a
-                        href="#"
-                        class="btn btn-sm btn-secondary"
-                        title="Salin Link Absen"
-                        ><i class="bi bi-link-45deg"></i
-                      ></a>
-                      <div class="btn-group">
-                        <button
-                          class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a class="dropdown-item" href="#"
-                              ><i class="bi bi-pencil-square me-2"></i>Edit</a
-                            >
-                          </li>
-                          <li>
-                            <a class="dropdown-item text-danger" href="#"
-                              ><i class="bi bi-trash-fill me-2"></i>Hapus</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Rapat Koordinasi Bulanan September</td>
-                    <td>05 Sep 2025, 13:00 WIB</td>
-                    <td>Ruang Rapat Utama</td>
-                    <td>0</td>
-                    <td>
-                      <span class="badge rounded-pill text-bg-primary"
-                        >Akan Datang</span
-                      >
-                    </td>
-                    <td>
-                      <a
-                        href="#"
-                        class="btn btn-sm btn-info disabled"
-                        title="Lihat Absensi"
-                        ><i class="bi bi-people-fill"></i
-                      ></a>
-                      <a
-                        href="#"
-                        class="btn btn-sm btn-secondary"
-                        title="Salin Link Absen"
-                        ><i class="bi bi-link-45deg"></i
-                      ></a>
-                      <div class="btn-group">
-                        <button
-                          class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a class="dropdown-item" href="#"
-                              ><i class="bi bi-pencil-square me-2"></i>Edit</a
-                            >
-                          </li>
-                          <li>
-                            <a class="dropdown-item text-danger" href="#"
-                              ><i class="bi bi-trash-fill me-2"></i>Hapus</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
+                    <td colspan="5" class="text-center text-secondary py-4">
+                      Memuat...
                     </td>
                   </tr>
                 </tbody>
@@ -329,49 +196,6 @@
 
       <footer class="footer-professional">
         <div class="container">
-          <div class="row">
-            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-              <h5 class="footer-title">
-                <i class="bi bi-geo-alt-fill"></i>Kantor Kami
-              </h5>
-              <p>
-                Jl. Antasari, Barabai,<br />Kab. Hulu Sungai Tengah,<br />Kalimantan
-                Selatan
-              </p>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-              <h5 class="footer-title">Sitemap</h5>
-              <ul class="footer-links">
-                <li><a href="#">Beranda</a></li>
-                <li><a href="#">Daftar Acara</a></li>
-                <li><a href="#">Login Admin</a></li>
-              </ul>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5 class="footer-title">Kontak Kami</h5>
-              <div class="contact-item mb-2">
-                <i class="bi bi-envelope-fill"></i
-                ><span>diskominfo@hstkab.go.id</span>
-              </div>
-              <div class="contact-item">
-                <i class="bi bi-telephone-fill"></i><span>(0517) 21111</span>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-              <h5 class="footer-title">Media Sosial</h5>
-              <div class="social-icons">
-                <a href="#" aria-label="Facebook"
-                  ><i class="bi bi-facebook"></i></a
-                ><a href="#" aria-label="Twitter"
-                  ><i class="bi bi-twitter-x"></i></a
-                ><a href="#" aria-label="Instagram"
-                  ><i class="bi bi-instagram"></i></a
-                ><a href="#" aria-label="Youtube"
-                  ><i class="bi bi-youtube"></i
-                ></a>
-              </div>
-            </div>
-          </div>
           <div class="footer-divider"></div>
           <div class="text-center copyright">
             &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai
@@ -381,42 +205,343 @@
       </footer>
     </div>
 
+    <!-- Modal Add/Edit -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <form id="eventForm">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalTitle">Tambah Acara</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body row g-3">
+              <input type="hidden" id="ev_id" />
+              <div class="col-12">
+                <label class="form-label">Judul</label>
+                <input
+                  id="ev_title"
+                  type="text"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Tanggal & Waktu</label>
+                <input
+                  id="ev_dt"
+                  type="datetime-local"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Lokasi</label>
+                <input id="ev_loc" type="text" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Status</label>
+                <select id="ev_status" class="form-select">
+                  <option value="active">Aktif</option>
+                  <option value="done">Selesai</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                type="button"
+              >
+                Batal
+              </button>
+              <button class="btn btn-primary" type="submit" id="btnSave">
+                Simpan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      document.getElementById("copyright-year").textContent =
-        new Date().getFullYear();
-      const themeToggle = document.getElementById("theme-toggle");
-      const htmlEl = document.documentElement;
-      function updateIcon() {
-        const icon = themeToggle.querySelector("i");
-        icon.className =
-          htmlEl.getAttribute("data-theme") === "dark"
-            ? "bi bi-sun-fill"
-            : "bi bi-moon-fill";
+      // Theme toggle
+      (function () {
+        const themeToggle = document.getElementById("theme-toggle"),
+          htmlEl = document.documentElement;
+        function ico() {
+          const i = themeToggle.querySelector("i");
+          i.className =
+            htmlEl.getAttribute("data-theme") === "dark"
+              ? "bi bi-sun-fill"
+              : "bi bi-moon-fill";
+        }
+        themeToggle.addEventListener("click", () => {
+          const n =
+            htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          htmlEl.setAttribute("data-theme", n);
+          localStorage.setItem("theme", n);
+          ico();
+        });
+        ico();
+        document.getElementById("copyright-year").textContent =
+          new Date().getFullYear();
+      })();
+
+      // --- Supabase client ---
+      const sb = supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_ANON_KEY
+      );
+
+      // Helpers
+      const tbody = document.getElementById("tbody-events");
+      const search = document.getElementById("search");
+      const fmt = (iso) =>
+        new Date(iso).toLocaleString("id-ID", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      const modalEl = document.getElementById("eventModal");
+      const eventModal = new bootstrap.Modal(modalEl);
+
+      async function loadEvents() {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-4">Memuat...</td></tr>`;
+        let q = sb
+          .from("events")
+          .select("id,title,datetime,location,status")
+          .order("datetime", { ascending: false });
+        const kw = (search.value || "").trim();
+        if (kw) q = q.ilike("title", `%${kw}%`).or(`location.ilike.%${kw}%`);
+        const { data, error } = await q;
+        if (error) {
+          console.error(error);
+          tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">${error.message}</td></tr>`;
+          return;
+        }
+        if (!data || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-4">Belum ada acara.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = "";
+        for (const ev of data) {
+          const badge =
+            ev.status === "done" ? "text-bg-secondary" : "text-bg-primary";
+          const tr = document.createElement("tr");
+          tr.dataset.id = ev.id;
+          tr.innerHTML = `
+            <td class="fw-semibold">${ev.title}</td>
+            <td>${fmt(ev.datetime)}</td>
+            <td>${ev.location || "-"}</td>
+            <td><span class="badge rounded-pill ${badge}">${
+            ev.status === "done" ? "Selesai" : "Akan Datang / Aktif"
+          }</span></td>
+            <td class="text-nowrap">
+              <a href="admin-daftar-hadir.html?event=${encodeURIComponent(
+                ev.id
+              )}" class="btn btn-sm btn-info" title="Lihat Absensi"><i class="bi bi-people-fill"></i></a>
+              <button class="btn btn-sm btn-secondary btn-copy" title="Salin Link Absen"><i class="bi bi-link-45deg"></i></button>
+              <button class="btn btn-sm btn-outline-secondary btn-edit" title="Edit"><i class="bi bi-pencil-square"></i></button>
+              <button class="btn btn-sm btn-outline-danger btn-del" title="Hapus"><i class="bi bi-trash-fill"></i></button>
+            </td>`;
+          tbody.appendChild(tr);
+        }
       }
-      themeToggle.addEventListener("click", () => {
-        const newTheme =
-          htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        htmlEl.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-        updateIcon();
+
+      // Clipboard
+      async function copyAbsenceLink(evId) {
+        const base = new URL(".", location.href);
+        const url = new URL("form-kehadiran.html", base);
+        url.searchParams.set("event", evId);
+        try {
+          await navigator.clipboard.writeText(url.toString());
+          toast("Link absen disalin.");
+        } catch {
+          alert("Ini link absen:\n" + url.toString());
+        }
+      }
+      function toast(msg) {
+        let el = document.getElementById("mini-toast");
+        if (!el) {
+          el = document.createElement("div");
+          el.id = "mini-toast";
+          Object.assign(el.style, {
+            position: "fixed",
+            right: "16px",
+            bottom: "16px",
+            zIndex: "1080",
+            padding: "10px 14px",
+            borderRadius: "10px",
+            background: "rgba(33,37,41,.95)",
+            color: "#fff",
+            boxShadow: "0 8px 24px rgba(0,0,0,.2)",
+          });
+          document.body.appendChild(el);
+        }
+        el.textContent = msg;
+        el.style.opacity = "1";
+        setTimeout(() => {
+          el.style.transition = "opacity .6s";
+          el.style.opacity = "0";
+        }, 1200);
+      }
+
+      // Add/Edit Modal logic
+      const f = {
+        id: document.getElementById("ev_id"),
+        title: document.getElementById("ev_title"),
+        dt: document.getElementById("ev_dt"),
+        loc: document.getElementById("ev_loc"),
+        status: document.getElementById("ev_status"),
+        modalTitle: document.getElementById("modalTitle"),
+        btnSave: document.getElementById("btnSave"),
+        form: document.getElementById("eventForm"),
+      };
+
+      document.getElementById("btn-add").addEventListener("click", () => {
+        f.modalTitle.textContent = "Tambah Acara";
+        f.id.value = "";
+        f.title.value = "";
+        f.loc.value = "";
+        f.status.value = "active";
+        // default: sekarang + 1 jam
+        const d = new Date();
+        d.setHours(d.getHours() + 1);
+        f.dt.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 16);
+        eventModal.show();
       });
-      updateIcon();
-    </script>
 
-    <!-- Supabase + Config + Auth + Guard -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/auth.js"></script>
-    <script>
-      // Paksa login admin; jika belum login → redirect ke login.html
-      AdminAuth.requireAdmin();
+      tbody.addEventListener("click", async (e) => {
+        const tr = e.target.closest("tr");
+        if (!tr) return;
+        const id = tr.dataset.id;
 
-      // Tombol logout
+        if (e.target.closest(".btn-copy")) {
+          copyAbsenceLink(id);
+          return;
+        }
+
+        if (e.target.closest(".btn-edit")) {
+          const { data, error } = await sb
+            .from("events")
+            .select("*")
+            .eq("id", id)
+            .single();
+          if (error) {
+            alert("Gagal memuat acara.");
+            return;
+          }
+          f.modalTitle.textContent = "Edit Acara";
+          f.id.value = data.id;
+          f.title.value = data.title || "";
+          f.loc.value = data.location || "";
+          f.status.value = data.status || "active";
+          // set datetime-local (local time)
+          const dt = new Date(data.datetime);
+          f.dt.value = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 16);
+          eventModal.show();
+          return;
+        }
+
+        if (e.target.closest(".btn-del")) {
+          if (!confirm("Hapus acara ini? Tindakan tidak bisa dibatalkan."))
+            return;
+          const { error } = await sb.from("events").delete().eq("id", id);
+          if (error) {
+            alert("Gagal menghapus: " + error.message);
+            return;
+          }
+          toast("Acara terhapus.");
+          loadEvents();
+          return;
+        }
+      });
+
+      f.form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        f.btnSave.disabled = true;
+
+        const payload = {
+          title: (f.title.value || "").trim(),
+          datetime: new Date(f.dt.value).toISOString(),
+          location: (f.loc.value || "").trim(),
+          status: f.status.value || "active",
+        };
+        if (!payload.title || !f.dt.value) {
+          alert("Judul dan waktu wajib isi.");
+          f.btnSave.disabled = false;
+          return;
+        }
+
+        let res;
+        if (f.id.value) {
+          // update
+          res = await sb
+            .from("events")
+            .update(payload)
+            .eq("id", f.id.value)
+            .select("id")
+            .single();
+        } else {
+          // insert
+          res = await sb.from("events").insert(payload).select("id").single();
+        }
+        if (res.error) {
+          alert("Simpan gagal: " + res.error.message);
+          f.btnSave.disabled = false;
+          return;
+        }
+
+        eventModal.hide();
+        toast("Acara disimpan.");
+        f.btnSave.disabled = false;
+        loadEvents();
+      });
+
+      // Search & refresh
+      document
+        .getElementById("btn-refresh")
+        .addEventListener("click", loadEvents);
+      search.addEventListener("input", () => {
+        loadEvents();
+      });
+
+      // Logout dummy (sesuaikan dengan auth-mu)
       document.getElementById("btn-logout")?.addEventListener("click", (e) => {
         e.preventDefault();
-        AdminAuth.logout();
+        location.href = "login.html";
       });
+
+      // Init
+      loadEvents();
+    </script>
+
+    <script>
+      // Optional: jika INSERT/UPDATE/DELETE gagal karena RLS, jalankan kebijakan ini di Supabase SQL:
+      // /*
+      // alter table public.events enable row level security;
+      // drop policy if exists "events select" on public.events;
+      // create policy "events select" on public.events for select to anon, authenticated using (true);
+      // drop policy if exists "events insert" on public.events;
+      // create policy "events insert" on public.events for insert to authenticated with check (true);
+      // drop policy if exists "events update" on public.events;
+      // create policy "events update" on public.events for update to authenticated using (true) with check (true);
+      // drop policy if exists "events delete" on public.events;
+      // create policy "events delete" on public.events for delete to authenticated using (true);
+      // */
     </script>
   </body>
 </html>

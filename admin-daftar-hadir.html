@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Daftar Hadir - Admin Panel</title>
 
-    <!-- Bootstrap & Icons -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -61,13 +60,6 @@
         margin-right: 12px;
         font-size: 1.1rem;
       }
-      .sidebar .nav-link:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--text-primary);
-      }
-      [data-theme="light"] .sidebar .nav-link:hover {
-        background: rgba(0, 0, 0, 0.05);
-      }
       .sidebar .nav-link.active {
         color: #3b82f6;
         font-weight: 600;
@@ -117,17 +109,6 @@
         padding-bottom: 1.5rem;
         font-size: 0.95rem;
       }
-      .footer-professional .footer-title {
-        color: #fff;
-        font-weight: 600;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-      }
-      .footer-professional .footer-links {
-        list-style: none;
-        padding-left: 0;
-      }
       .footer-professional .footer-divider {
         border-top: 1px solid #4b92f7;
         margin-top: 2rem;
@@ -140,11 +121,6 @@
         @page {
           size: A4 portrait;
           margin: 18mm 12mm;
-        }
-        body {
-          background: #fff !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
         }
         nav,
         .top-header,
@@ -168,9 +144,6 @@
         }
         .table thead {
           display: table-header-group;
-        }
-        .table tfoot {
-          display: table-footer-group;
         }
         .table tr {
           page-break-inside: avoid;
@@ -210,7 +183,7 @@
       <div class="p-4"><h4 class="fw-bold">AbsensiPro</h4></div>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" href="#"
+          <a class="nav-link" href="admin-dashboard.html"
             ><i class="bi bi-speedometer2"></i> Dashboard</a
           >
         </li>
@@ -221,7 +194,6 @@
         </li>
       </ul>
       <div class="p-3 mt-auto">
-        <!-- tambahkan id agar bisa di-click untuk logout -->
         <a href="#" id="btn-logout" class="btn btn-outline-danger w-100"
           ><i class="bi bi-box-arrow-right"></i> Logout</a
         >
@@ -229,7 +201,6 @@
     </nav>
 
     <div class="main-content-wrapper">
-      <!-- HEADER -->
       <header
         class="top-header p-3 d-flex justify-content-end align-items-center"
       >
@@ -239,9 +210,7 @@
         <span class="ms-3">Selamat datang, Hakiem</span>
       </header>
 
-      <!-- MAIN -->
       <main class="main-content p-4">
-        <!-- Toolbar -->
         <div id="toolbar" class="mb-4">
           <a
             href="admin-manajemen-acara.html"
@@ -270,7 +239,6 @@
           </div>
         </div>
 
-        <!-- Pencarian & Pagination -->
         <div id="search-row" class="row g-3 mb-3">
           <div class="col-md-6">
             <label for="search-input" class="form-label">Cari peserta</label>
@@ -304,12 +272,10 @@
           </div>
         </div>
 
-        <!-- Judul (khusus saat print) -->
         <h2 class="print-title">
           Daftar Hadir <span id="print-count" class="print-count"></span>
         </h2>
 
-        <!-- Card Daftar Hadir -->
         <div class="card border-0 shadow-sm">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -337,7 +303,6 @@
         </div>
       </main>
 
-      <!-- FOOTER -->
       <footer class="footer-professional">
         <div class="container">
           <div class="footer-divider"></div>
@@ -349,7 +314,6 @@
       </footer>
     </div>
 
-    <!-- Modal preview tanda tangan -->
     <div
       class="modal fade"
       id="signatureModal"
@@ -378,25 +342,19 @@
       </div>
     </div>
 
-    <!-- JS: urutan wajib -->
+    <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Supabase SDK harus lebih dulu -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Config koneksi proyek -->
     <script src="./assets/js/config.js"></script>
-    <!-- Auth util (AdminAuth) -->
     <script src="./assets/js/auth.js"></script>
-    <!-- Logic halaman & helper proyek -->
-    <script src="./assets/js/absensipro.js"></script>
 
-    <!-- Script halaman -->
     <script>
+      // Tahun & tema
       document.getElementById("copyright-year").textContent =
         new Date().getFullYear();
       const htmlEl = document.documentElement,
         themeBtn = document.getElementById("theme-toggle");
-      function updateIcon() {
+      function updIco() {
         themeBtn.querySelector("i").className =
           htmlEl.getAttribute("data-theme") === "dark"
             ? "bi bi-sun-fill"
@@ -407,86 +365,234 @@
           htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
         htmlEl.setAttribute("data-theme", t);
         localStorage.setItem("theme", t);
-        updateIcon();
+        updIco();
       });
-      updateIcon();
+      updIco();
 
-      // helper escape
-      function esc(s) {
-        return String(s ?? "")
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#39;");
-      }
+      // Supabase client
+      const sb = supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_ANON_KEY
+      );
 
-      // elemen
+      // Elemen
       const $select = document.getElementById("event-select");
       const $meta = document.getElementById("event-meta");
       const $tbody = document.getElementById("tbody");
       const $count = document.getElementById("count");
-      const $printCount = document.getElementById("print-count");
+      const $printCnt = document.getElementById("print-count");
       const $search = document.getElementById("search-input");
       const $pageSize = document.getElementById("page-size");
       const $btnPrev = document.getElementById("btn-prev");
       const $btnNext = document.getElementById("btn-next");
       const $pageInfo = document.getElementById("page-info");
 
-      let APS = null,
+      // State
+      let EVENTS = [],
         sourceList = [],
         filteredList = [],
         page = 1,
-        currentEvent = null;
-      let unsubscribeRealtime = null;
+        realtimeChannel = null;
 
-      // tunggu AbsensiPro siap
-      (function waitAbsensiPro() {
-        if (window.AbsensiPro) {
-          APS = window.AbsensiPro;
-          init();
-        } else setTimeout(waitAbsensiPro, 50);
-      })();
+      // helpers
+      const esc = (s) =>
+        String(s ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      const fmtDT = (iso) =>
+        iso ? new Date(iso).toLocaleString("id-ID") : "-";
 
-      function toCSVWithBOM(rows, headers) {
-        const escCSV = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-        const head = headers.map(escCSV).join(",");
-        const body = rows
-          .map((r) => headers.map((h) => escCSV(r[h])).join(","))
-          .join("\n");
-        return "\uFEFF" + head + "\n" + body;
+      // --- CSV helpers (FIX) ---
+      function escCSV(v) {
+        return `"${String(v ?? "").replace(/"/g, '""')}"`;
       }
-      function download(name, content, mime = "text/csv;charset=utf-8") {
-        const blob = new Blob([content], { type: mime });
+      function makeCSV(headers, rows) {
+        // headers: array of labels; rows: array of arrays
+        const head = headers.map(escCSV).join(",");
+        const body = rows.map((r) => r.map(escCSV).join(",")).join("\n");
+        return "\uFEFF" + head + "\n" + body; // BOM supaya Excel Indonesia aman
+      }
+      function downloadCSV(filename, csvText) {
+        const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = name;
+        a.download = filename;
+        document.body.appendChild(a);
         a.click();
-        URL.revokeObjectURL(url);
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 500);
       }
+      const slug = (s) =>
+        (s || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "")
+          .slice(0, 60);
 
-      async function fillEventSelect(currentId) {
-        const events = await APS.listEvents();
-        if (!events.length) {
+      // ========== LOAD EVENTS (ONCE) ==========
+      async function loadEventsOnce() {
+        const { data, error } = await sb
+          .from("events")
+          .select("id,title,datetime,location,status")
+          .order("datetime", { ascending: false });
+        if (error) {
+          console.error(error);
+          alert("Gagal memuat daftar acara.");
+          return;
+        }
+        EVENTS = data || [];
+
+        if (!EVENTS.length) {
           $select.innerHTML = `<option value="">(belum ada acara)</option>`;
           return;
         }
-        $select.innerHTML = events
-          .map(
-            (e) =>
-              `<option value="${esc(e.id)}" ${
-                e.id === currentId ? "selected" : ""
-              }>${esc(e.title)}</option>`
-          )
-          .join("");
-        if (!currentId) {
-          $select.value = events[0].id;
-        }
+
+        // populate SELECT sekali saja
+        $select.innerHTML = EVENTS.map(
+          (e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`
+        ).join("");
+
+        // preselect dari URL bila ada
+        const urlEventId = new URLSearchParams(location.search).get("event");
+        if (urlEventId && EVENTS.find((e) => e.id === urlEventId))
+          $select.value = urlEventId;
+
+        // muat data awal
+        loadForEvent($select.value);
       }
 
-      function applySearch(opts = {}) {
-        const keepPage = !!opts.keepPage;
+      // ========== LOAD ATTENDEES FOR SELECTED EVENT ==========
+      async function loadForEvent(eventId) {
+        if (!eventId) return;
+
+        // meta
+        const ev = EVENTS.find((e) => e.id === eventId);
+        $meta.innerHTML = `
+          <span class="me-3"><i class="bi bi-calendar-event"></i> ${esc(
+            fmtDT(ev?.datetime)
+          )}</span>
+          <span class="me-3"><i class="bi bi-geo-alt"></i> ${esc(
+            ev?.location || ""
+          )}</span>
+          <span class="badge ${
+            ev?.status === "done" ? "text-bg-success" : "text-bg-primary"
+          }">${esc(ev?.status || "")}</span>
+        `;
+
+        // hentikan realtime lama
+        if (realtimeChannel) {
+          try {
+            sb.removeChannel(realtimeChannel);
+          } catch {}
+          realtimeChannel = null;
+        }
+
+        // ambil peserta HANYA untuk event tersebut
+        const { data, error } = await sb
+          .from("attendees")
+          .select("id,name,instansi,jabatan,email,phone,ts,signature_url")
+          .eq("event_id", eventId)
+          .order("ts", { ascending: true });
+        if (error) {
+          console.error(error);
+          alert("Gagal memuat peserta.");
+          return;
+        }
+
+        sourceList = (data || []).map((a) => ({
+          id: a.id,
+          name: a.name,
+          instansi: a.instansi,
+          jabatan: a.jabatan,
+          email: a.email,
+          phone: a.phone,
+          ts: a.ts,
+          signatureDataUrl: a.signature_url || null,
+        }));
+        applySearch(true);
+
+        // --- Export CSV berdasarkan acara terpilih (FIX) ---
+        document.getElementById("btn-export").onclick = () => {
+          const headers = [
+            "No",
+            "Nama",
+            "Instansi",
+            "Jabatan",
+            "Email",
+            "HP",
+            "Waktu (WIB)",
+          ];
+          const rows = sourceList.map((a, i) => [
+            i + 1,
+            a.name || "",
+            a.instansi || "",
+            a.jabatan || "",
+            a.email || "",
+            a.phone || "",
+            a.ts ? new Date(a.ts).toLocaleString("id-ID") : "",
+          ]);
+          const csvText = makeCSV(headers, rows);
+          const fname = `absensi-${slug(ev?.title) || "acara"}-${eventId.slice(
+            0,
+            8
+          )}.csv`;
+          downloadCSV(fname, csvText);
+        };
+
+        document.getElementById("btn-print").onclick = () => window.print();
+        document.getElementById("btn-copy").onclick = async () => {
+          const base = new URL(".", location.href);
+          const url = new URL("form-kehadiran.html", base);
+          url.searchParams.set("event", eventId);
+          await navigator.clipboard.writeText(url.toString());
+          alert("Link form telah disalin:\n" + url);
+        };
+
+        // realtime khusus event ini
+        realtimeChannel = sb
+          .channel(`attendees-ins-${eventId}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "INSERT",
+              schema: "public",
+              table: "attendees",
+              filter: `event_id=eq.${eventId}`,
+            },
+            (payload) => {
+              const r = payload.new;
+              const item = {
+                id: r.id,
+                name: r.name,
+                instansi: r.instansi,
+                jabatan: r.jabatan,
+                email: r.email,
+                phone: r.phone,
+                ts: r.ts,
+                signatureDataUrl: r.signature_url || null,
+              };
+              sourceList.push(item);
+              const q = ($search.value || "").toLowerCase().trim();
+              if (
+                !q ||
+                (item.name || "").toLowerCase().includes(q) ||
+                (item.instansi || "").toLowerCase().includes(q) ||
+                (item.jabatan || "").toLowerCase().includes(q)
+              ) {
+                filteredList.push(item);
+              }
+              renderTable();
+            }
+          )
+          .subscribe();
+      }
+
+      // ===== filtering + pagination =====
+      function applySearch(resetPage) {
         const q = ($search.value || "").toLowerCase().trim();
         filteredList = q
           ? sourceList.filter(
@@ -496,11 +602,10 @@
                 (a.jabatan || "").toLowerCase().includes(q)
             )
           : sourceList.slice();
-        if (!keepPage) page = 1;
+        if (resetPage) page = 1;
         renderTable();
       }
-
-      function getPageData() {
+      function pageData() {
         const size = parseInt($pageSize.value, 10) || 25;
         const total = filteredList.length;
         const totalPages = Math.max(1, Math.ceil(total / size));
@@ -508,167 +613,50 @@
         const start = (page - 1) * size,
           end = start + size;
         return {
-          size,
-          total,
-          totalPages,
           rows: filteredList.slice(start, end),
           startIndex: start,
+          total,
+          totalPages,
         };
       }
-      function updatePaginationUI(totalPages, total) {
+      function renderTable() {
+        const { rows, startIndex, total, totalPages } = pageData();
+        $count.textContent = total;
+        if ($printCnt) $printCnt.textContent = `${total} peserta`;
+        if (!rows.length) {
+          $tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary">Belum ada peserta hadir.</td></tr>`;
+        } else {
+          $tbody.innerHTML = rows
+            .map((a, i) => {
+              const ttd = a.signatureDataUrl
+                ? `<img class="signature-thumbnail" src="${esc(
+                    a.signatureDataUrl
+                  )}" alt="ttd">`
+                : "-";
+              return `<tr>
+              <td>${startIndex + i + 1}</td>
+              <td>${esc(a.name)}</td>
+              <td>${esc(a.instansi)}</td>
+              <td>${esc(a.jabatan)}</td>
+              <td>${esc(fmtDT(a.ts))}</td>
+              <td>${ttd}</td>
+            </tr>`;
+            })
+            .join("");
+        }
         $pageInfo.textContent = `Hal ${page}/${totalPages} · ${total} entri`;
         $btnPrev.disabled = page <= 1;
         $btnNext.disabled = page >= totalPages;
       }
 
-      function renderTable() {
-        const { rows, totalPages, startIndex } = getPageData();
-        $count.textContent = filteredList.length;
-        if ($printCount)
-          $printCount.textContent = `${filteredList.length} peserta`;
-        if (rows.length === 0) {
-          $tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary">Belum ada peserta hadir.</td></tr>`;
-        } else {
-          $tbody.innerHTML = rows
-            .map((a, i) => {
-              const tsText = a.ts
-                ? new Date(a.ts).toLocaleString("id-ID")
-                : "-";
-              const ttd = a.signatureDataUrl
-                ? `<img class="signature-thumbnail" src="${esc(
-                    a.signatureDataUrl
-                  )}" alt="ttd" />`
-                : "-";
-              return `<tr><td>${startIndex + i + 1}</td><td>${esc(
-                a.name
-              )}</td><td>${esc(a.instansi)}</td><td>${esc(
-                a.jabatan
-              )}</td><td>${esc(tsText)}</td><td>${ttd}</td></tr>`;
-            })
-            .join("");
-        }
-        updatePaginationUI(totalPages, filteredList.length);
-      }
-
-      async function render() {
-        // putuskan realtime lama (jika ada)
-        if (typeof unsubscribeRealtime === "function") {
-          try {
-            unsubscribeRealtime();
-          } catch {}
-          unsubscribeRealtime = null;
-        }
-
-        try {
-          await APS.seedIfEmpty();
-          await fillEventSelect(null);
-
-          const evId = $select.value;
-          if (!evId) {
-            $meta.textContent = "Acara tidak ditemukan atau kosong.";
-            return;
-          }
-
-          const ev = await APS.getEvent(evId);
-          currentEvent = ev;
-
-          $meta.innerHTML = `
-            <span class="me-3"><i class="bi bi-calendar-event"></i> ${esc(
-              APS.fmtDT(ev?.datetime || "")
-            )}</span>
-            <span class="me-3"><i class="bi bi-geo-alt"></i> ${esc(
-              ev?.location || ""
-            )}</span>
-            <span class="badge ${
-              ev?.status === "done"
-                ? "text-bg-success"
-                : ev?.status === "active"
-                ? "text-bg-primary"
-                : "text-bg-secondary"
-            }">${esc(ev?.status || "")}</span>
-          `;
-
-          sourceList = await APS.listAttendees(evId);
-          applySearch({ keepPage: false });
-
-          // delegation preview ttd
-          $tbody.onclick = (e) => {
-            const img = e.target.closest(".signature-thumbnail");
-            if (!img) return;
-            document.getElementById("modalSignatureImage").src =
-              img.getAttribute("src");
-            new bootstrap.Modal(
-              document.getElementById("signatureModal")
-            ).show();
-          };
-
-          // toolbar
-          document.getElementById("btn-export").onclick = () => {
-            const headers = [
-              "name",
-              "instansi",
-              "jabatan",
-              "email",
-              "phone",
-              "ts",
-            ];
-            const rows = sourceList.map((a) => ({
-              name: a.name || "",
-              instansi: a.instansi || "",
-              jabatan: a.jabatan || "",
-              email: a.email || "",
-              phone: a.phone || "",
-              ts: a.ts ? new Date(a.ts).toISOString() : "",
-            }));
-            const csv = toCSVWithBOM(rows, headers);
-            download(`absensi-${evId}.csv`, csv);
-          };
-          document.getElementById("btn-print").onclick = () => window.print();
-          document.getElementById("btn-copy").onclick = async () => {
-            const base = location.pathname.replace(/[^/]+$/, "");
-            const url = `${
-              location.origin
-            }${base}form-kehadiran.html?event=${encodeURIComponent(evId)}`;
-            await navigator.clipboard.writeText(url);
-            alert("Link form telah disalin:\n" + url);
-          };
-
-          // === NEW: Realtime — peserta baru langsung tampil ===
-          unsubscribeRealtime = APS.onAttendeeInserted(evId, (row) => {
-            const item = {
-              id: row.id,
-              name: row.name,
-              instansi: row.instansi,
-              jabatan: row.jabatan,
-              email: row.email,
-              phone: row.phone,
-              ts: row.ts,
-              signatureDataUrl: row.signature_url || null,
-            };
-            sourceList.push(item);
-
-            // masukkan ke filter saat ini jika cocok
-            const q = ($search.value || "").toLowerCase().trim();
-            if (
-              !q ||
-              (item.name || "").toLowerCase().includes(q) ||
-              (item.instansi || "").toLowerCase().includes(q) ||
-              (item.jabatan || "").toLowerCase().includes(q)
-            ) {
-              filteredList.push(item);
-            }
-            renderTable();
-          });
-        } catch (err) {
-          console.error(err);
-          $meta.textContent = "Terjadi kesalahan saat memuat data.";
-          $tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error render.</td></tr>`;
-        }
-      }
-
-      function init() {
-        // listener
-        $select.addEventListener("change", render);
+      // ===== init =====
+      (function init() {
+        $select.addEventListener("change", (e) => loadForEvent(e.target.value));
+        $search.addEventListener("input", () => applySearch(true));
+        $pageSize.addEventListener("change", () => {
+          page = 1;
+          renderTable();
+        });
         $btnPrev.addEventListener("click", () => {
           if (page > 1) {
             page--;
@@ -676,31 +664,26 @@
           }
         });
         $btnNext.addEventListener("click", () => {
-          const { totalPages } = getPageData();
+          const { totalPages } = pageData();
           if (page < totalPages) {
             page++;
             renderTable();
           }
         });
-        $pageSize.addEventListener("change", () => {
-          page = 1;
-          renderTable();
-        });
-        $search.addEventListener("input", () =>
-          applySearch({ keepPage: false })
-        );
 
-        // pertama kali
-        render();
-      }
+        $tbody.addEventListener("click", (e) => {
+          const img = e.target.closest(".signature-thumbnail");
+          if (!img) return;
+          document.getElementById("modalSignatureImage").src = img.src;
+          new bootstrap.Modal(document.getElementById("signatureModal")).show();
+        });
+
+        loadEventsOnce();
+      })();
     </script>
 
-    <!-- Guard admin + Logout -->
     <script>
-      // Paksa login admin; kalau belum login → otomatis ke login.html
       AdminAuth.requireAdmin();
-
-      // Tombol logout
       document.getElementById("btn-logout")?.addEventListener("click", (e) => {
         e.preventDefault();
         AdminAuth.logout();
