@@ -15,7 +15,6 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
 
-      /* 1. Definisi Variabel Warna untuk Tema */
       :root[data-theme="light"] {
         --page-bg: #f0f2f5;
         --card-bg: #ffffff;
@@ -26,7 +25,6 @@
         --info-overlay-start: rgba(42, 109, 225, 0.9);
         --info-overlay-end: rgba(62, 132, 244, 0.9);
       }
-
       :root[data-theme="dark"] {
         --page-bg: #1a202c;
         --card-bg: #2d3748;
@@ -56,7 +54,6 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         transition: background-color 0.3s ease;
       }
-
       .info-panel {
         background: linear-gradient(
             var(--info-overlay-start),
@@ -71,67 +68,51 @@
         flex-direction: column;
         justify-content: center;
       }
-
       .info-panel h1 {
         font-weight: 700;
         font-size: 2.5rem;
       }
-
       .form-panel {
         background-color: var(--card-bg);
         color: var(--text-primary);
         padding: 4rem;
         position: relative;
-        transition: background-color 0.3s ease;
       }
       .form-panel .text-muted {
         color: var(--text-secondary) !important;
       }
-
       .form-panel .form-control {
         background-color: var(--input-bg);
         border: 1px solid var(--input-border);
         color: var(--text-primary);
       }
       .form-panel .form-control:focus {
-        background-color: var(--input-bg);
         border-color: #3b82f6;
-        color: var(--text-primary);
         box-shadow: none;
       }
-
       .form-panel .btn-primary {
         background-color: #3b82f6;
         border: none;
         padding: 0.75rem;
         font-weight: 600;
       }
-
       .form-panel .copyright {
         font-size: 0.8rem;
         color: var(--text-secondary);
       }
-
       .theme-toggle {
         position: absolute;
         top: 1.5rem;
         right: 1.5rem;
         font-size: 1.2rem;
         cursor: pointer;
-        color: #f6e05e; /* Default sun color */
-      }
-      [data-theme="dark"] .theme-toggle {
-        color: #f6e05e;
-      }
-      [data-theme="light"] .theme-toggle {
-        color: #4a5568;
       }
     </style>
   </head>
   <body>
     <script>
       (function () {
-        const theme = localStorage.getItem("theme") || "dark"; // Default ke tema gelap
+        const theme = localStorage.getItem("theme") || "dark";
         document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
@@ -139,6 +120,7 @@
     <div class="container">
       <div class="login-card mx-auto">
         <div class="row g-0">
+          <!-- Panel kiri -->
           <div class="col-lg-6 d-none d-lg-block">
             <div class="info-panel h-100">
               <h1>AbsensiPro</h1>
@@ -149,6 +131,7 @@
             </div>
           </div>
 
+          <!-- Panel kanan -->
           <div class="col-lg-6">
             <div class="form-panel">
               <span id="theme-toggle" class="theme-toggle"
@@ -158,13 +141,14 @@
               <h2 class="fw-bold mb-2">Selamat Datang!</h2>
               <p class="text-muted mb-4">Silakan masuk untuk melanjutkan.</p>
 
-              <form>
+              <form novalidate>
                 <div class="mb-3">
-                  <label for="email" class="form-label">Email atau NIP</label>
+                  <label for="username" class="form-label">Username</label>
                   <input
-                    type="email"
+                    type="text"
                     class="form-control"
-                    id="email"
+                    id="username"
+                    placeholder="Masukkan username"
                     required
                   />
                 </div>
@@ -174,6 +158,7 @@
                     type="password"
                     class="form-control"
                     id="password"
+                    placeholder="Masukkan password"
                     required
                   />
                 </div>
@@ -194,33 +179,54 @@
       </div>
     </div>
 
+    <!-- Script toggle tema -->
     <script>
       const themeToggle = document.getElementById("theme-toggle");
       const htmlEl = document.documentElement;
-
-      // Fungsi untuk mengganti ikon
       function updateIcon() {
-        const currentTheme = htmlEl.getAttribute("data-theme");
         const icon = themeToggle.querySelector("i");
-        if (currentTheme === "dark") {
-          icon.className = "bi bi-sun-fill";
-        } else {
-          icon.className = "bi bi-moon-fill";
-        }
+        icon.className =
+          htmlEl.getAttribute("data-theme") === "dark"
+            ? "bi bi-sun-fill"
+            : "bi bi-moon-fill";
       }
-
-      // Event listener untuk tombol toggle
-      themeToggle.addEventListener("click", function () {
-        const currentTheme = htmlEl.getAttribute("data-theme");
-        const newTheme = currentTheme === "dark" ? "light" : "dark";
-
-        htmlEl.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
+      themeToggle.addEventListener("click", () => {
+        const next =
+          htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        htmlEl.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
         updateIcon();
       });
-
-      // Panggil fungsi di awal untuk set ikon yang benar
       updateIcon();
+    </script>
+
+    <!-- Script Supabase + Config + Auth + Login -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+      (function () {
+        const form = document.querySelector("form");
+        const inpUser = document.getElementById("username");
+        const inpPass = document.getElementById("password");
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const username = (inpUser.value || "").trim();
+          const password = (inpPass.value || "").trim();
+          if (!username || !password) {
+            alert("Isi username dan password.");
+            return;
+          }
+          try {
+            await AdminAuth.login(username, password);
+            location.href = "admin-dashboard.html";
+          } catch (err) {
+            console.error(err);
+            alert("Username atau password salah.");
+          }
+        });
+      })();
     </script>
   </body>
 </html>
