@@ -182,7 +182,8 @@
         </li>
       </ul>
       <div class="p-3 mt-auto">
-        <a href="#" class="btn btn-outline-danger w-100"
+        <!-- tambahkan id agar tombol benar2 diproses logout -->
+        <a href="#" id="btn-logout" class="btn btn-outline-danger w-100"
           ><i class="bi bi-box-arrow-right"></i> Logout</a
         >
       </div>
@@ -401,6 +402,21 @@
         updateIcon();
       });
       updateIcon();
+    </script>
+
+    <!-- Supabase + Config + Auth + Guard -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+      // Paksa login admin; jika belum login → redirect ke login.html
+      AdminAuth.requireAdmin();
+
+      // Tombol logout
+      document.getElementById("btn-logout")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        AdminAuth.logout();
+      });
     </script>
   </body>
 </html>

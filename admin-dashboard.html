@@ -177,9 +177,10 @@
         </li>
       </ul>
       <div class="p-3 mt-auto">
-        <a href="#" class="btn btn-outline-danger w-100"
-          ><i class="bi bi-box-arrow-right"></i> Logout</a
-        >
+        <!-- tambahkan id untuk logout -->
+        <a href="#" id="btn-logout" class="btn btn-outline-danger w-100">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
       </div>
     </nav>
 
@@ -206,7 +207,7 @@
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body">
                 <h5 class="card-title text-secondary">Total Acara</h5>
-                <p class="fs-2 fw-bold">12</p>
+                <p class="fs-2 fw-bold" id="stat-events">12</p>
               </div>
             </div>
           </div>
@@ -230,7 +231,7 @@
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body">
                 <h5 class="card-title text-secondary">Total Peserta</h5>
-                <p class="fs-2 fw-bold">458</p>
+                <p class="fs-2 fw-bold" id="stat-attendees">458</p>
               </div>
             </div>
           </div>
@@ -373,6 +374,38 @@
           maintainAspectRatio: false,
         },
       });
+    </script>
+
+    <!-- Supabase + Config + Auth + Guard -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+      // Wajib login admin
+      AdminAuth.requireAdmin();
+
+      // Logout
+      document.getElementById("btn-logout")?.addEventListener("click", () => {
+        AdminAuth.logout();
+      });
+
+      // (Opsional) Isi angka kartu dari database
+      (async () => {
+        const ev = await sb
+          .from("events")
+          .select("*", { count: "exact", head: true });
+        if (typeof ev?.count === "number") {
+          const el = document.getElementById("stat-events");
+          if (el) el.innerText = ev.count;
+        }
+        const at = await sb
+          .from("attendees")
+          .select("*", { count: "exact", head: true });
+        if (typeof at?.count === "number") {
+          const el = document.getElementById("stat-attendees");
+          if (el) el.innerText = at.count;
+        }
+      })();
     </script>
   </body>
 </html>

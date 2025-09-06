@@ -75,7 +75,7 @@
         font-size: 0.95rem;
       }
       .footer-professional .footer-title {
-        color: white;
+        color: #fff;
         font-weight: 600;
         margin-bottom: 1.25rem;
         display: flex;
@@ -101,7 +101,7 @@
         align-items: center;
       }
       .footer-professional .footer-links a:hover {
-        color: white;
+        color: #fff;
       }
       .footer-professional .contact-item .bi {
         margin-right: 0.5rem;
@@ -113,7 +113,7 @@
         transition: color 0.3s;
       }
       .footer-professional .social-icons a:hover {
-        color: white;
+        color: #fff;
       }
       .footer-professional .footer-divider {
         border-top: 1px solid #4b92f7;
@@ -124,7 +124,15 @@
         font-size: 0.875rem;
       }
     </style>
+
+    <!-- SDK Supabase harus duluan -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Konfigurasi URL & KEY -->
+    <script src="assets/js/config.js"></script>
+    <!-- Library app kamu (membuat client & API AbsensiPro) -->
+    <script src="assets/js/absensipro.js"></script>
   </head>
+
   <body>
     <script>
       (function () {
@@ -186,14 +194,15 @@
             <h5 class="footer-title">Media Sosial</h5>
             <div class="social-icons">
               <a href="#" aria-label="Facebook"
-                ><i class="bi bi-facebook"></i></a
-              ><a href="#" aria-label="Twitter"
-                ><i class="bi bi-twitter-x"></i></a
-              ><a href="#" aria-label="Instagram"
-                ><i class="bi bi-instagram"></i></a
-              ><a href="#" aria-label="Youtube"
-                ><i class="bi bi-youtube"></i
+                ><i class="bi bi-facebook"></i
               ></a>
+              <a href="#" aria-label="Twitter"
+                ><i class="bi bi-twitter-x"></i
+              ></a>
+              <a href="#" aria-label="Instagram"
+                ><i class="bi bi-instagram"></i
+              ></a>
+              <a href="#" aria-label="Youtube"><i class="bi bi-youtube"></i></a>
             </div>
           </div>
         </div>
@@ -208,18 +217,38 @@
     <!-- JS Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Hubungkan ke JS AbsensiPro -->
-    <script src="assets/js/absensipro.js"></script>
+    <!-- Render daftar acara (ASYNC) -->
     <script>
-      // Render daftar acara
-      (function () {
+      (async function () {
+        // tahun footer
         document.getElementById("copyright-year").textContent =
           new Date().getFullYear();
 
         const listWrap = document.getElementById("event-list");
+        listWrap.innerHTML =
+          "<div class='text-center text-secondary py-5'>Memuat acara...</div>";
+
+        // Ambil data dari API AbsensiPro (yang memanggil Supabase)
+        let events = [];
+        try {
+          events = await AbsensiPro.listEvents();
+        } catch (e) {
+          console.error(e);
+          listWrap.innerHTML =
+            "<div class='text-center text-danger py-5'>Gagal memuat acara.</div>";
+          return;
+        }
+
         listWrap.innerHTML = "";
 
-        AbsensiPro.listEvents().forEach((ev) => {
+        if (!events || events.length === 0) {
+          listWrap.innerHTML =
+            "<div class='text-center text-secondary py-5'>Belum ada acara.</div>";
+          return;
+        }
+
+        // Render kartu acara
+        events.forEach((ev) => {
           const isDone = ev.status === "done";
           const badge = isDone ? "text-bg-secondary" : "text-bg-success";
           const btnDisabled = isDone ? "disabled" : "";
@@ -241,7 +270,7 @@
                   <i class="bi bi-calendar-event"></i> ${AbsensiPro.fmtDT(
                     ev.datetime
                   )}<br/>
-                  <i class="bi bi-geo-alt-fill"></i> ${ev.location}
+                  <i class="bi bi-geo-alt-fill"></i> ${ev.location || "-"}
                 </p>
                 <a href="${href}" class="btn btn-primary mt-auto ${btnDisabled}">${btnText}</a>
               </div>
