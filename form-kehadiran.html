@@ -20,11 +20,17 @@
         --card-bg: #2d3748;
         --card-border: #4a5568;
         --event-title-bg: #2c3340;
+        --footer-bg: #3b82f6;
+        --footer-fg: #e5e7eb;
       }
       [data-bs-theme="light"] {
         --card-bg: #ffffff;
         --card-border: #e5e7eb;
         --event-title-bg: #f5f5f5;
+      }
+      html,
+      body {
+        height: 100%;
       }
       body {
         min-height: 100vh;
@@ -35,6 +41,10 @@
         flex: 1 1 auto;
       }
 
+      .navbar {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--card-border);
+      }
       .form-container {
         background: var(--card-bg);
         border: 1px solid var(--card-border);
@@ -51,7 +61,6 @@
         font-weight: 700;
         margin-bottom: 22px;
       }
-
       .signature-pad-wrapper {
         position: relative;
         border: 1px solid var(--card-border);
@@ -69,28 +78,28 @@
         cursor: crosshair;
         touch-action: none;
       }
-
       .footer-bar {
-        background: #3b82f6;
-        color: #e5e7eb;
+        background: var(--footer-bg);
+        color: var(--footer-fg);
         padding: 18px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .help-text {
+        color: #94a3b8;
+        font-size: 0.9rem;
       }
     </style>
   </head>
   <body>
     <script>
-      // set tema awal dari localStorage
       (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved)
-          document.documentElement.setAttribute("data-bs-theme", saved);
+        const t = localStorage.getItem("theme");
+        if (t) document.documentElement.setAttribute("data-bs-theme", t);
       })();
     </script>
 
-    <nav
-      class="navbar navbar-expand-lg border-bottom"
-      style="background: var(--card-bg)"
-    >
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg">
       <div class="container">
         <a class="navbar-brand fw-semibold" href="pilih-acara.html"
           >AbsensiPro</a
@@ -109,17 +118,20 @@
       </div>
     </nav>
 
+    <!-- CONTENT -->
     <main class="container my-5">
       <div class="row justify-content-center">
         <div class="col-lg-8">
           <h1 class="text-center mb-4">Form Kehadiran</h1>
+
           <div class="form-container">
             <div class="event-title" id="event-title">Memuat judul acara…</div>
 
-            <!-- FORM -->
             <form id="attendance-form" autocomplete="on" novalidate>
               <div class="mb-3">
-                <label for="nama" class="form-label">Nama</label>
+                <label for="nama" class="form-label"
+                  >Nama <span class="text-danger">*</span></label
+                >
                 <input
                   id="nama"
                   class="form-control"
@@ -137,7 +149,9 @@
                   type="email"
                   placeholder="nama@contoh.com"
                 />
-                <div class="form-text">Opsional, tapi disarankan.</div>
+                <div class="form-text help-text">
+                  Opsional, tapi disarankan.
+                </div>
               </div>
 
               <div class="mb-3">
@@ -148,7 +162,9 @@
                   type="tel"
                   placeholder="08xxxxxxxxxx"
                 />
-                <div class="form-text">Opsional, tapi disarankan.</div>
+                <div class="form-text help-text">
+                  Opsional, tapi disarankan.
+                </div>
               </div>
 
               <div class="mb-3">
@@ -180,7 +196,7 @@
                 <div id="signature-wrapper" class="signature-pad-wrapper">
                   <canvas id="signature-canvas"></canvas>
                 </div>
-                <div class="form-text">
+                <div class="form-text help-text">
                   Opsional. Jika dibubuhkan, akan terunggah ke Storage.
                 </div>
               </div>
@@ -202,43 +218,48 @@
                 </button>
               </div>
             </form>
-            <!-- /FORM -->
+
+            <div id="bad-link" class="alert alert-warning mt-3 d-none">
+              Link acara tidak valid. Silakan kembali ke
+              <a href="pilih-acara.html" class="alert-link">Pilih Acara</a>.
+            </div>
           </div>
         </div>
       </div>
     </main>
 
+    <!-- FOOTER -->
     <footer class="footer-bar">
       <div class="container text-center">
         &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai Tengah.
       </div>
     </footer>
 
-    <!-- JS (URUTAN WAJIB) -->
+    <!-- LIBS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./assets/js/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-    <script src="./assets/js/absensipro.js"></script>
+    <script src="assets/js/config.js"></script>
 
     <!-- PAGE LOGIC -->
     <script>
-      // Tahun dinamis
       document.getElementById("copyright-year").textContent =
         new Date().getFullYear();
-
-      // Toggle tema
-      const htmlEl = document.documentElement,
-        themeBtn = document.getElementById("theme-toggle");
-      themeBtn?.addEventListener("click", () => {
+      const htmlEl = document.documentElement;
+      document.getElementById("theme-toggle").addEventListener("click", () => {
         const next =
           htmlEl.getAttribute("data-bs-theme") === "dark" ? "light" : "dark";
         htmlEl.setAttribute("data-bs-theme", next);
         localStorage.setItem("theme", next);
-        themeBtn.textContent = next === "dark" ? "☀️" : "🌙";
+        document.getElementById("theme-toggle").textContent =
+          next === "dark" ? "☀️" : "🌙";
       });
 
-      // Elemen form
+      const sb = supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_ANON_KEY
+      );
+
       const $form = document.getElementById("attendance-form");
       const $btn = document.getElementById("submit-button");
       const $nama = document.getElementById("nama");
@@ -247,8 +268,8 @@
       const $jabatan = document.getElementById("jabatan");
       const $instansi = document.getElementById("instansi");
       const $titleBox = document.getElementById("event-title");
+      const $badLink = document.getElementById("bad-link");
 
-      // Signature
       const wrapper = document.getElementById("signature-wrapper");
       const canvas = document.getElementById("signature-canvas");
       let signaturePad = null;
@@ -264,145 +285,153 @@
         canvas.height = Math.floor(h * ratio);
         const ctx = canvas.getContext("2d");
         ctx.scale(ratio, ratio);
-        signaturePad?.clear();
+        if (!signaturePad || signaturePad.isEmpty()) ctx.clearRect(0, 0, w, h);
       }
 
-      (function waitReady() {
-        if (!window.AbsensiPro) return setTimeout(waitReady, 50);
+      document.addEventListener("DOMContentLoaded", () => {
+        signaturePad = new SignaturePad(canvas, {
+          backgroundColor: "rgba(0,0,0,0)",
+          penColor: "#111827",
+        });
+        resizeCanvas();
+      });
+      window.addEventListener("resize", resizeCanvas);
+      document
+        .getElementById("clear-signature")
+        ?.addEventListener("click", () => signaturePad?.clear());
 
-        // Seed event bila kosong (opsional)
-        AbsensiPro.seedIfEmpty?.();
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      const trim = (v) => (v ?? "").toString().trim();
+      const esc = (s) =>
+        (s ?? "").toString().replace(
+          /[&<>"']/g,
+          (m) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[m])
+        );
 
-        // Ambil eventId dari URL
-        const params = new URLSearchParams(location.search);
-        const eventId = params.get("event");
+      const params = new URLSearchParams(location.search);
+      const eventId = params.get("event");
 
+      async function loadEventTitle() {
         if (!eventId) {
           $titleBox.textContent =
             "Link acara tidak valid. Gunakan tautan dari admin.";
           $btn.disabled = true;
+          $badLink.classList.remove("d-none");
+          return;
+        }
+        const { data, error } = await sb
+          .from("events")
+          .select("id,title,datetime,location,status")
+          .eq("id", eventId)
+          .single();
+        if (error || !data) {
+          $titleBox.textContent =
+            "Acara tidak ditemukan atau link tidak valid.";
+          $btn.disabled = true;
+          $badLink.classList.remove("d-none");
+          return;
+        }
+        const dt = data.datetime ? new Date(data.datetime) : null;
+        const meta = dt
+          ? dt.toLocaleString("id-ID", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "";
+        $titleBox.innerHTML = `
+          <div class="fw-bold">${esc(data.title || "Tanpa Judul")}</div>
+          <div class="small text-secondary">${esc(data.location || "-")}${
+          meta ? " • " + meta : ""
+        }</div>
+        `;
+        if (data.status === "done") {
+          $btn.disabled = true;
+          $btn.textContent = "Acara Selesai";
+        }
+      }
+      loadEventTitle();
+
+      // SUBMIT dengan upload tanda tangan aktif
+      $form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = trim($nama.value);
+        if (!name) {
+          alert("Nama wajib diisi.");
+          $nama.focus();
+          return;
+        }
+        if (!eventId) {
+          alert("Link acara tidak valid.");
           return;
         }
 
-        // ===== JU D U L  E V E N T (otomatis dari Supabase) =====
-        (async () => {
-          try {
-            const ev = await AbsensiPro.getEvent(eventId);
-            if (!ev) {
-              $titleBox.textContent = "Acara tidak ditemukan.";
-              $btn.disabled = true;
-              return;
-            }
-            const dt = ev.datetime ? new Date(ev.datetime) : null;
-            const waktu = dt
-              ? dt.toLocaleString("id-ID", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "";
+        const oldText = $btn.textContent;
+        $btn.disabled = true;
+        $btn.textContent = "Menyimpan…";
 
-            $titleBox.innerHTML = `
-              <div class="fs-5">${ev.title}</div>
-              <div class="small text-secondary">
-                ${waktu}${ev.location ? " • " + ev.location : ""}
-              </div>
-            `;
-
-            if (ev.status === "done") {
-              $btn.disabled = true;
-              $btn.textContent = "Acara Selesai";
-            }
-          } catch (e) {
-            console.warn(e);
-            $titleBox.textContent = "Gagal memuat detail acara.";
-          }
-        })();
-        // ===== end judul event =====
-
-        // Init signature pad
-        if (canvas) {
-          signaturePad = new SignaturePad(canvas, {
-            penColor: "#e5e7eb",
-            backgroundColor: "rgba(0,0,0,0)",
-          });
-          canvas.style.touchAction = "none";
-          window.addEventListener("load", () =>
-            requestAnimationFrame(resizeCanvas)
-          );
-          window.addEventListener("resize", resizeCanvas);
-          window.addEventListener("orientationchange", resizeCanvas);
-          document
-            .getElementById("clear-signature")
-            ?.addEventListener("click", () => signaturePad.clear());
-        }
-
-        function isValidEmail(v) {
-          return !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-        }
-        function cleanPhone(v) {
-          return (v || "").replace(/[^0-9+]/g, "").trim();
-        }
-
-        // Submit
-        async function handleSubmit(e) {
-          e.preventDefault();
-          const payload = {
-            name: ($nama?.value || "").trim(),
-            email: ($email?.value || "").trim(),
-            phone: cleanPhone($phone?.value || ""),
-            jabatan: ($jabatan?.value || "").trim(),
-            instansi: ($instansi?.value || "").trim(),
-          };
-
-          if (!payload.name) {
-            alert("Nama wajib diisi.");
-            $nama?.focus();
-            return;
-          }
-          if (!isValidEmail(payload.email)) {
-            alert("Format email tidak valid.");
-            $email?.focus();
-            return;
-          }
-
+        try {
+          // 1) Upload signature bila ada coretan
+          let signature_url = null;
           if (signaturePad && !signaturePad.isEmpty()) {
-            payload.signatureDataUrl = signaturePad.toDataURL("image/png");
+            const dataURL = signaturePad.toDataURL("image/png");
+            const blob = await (await fetch(dataURL)).blob();
+            const rand = Math.random().toString(36).slice(2, 8);
+            const path = `event_${eventId}/${Date.now()}_${rand}.png`;
+
+            const up = await sb.storage
+              .from("signatures")
+              .upload(path, blob, { contentType: "image/png", upsert: false });
+
+            if (!up.error) {
+              const { data: pub } = sb.storage
+                .from("signatures")
+                .getPublicUrl(path);
+              signature_url = pub?.publicUrl || null;
+            } else {
+              console.error("Upload error:", up.error);
+            }
           }
 
-          try {
-            if ($btn) {
-              $btn.disabled = true;
-              $btn.textContent = "Menyimpan...";
-            }
-            await AbsensiPro.addAttendee(eventId, payload);
-            alert("Terima kasih, absensi berhasil dicatat.");
-            $form?.reset();
-            signaturePad?.clear?.();
-          } catch (err) {
-            console.error(err);
-            if (err?.code === "23505")
-              alert("Anda sudah tercatat hadir untuk acara ini (duplikat).");
-            else alert("Gagal menyimpan. Coba lagi.");
-          } finally {
-            if ($btn) {
-              $btn.disabled = false;
-              $btn.textContent = "Hadir";
-            }
-          }
+          // 2) Insert baris ke 'attendees'
+          const payload = {
+            event_id: eventId,
+            name,
+            instansi: trim($instansi.value) || null,
+            jabatan: trim($jabatan.value) || null,
+            email: trim($email.value) || null,
+            phone: trim($phone.value) || null,
+            ts: new Date().toISOString(),
+            signature_url,
+          };
+          const ins = await sb.from("attendees").insert(payload);
+          if (ins.error) throw ins.error;
+
+          // 3) Beres
+          $form.reset();
+          signaturePad?.clear();
+          $btn.textContent = "Tersimpan ✓";
+          await sleep(900);
+          $btn.textContent = oldText;
+          alert("Terima kasih! Kehadiran Anda sudah tercatat.");
+        } catch (err) {
+          console.error(err);
+          alert("Gagal menyimpan kehadiran. Coba lagi ya.");
+          $btn.textContent = oldText;
+        } finally {
+          $btn.disabled = false;
         }
-
-        $form?.addEventListener("submit", handleSubmit);
-        $btn?.addEventListener("click", (e) => {
-          if (!$form) {
-            e.preventDefault();
-            handleSubmit(e);
-          }
-        });
-      })();
+      });
     </script>
   </body>
 </html>
