@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pilih Acara - AbsensiPro</title>
-
-    <!-- Bootstrap & Icons -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pilih Acara</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -16,383 +14,335 @@
     />
 
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
+      :root {
+        --content-gutter-x: clamp(16px, 2.5vw, 28px);
+      }
+
+      /* Theme vars */
       :root[data-theme="light"] {
-        --page-bg: #f8f9fa;
+        --bg-main: #f8fafc;
         --card-bg: #ffffff;
-        --text-primary: #212529;
-        --text-secondary: #6c757d;
-        --border-color: #dee2e6;
+        --text-primary: #0f172a;
+        --text-secondary: #475569; /* slate-700 */
+        --border-color: #e2e8f0;
+        --hover: #f1f5f9;
+        --pill-active: #dcfce7;
+        --pill-active-text: #166534;
+        --pill-upcoming: #e0f2fe;
+        --pill-upcoming-text: #0369a1;
+        /* Footer tokens */
+        --footer-bg: #3b82f6;
+        --footer-fg: #e5e7eb;
       }
       :root[data-theme="dark"] {
-        --page-bg: #1a202c;
-        --card-bg: #2d3748;
-        --text-primary: #e2e8f0;
-        --text-secondary: #a0aec0;
-        --border-color: #4a5568;
+        --bg-main: #111827;
+        --card-bg: #1f2937; /* lebih kontras */
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1; /* slate-300: jelas di dark */
+        --border-color: #374151;
+        --hover: #2b3546;
+        --pill-active: #064e3b;
+        --pill-active-text: #a7f3d0;
+        --pill-upcoming: #0b3b5c;
+        --pill-upcoming-text: #93c5fd;
+        /* Footer tokens */
+        --footer-bg: #3b82f6;
+        --footer-fg: #e5e7eb;
       }
 
+      html,
       body {
-        background: var(--page-bg);
+        height: 100%;
+      }
+      body {
+        background: var(--bg-main);
         color: var(--text-primary);
         font-family: "Poppins", sans-serif;
+        /* Sticky footer layout */
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
-        transition: background-color 0.25s, color 0.25s;
       }
-      .main-content {
+      main {
         flex: 1 1 auto;
       }
 
-      .navbar {
-        background: var(--card-bg) !important;
-        border-bottom: 1px solid var(--border-color);
-        transition: background-color 0.25s, border-color 0.25s;
-      }
-      .navbar .nav-link {
-        color: var(--text-primary) !important;
-      }
-      .navbar .nav-link.active {
-        color: #3b82f6 !important;
-        font-weight: 600;
-      }
-
-      .event-card {
+      .topbar {
         background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        transition: transform 0.2s ease, box-shadow 0.2s ease,
-          background-color 0.25s, border-color 0.25s;
-        position: relative;
+        border-bottom: 1px solid var(--border-color);
       }
-      .event-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      }
-      .status-badge {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
+      .container-left {
+        padding-left: var(--content-gutter-x);
+        padding-right: var(--content-gutter-x);
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
-      .footer-professional {
-        background: #3b82f6;
-        color: #e5e7eb;
-        padding-top: 3rem;
-        padding-bottom: 1.5rem;
-        font-size: 0.95rem;
+      .btn-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        background: transparent;
       }
-      .footer-professional .footer-title {
-        color: #fff;
+      .btn-icon:hover {
+        background: var(--hover);
+      }
+
+      .title-lg {
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+      .subtitle {
+        color: var(--text-secondary);
+      }
+
+      .events-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      @media (min-width: 768px) {
+        .events-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (min-width: 1200px) {
+        .events-grid {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+      }
+
+      .card {
+        background: var(--card-bg);
+        border-color: var(--border-color);
+      }
+      .event-title {
+        font-weight: 700;
+      }
+      .event-meta {
+        color: var(--text-secondary);
+        font-size: 0.94rem;
+      }
+      .event-badge {
+        padding: 0.25rem 0.55rem;
+        border-radius: 9999px;
         font-weight: 600;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
+        font-size: 0.8rem;
       }
-      .footer-professional .footer-title .bi {
-        margin-right: 0.5rem;
-        font-size: 1.2rem;
+      .badge-active {
+        background: var(--pill-active);
+        color: var(--pill-active-text);
       }
-      .footer-professional .footer-links {
-        list-style: none;
-        padding-left: 0;
+      .badge-upcoming {
+        background: var(--pill-upcoming);
+        color: var(--pill-upcoming-text);
       }
-      .footer-professional .footer-links li {
-        margin-bottom: 0.75rem;
+      .event-card .bi {
+        vertical-align: -0.15rem;
       }
-      .footer-professional .footer-links a,
-      .footer-professional .contact-item {
-        color: #e5e7eb;
-        text-decoration: none;
-        transition: color 0.25s;
-        display: flex;
-        align-items: center;
-      }
-      .footer-professional .footer-links a:hover,
-      .footer-professional .social-icons a:hover {
-        color: #fff;
-      }
-      .footer-professional .contact-item .bi {
-        margin-right: 0.5rem;
-      }
-      .footer-professional .social-icons a {
-        color: #e5e7eb;
-        font-size: 1.2rem;
-        margin-right: 1rem;
-        transition: color 0.25s;
-      }
-      .footer-professional .footer-divider {
-        border-top: 1px solid #4b92f7;
-        margin-top: 2rem;
-        margin-bottom: 1.5rem;
-      }
-      .footer-professional .copyright {
-        font-size: 0.875rem;
+
+      /* Footer seperti menu lain (bar biru) */
+      .footer-bar {
+        background: var(--footer-bg);
+        color: var(--footer-fg);
+        padding: 18px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
       }
     </style>
-
-    <!-- SDK Supabase harus duluan -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Konfigurasi URL & KEY -->
-    <script src="assets/js/config.js"></script>
-    <!-- Library app (client & API AbsensiPro) -->
-    <script src="assets/js/absensipro.js"></script>
   </head>
-
   <body>
     <script>
-      // set tema awal
+      // persist tema
       (function () {
-        const saved = localStorage.getItem("theme");
-        const preferDark =
-          window.matchMedia &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const theme = saved || (preferDark ? "dark" : "light");
-        document.documentElement.setAttribute("data-theme", theme);
+        const t = localStorage.getItem("theme") || "dark";
+        document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg shadow-sm">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="pilih-acara.html">AbsensiPro</a>
-
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mainNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="mainNav">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a
-                class="nav-link active"
-                aria-current="page"
-                href="pilih-acara.html"
-              ></a>
-            </li>
-          </ul>
-
-          <div class="d-flex align-items-center gap-2">
-            <button
-              id="theme-toggle"
-              class="btn btn-outline-secondary btn-sm"
-              type="button"
-              title="Toggle tema"
-            >
-              <i id="theme-icon" class="bi"></i>
-            </button>
-            <a id="login-link" class="btn btn-primary btn-sm" href="login.html"
-              >Login Admin</a
-            >
-            <a
-              id="admin-link"
-              class="btn btn-outline-primary btn-sm d-none"
-              href="admin-manajemen-acara.html"
-              >Admin Panel</a
-            >
-            <button
-              id="logout-btn"
-              class="btn btn-outline-danger btn-sm d-none"
-              type="button"
-            >
-              Logout
-            </button>
-          </div>
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div
+        class="container-left d-flex align-items-center justify-content-between py-3"
+      >
+        <div class="fw-bold">AbsensiPro</div>
+        <div class="d-flex align-items-center gap-2">
+          <button
+            id="theme-toggle"
+            class="btn-icon"
+            aria-label="Ubah tema"
+          ></button>
+          <button
+            class="btn-icon"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#menuOffcanvas"
+            aria-label="Menu"
+          >
+            <i class="bi bi-list"></i>
+          </button>
         </div>
       </div>
-    </nav>
+    </header>
+
+    <!-- MENU -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="menuOffcanvas">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="offcanvas"
+          aria-label="Tutup"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <a
+          href="admin-dashboard.html"
+          class="btn btn-outline-secondary w-100 mb-2"
+          ><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</a
+        >
+      </div>
+    </div>
 
     <!-- CONTENT -->
-    <main class="main-content container my-5">
-      <div class="text-center mb-5">
-        <h1 class="fw-bold">Daftar Acara Tersedia</h1>
-        <p class="text-secondary">
+    <main class="py-4 py-md-5">
+      <div class="container-left">
+        <h1 class="title-lg display-6 text-center mb-2">
+          Daftar Acara Tersedia
+        </h1>
+        <p class="subtitle text-center mb-4">
           Silakan pilih acara yang akan Anda hadiri untuk mengisi daftar hadir.
         </p>
+
+        <div id="events-grid" class="events-grid">
+          <!-- cards injected -->
+        </div>
+
+        <p id="empty" class="subtitle text-center my-4 d-none">
+          Belum ada acara aktif.
+        </p>
       </div>
-      <div class="row" id="event-list"></div>
     </main>
 
-    <!-- FOOTER -->
-    <footer class="footer-professional">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-            <h5 class="footer-title">
-              <i class="bi bi-geo-alt-fill"></i>Kantor Kami
-            </h5>
-            <p>
-              Jl. Perintis Kemerdekaan, Barabai,<br />Kab. Hulu Sungai
-              Tengah,<br />Kalimantan Selatan
-            </p>
-          </div>
-          <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-            <h5 class="footer-title">Sitemap</h5>
-            <ul class="footer-links">
-              <li><a href="pilih-acara.html">Pilih Acara</a></li>
-              <li><a href="login.html">Login Admin</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h5 class="footer-title">Kontak Kami</h5>
-            <div class="contact-item mb-2">
-              <i class="bi bi-envelope-fill"></i
-              ><span>diskominfo@hstkab.go.id</span>
-            </div>
-            <div class="contact-item">
-              <i class="bi bi-telephone-fill"></i><span>(0517) 21111</span>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6">
-            <h5 class="footer-title">Media Sosial</h5>
-            <div class="social-icons">
-              <a href="#" aria-label="Facebook"
-                ><i class="bi bi-facebook"></i
-              ></a>
-              <a href="#" aria-label="Twitter"
-                ><i class="bi bi-twitter-x"></i
-              ></a>
-              <a href="#" aria-label="Instagram"
-                ><i class="bi bi-instagram"></i
-              ></a>
-              <a href="#" aria-label="Youtube"><i class="bi bi-youtube"></i></a>
-            </div>
-          </div>
-        </div>
-        <div class="footer-divider"></div>
-        <div class="text-center copyright">
-          &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai
-          Tengah. All rights reserved.
-        </div>
+    <!-- FOOTER (bar biru & sticky) -->
+    <footer class="footer-bar">
+      <div class="container-left text-center">
+        &copy; <span id="year"></span> Diskominfo Hulu Sungai Tengah.
       </div>
     </footer>
 
-    <!-- JS Bootstrap -->
+    <!-- Libs -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
 
-    <!-- PAGE SCRIPT -->
     <script>
-      // util theme
-      (function initThemeToggle() {
-        const icon = document.getElementById("theme-icon");
-        const btn = document.getElementById("theme-toggle");
-        function syncIcon() {
-          const t = document.documentElement.getAttribute("data-theme");
-          icon.className = t === "dark" ? "bi bi-sun-fill" : "bi bi-moon-fill";
-          btn.setAttribute(
-            "aria-label",
-            t === "dark" ? "Ubah ke terang" : "Ubah ke gelap"
-          );
-        }
-        syncIcon();
-        btn.addEventListener("click", () => {
-          const cur =
-            document.documentElement.getAttribute("data-theme") || "light";
-          const next = cur === "dark" ? "light" : "dark";
-          document.documentElement.setAttribute("data-theme", next);
-          localStorage.setItem("theme", next);
-          syncIcon();
-        });
-      })();
+      // Tahun
+      document.getElementById("year").textContent = new Date().getFullYear();
 
-      // tahun footer
-      document.getElementById("copyright-year").textContent =
-        new Date().getFullYear();
+      // Theme toggle ikon
+      const themeBtn = document.getElementById("theme-toggle");
+      function syncThemeIcon() {
+        const t = document.documentElement.getAttribute("data-theme");
+        themeBtn.innerHTML =
+          t === "dark"
+            ? '<i class="bi bi-sun-fill"></i>'
+            : '<i class="bi bi-moon-fill"></i>';
+      }
+      syncThemeIcon();
+      themeBtn.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme");
+        const next = cur === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        syncThemeIcon();
+      });
 
-      // Supabase auth (untuk navbar login/logout)
+      // Supabase (tetap sesuai kode kamu)
       const sb = supabase.createClient(
         window.SUPABASE_URL,
         window.SUPABASE_ANON_KEY
       );
-      const $login = document.getElementById("login-link");
-      const $admin = document.getElementById("admin-link");
-      const $logout = document.getElementById("logout-btn");
 
-      async function syncAuthUI() {
-        const {
-          data: { user },
-        } = await sb.auth.getUser();
-        if (user) {
-          $login.classList.add("d-none");
-          $admin.classList.remove("d-none");
-          $logout.classList.remove("d-none");
-        } else {
-          $login.classList.remove("d-none");
-          $admin.classList.add("d-none");
-          $logout.classList.add("d-none");
-        }
-      }
-      $logout.addEventListener("click", async () => {
-        await sb.auth.signOut();
-        await syncAuthUI();
-      });
+      const $grid = document.getElementById("events-grid");
+      const $empty = document.getElementById("empty");
 
-      // Render daftar acara
-      (async function () {
-        await syncAuthUI();
-        // seed jika kosong
-        try {
-          AbsensiPro.seedIfEmpty && (await AbsensiPro.seedIfEmpty());
-        } catch (_) {}
-
-        const listWrap = document.getElementById("event-list");
-        listWrap.innerHTML =
-          "<div class='text-center text-secondary py-5'>Memuat acara...</div>";
-
-        let events = [];
-        try {
-          events = await AbsensiPro.listEvents();
-        } catch (e) {
-          console.error(e);
-          listWrap.innerHTML =
-            "<div class='text-center text-danger py-5'>Gagal memuat acara.</div>";
-          return;
-        }
-
-        listWrap.innerHTML = "";
-
-        if (!events || events.length === 0) {
-          listWrap.innerHTML =
-            "<div class='text-center text-secondary py-5'>Belum ada acara.</div>";
-          return;
-        }
-
-        events.forEach((ev) => {
-          const isDone = ev.status === "done";
-          const badge = isDone ? "text-bg-secondary" : "text-bg-success";
-          const btnDisabled = isDone ? "disabled" : "";
-          const btnText = isDone ? "Acara Selesai" : "Isi Daftar Hadir";
-          const href = isDone
-            ? "#"
-            : `form-kehadiran.html?event=${encodeURIComponent(ev.id)}`;
-
-          const col = document.createElement("div");
-          col.className = "col-lg-4 col-md-6 mb-4";
-          col.innerHTML = `
-            <div class="card event-card h-100">
-              <span class="status-badge badge rounded-pill ${badge}">
-                ${isDone ? "Selesai" : "Aktif"}
-              </span>
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title fw-bold">${ev.title}</h5>
-                <p class="card-text text-secondary small mb-4">
-                  <i class="bi bi-calendar-event"></i> ${AbsensiPro.fmtDT(
-                    ev.datetime
-                  )}<br/>
-                  <i class="bi bi-geo-alt-fill"></i> ${ev.location || "-"}
-                </p>
-                <a href="${href}" class="btn btn-primary mt-auto ${btnDisabled}">${btnText}</a>
-              </div>
-            </div>`;
-          listWrap.appendChild(col);
+      function fmtDateLong(iso) {
+        const d = new Date(iso);
+        return d.toLocaleString("id-ID", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
         });
-      })();
+      }
+
+      function card(ev) {
+        const href = `form-kehadiran.html?event=${encodeURIComponent(ev.id)}`;
+        const badge =
+          ev.status === "active"
+            ? '<span class="event-badge badge-active">Aktif</span>'
+            : '<span class="event-badge badge-upcoming">Upcoming</span>';
+
+        return `
+          <div class="card event-card shadow-sm">
+            <div class="card-body d-flex flex-column h-100">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <h5 class="event-title mb-0">${ev.title}</h5>
+                ${badge}
+              </div>
+              <div class="event-meta mb-3">
+                <div class="mb-1"><i class="bi bi-calendar-event me-1"></i>${fmtDateLong(
+                  ev.datetime
+                )}</div>
+                ${
+                  ev.location
+                    ? `<div><i class="bi bi-geo-alt me-1"></i>${ev.location}</div>`
+                    : ""
+                }
+              </div>
+              <div class="mt-auto">
+                <a class="btn btn-primary w-100" href="${href}">Isi Daftar Hadir</a>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      async function loadEvents() {
+        // 1) Ambil yang AKTIF dulu (tanggal terbaru desc)
+        const a = await sb
+          .from("events")
+          .select("id,title,datetime,location,status")
+          .eq("status", "active")
+          .order("datetime", { ascending: false });
+        // 2) Lalu UPCOMING (tanggal terbaru desc)
+        const u = await sb
+          .from("events")
+          .select("id,title,datetime,location,status")
+          .eq("status", "upcoming")
+          .order("datetime", { ascending: false });
+
+        const data = [...(a.data || []), ...(u.data || [])];
+
+        if (!data.length) {
+          $grid.innerHTML = "";
+          $empty.classList.remove("d-none");
+          return;
+        }
+
+        $empty.classList.add("d-none");
+        $grid.innerHTML = data.map(card).join("");
+      }
+
+      loadEvents();
     </script>
   </body>
 </html>

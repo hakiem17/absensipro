@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Daftar Hadir - Admin Panel</title>
 
-    <!-- Bootstrap & Icons -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -16,7 +15,14 @@
     />
 
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+      :root {
+        --sidebar-w: 260px;
+        --content-gutter-x: clamp(12px, 0.9vw, 22px);
+      }
+
+      /* THEME */
       :root[data-theme="light"] {
         --bg-main: #f8f9fa;
         --bg-sidebar: #fff;
@@ -24,31 +30,40 @@
         --text-secondary: #6c757d;
         --border-color: #dee2e6;
         --card-bg: #fff;
+        --hover: #f1f5f9;
       }
       :root[data-theme="dark"] {
-        --bg-main: #1a202c;
-        --bg-sidebar: #2d3748;
-        --text-primary: #e2e8f0;
-        --text-secondary: #a0aec0;
-        --border-color: #4a5568;
-        --card-bg: #2d3748;
+        --bg-main: #111827;
+        --bg-sidebar: #1f2937;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --border-color: #374151;
+        --card-bg: #1f2937;
+        --hover: #2b3546;
+      }
+
+      html,
+      body {
+        height: 100%;
       }
       body {
-        display: flex;
-        min-height: 100vh;
         background: var(--bg-main);
         color: var(--text-primary);
         font-family: "Poppins", sans-serif;
       }
-      .sidebar {
-        background: var(--bg-sidebar);
-        position: fixed;
-        inset: 0 auto 0 0;
-        z-index: 100;
-        width: 260px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+
+      /* ===== LAYOUT ===== */
+      .main-wrapper {
         display: flex;
-        flex-direction: column;
+        min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      /* Sidebar (offcanvas on mobile, fixed on desktop) */
+      .sidebar {
+        --bs-offcanvas-width: var(--sidebar-w);
+        background: var(--bg-sidebar);
       }
       .sidebar .nav-link {
         color: var(--text-secondary);
@@ -63,19 +78,76 @@
       }
       .sidebar .nav-link.active {
         color: #3b82f6;
-        font-weight: 600;
+        font-weight: 700;
       }
+      .sidebar .nav-link:hover {
+        background: var(--hover);
+        color: var(--text-primary);
+      }
+      @media (min-width: 992px) {
+        .sidebar {
+          position: fixed;
+          inset: 0 auto 0 0;
+          width: var(--sidebar-w);
+          border-right: 1px solid var(--border-color);
+        }
+        .offcanvas-backdrop {
+          display: none !important;
+        }
+      }
+
+      /* Main content wrapper —> STICKY FOOTER works because of min-height + flex column */
       .main-content-wrapper {
-        margin-left: 260px;
-        width: calc(100% - 260px);
+        width: 100%;
         display: flex;
         flex-direction: column;
-        flex-grow: 1;
+        min-height: 100vh; /* KUNCI footer nempel bawah */
       }
+      @media (min-width: 992px) {
+        .main-content-wrapper {
+          margin-left: var(--sidebar-w);
+          width: calc(100% - var(--sidebar-w));
+        }
+      }
+
       .top-header {
         background: var(--card-bg);
         border-bottom: 1px solid var(--border-color);
       }
+      .container-left {
+        padding-left: var(--content-gutter-x);
+        padding-right: var(--content-gutter-x);
+      }
+      @media (min-width: 992px) {
+        .container-left {
+          padding-left: 0;
+        }
+      } /* mepet kiri di desktop */
+
+      .btn-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        color: var(--text-primary);
+      }
+      .btn-icon:hover {
+        background: var(--hover);
+      }
+
+      .main-content {
+        padding: 1rem 0;
+      }
+      @media (min-width: 768px) {
+        .main-content {
+          padding: 2rem 0;
+        }
+      }
+
       .card {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
@@ -84,13 +156,8 @@
         --bs-table-bg: var(--card-bg);
         --bs-table-color: var(--text-primary);
         --bs-table-border-color: var(--border-color);
-        --bs-table-striped-bg: rgba(255, 255, 255, 0.02);
-        --bs-table-hover-bg: rgba(255, 255, 255, 0.04);
       }
-      [data-theme="light"] .table {
-        --bs-table-striped-bg: rgba(0, 0, 0, 0.02);
-        --bs-table-hover-bg: rgba(0, 0, 0, 0.04);
-      }
+
       .signature-thumbnail {
         width: 100px;
         height: 50px;
@@ -101,20 +168,32 @@
         cursor: pointer;
       }
       [data-theme="dark"] .signature-thumbnail {
-        background: #4a5568;
+        background: #374151;
       }
+
+      /* ===== FOOTER (sticky) ===== */
       .footer-professional {
         background: #3b82f6;
         color: #e5e7eb;
-        padding-top: 3rem;
-        padding-bottom: 1.5rem;
+        margin-top: auto; /* dorong ke bawah */
+        padding: 1rem 0;
         font-size: 0.95rem;
       }
       .footer-professional .footer-divider {
-        border-top: 1px solid #4b92f7;
-        margin-top: 2rem;
-        margin-bottom: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.25);
+        margin: 0.5rem 0;
       }
+
+      /* ===== TABLE: ringkas di HP ===== */
+      @media (max-width: 767.98px) {
+        .col-instansi,
+        .col-jabatan,
+        .col-aksi {
+          display: none;
+        }
+      }
+
+      /* ===== PRINT ===== */
       .print-title {
         display: none;
       }
@@ -123,11 +202,10 @@
           size: A4 portrait;
           margin: 18mm 12mm;
         }
-        nav,
+        #sidebar,
         .top-header,
         .footer-professional,
         #toolbar,
-        #theme-toggle,
         #search-row {
           display: none !important;
         }
@@ -145,9 +223,6 @@
         }
         .table thead {
           display: table-header-group;
-        }
-        .table tr {
-          page-break-inside: avoid;
         }
         .table th,
         .table td {
@@ -179,151 +254,210 @@
       })();
     </script>
 
-    <!-- SIDEBAR -->
-    <nav class="sidebar">
-      <div class="p-4"><h4 class="fw-bold">AbsensiPro</h4></div>
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link" href="admin-dashboard.html"
-            ><i class="bi bi-speedometer2"></i> Dashboard</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="#"
-            ><i class="bi bi-calendar-event"></i> Manajemen Acara</a
-          >
-        </li>
-      </ul>
-      <div class="p-3 mt-auto">
-        <a href="#" id="btn-logout" class="btn btn-outline-danger w-100"
-          ><i class="bi bi-box-arrow-right"></i> Logout</a
-        >
-      </div>
-    </nav>
-
-    <div class="main-content-wrapper">
-      <!-- HEADER -->
-      <header
-        class="top-header p-3 d-flex justify-content-end align-items-center"
+    <div class="main-wrapper">
+      <!-- SIDEBAR -->
+      <nav
+        id="sidebar"
+        class="offcanvas-lg offcanvas-start sidebar"
+        data-bs-scroll="true"
+        data-bs-backdrop="true"
+        tabindex="-1"
+        aria-labelledby="sidebarLabel"
       >
-        <button id="theme-toggle" class="btn btn-outline-secondary">
-          <i class="bi bi-sun-fill"></i>
-        </button>
-        <span class="ms-3">Selamat datang, Hakiem</span>
-      </header>
+        <div class="offcanvas-header d-lg-none">
+          <h5 class="offcanvas-title" id="sidebarLabel">AbsensiPro</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Tutup"
+          ></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column p-0">
+          <div class="p-4 d-none d-lg-block">
+            <h4 class="fw-bold m-0">AbsensiPro</h4>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="admin-dashboard.html"
+                ><i class="bi bi-speedometer2"></i> Dashboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="#"
+                ><i class="bi bi-calendar-event"></i> Manajemen Acara</a
+              >
+            </li>
+          </ul>
+          <div class="p-3 mt-auto">
+            <a href="#" id="btn-logout" class="btn btn-outline-danger w-100"
+              ><i class="bi bi-box-arrow-right"></i> Logout</a
+            >
+          </div>
+        </div>
+      </nav>
 
       <!-- MAIN -->
-      <main class="main-content p-4">
-        <!-- Toolbar -->
-        <div id="toolbar" class="mb-4">
-          <a
-            href="admin-manajemen-acara.html"
-            class="btn btn-outline-secondary mb-3"
-            ><i class="bi bi-arrow-left"></i> Kembali</a
+      <div class="main-content-wrapper">
+        <!-- HEADER -->
+        <header class="top-header">
+          <div
+            class="container-left d-flex align-items-center justify-content-between py-2"
           >
-          <div class="row g-3 align-items-end">
-            <div class="col-md-5">
-              <label class="form-label" for="event-select">Acara</label>
-              <select id="event-select" class="form-select"></select>
-              <div class="small text-secondary mt-2" id="event-meta"></div>
-            </div>
-            <div class="col-md-7 text-md-end">
-              <div class="btn-group me-2">
-                <button id="btn-export" class="btn btn-success">
-                  <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
-                </button>
-                <button id="btn-print" class="btn btn-danger">
-                  <i class="bi bi-file-earmark-pdf"></i> Export PDF
-                </button>
-              </div>
-              <button id="btn-copy" class="btn btn-outline-info">
-                <i class="bi bi-link-45deg"></i> Copy Link Form
-              </button>
-              <button id="btn-qr" class="btn btn-outline-primary">
-                <i class="bi bi-qr-code"></i> QR Form
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pencarian & Pagination -->
-        <div id="search-row" class="row g-3 mb-3">
-          <div class="col-md-6">
-            <label for="search-input" class="form-label">Cari peserta</label>
-            <input
-              id="search-input"
-              class="form-control"
-              placeholder="Ketik nama, instansi, atau jabatan..."
-            />
-          </div>
-          <div class="col-md-3">
-            <label for="page-size" class="form-label">Tampil per halaman</label>
-            <select id="page-size" class="form-select">
-              <option value="10">10</option>
-              <option value="25" selected>25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </div>
-          <div class="col-md-3 d-flex align-items-end justify-content-md-end">
-            <div class="btn-group" role="group" aria-label="Pagination">
-              <button id="btn-prev" class="btn btn-outline-secondary">
-                <i class="bi bi-chevron-left"></i>
-              </button>
-              <span id="page-info" class="btn btn-outline-secondary disabled"
-                >Hal 1/1</span
+            <div class="d-flex align-items-center gap-2">
+              <button
+                class="btn-icon d-lg-none"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#sidebar"
               >
-              <button id="btn-next" class="btn btn-outline-secondary">
-                <i class="bi bi-chevron-right"></i>
+                <i class="bi bi-list"></i>
               </button>
+              <h1 class="h5 m-0 d-none d-sm-block">Daftar Hadir</h1>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button
+                id="theme-toggle"
+                class="btn-icon"
+                type="button"
+                aria-label="Ubah tema"
+              ></button>
+              <span class="d-none d-sm-inline">Selamat datang, Hakiem</span>
             </div>
           </div>
-        </div>
+        </header>
 
-        <!-- Judul (print) -->
-        <h2 class="print-title">
-          Daftar Hadir <span id="print-count" class="print-count"></span>
-        </h2>
-
-        <!-- Card Daftar Hadir -->
-        <div class="card border-0 shadow-sm">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h4 class="mb-0">Daftar Hadir</h4>
-              <div class="text-secondary">
-                <span id="count">0</span> peserta
+        <!-- CONTENT -->
+        <main class="main-content">
+          <div class="container-left">
+            <!-- Toolbar -->
+            <div id="toolbar" class="mb-3">
+              <a
+                href="admin-manajemen-acara.html"
+                class="btn btn-outline-secondary mb-3"
+                ><i class="bi bi-arrow-left"></i> Kembali</a
+              >
+              <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                  <label class="form-label" for="event-select">Acara</label>
+                  <select id="event-select" class="form-select"></select>
+                  <div class="small text-secondary mt-2" id="event-meta"></div>
+                </div>
+                <div class="col-md-7 text-md-end">
+                  <div class="btn-group me-2 mb-2 mb-md-0">
+                    <button id="btn-export" class="btn btn-success">
+                      <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+                    </button>
+                    <button id="btn-print" class="btn btn-danger">
+                      <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                    </button>
+                  </div>
+                  <button
+                    id="btn-copy"
+                    class="btn btn-outline-info me-2 mb-2 mb-md-0"
+                  >
+                    <i class="bi bi-link-45deg"></i> Copy Link Form
+                  </button>
+                  <button
+                    id="btn-qr"
+                    class="btn btn-outline-primary mb-2 mb-md-0"
+                  >
+                    <i class="bi bi-qr-code"></i> QR Form
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="table-responsive">
-              <table class="table table-hover align-middle">
-                <thead>
-                  <tr>
-                    <th style="width: 60px">#</th>
-                    <th>Nama Lengkap</th>
-                    <th>Instansi</th>
-                    <th>Jabatan</th>
-                    <th>Waktu Kehadiran</th>
-                    <th>Tanda Tangan</th>
-                    <th style="width: 80px">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="tbody"></tbody>
-              </table>
+
+            <!-- Search + Paging -->
+            <div id="search-row" class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="search-input" class="form-label"
+                  >Cari peserta</label
+                >
+                <input
+                  id="search-input"
+                  class="form-control"
+                  placeholder="Ketik nama, instansi, atau jabatan..."
+                />
+              </div>
+              <div class="col-md-3">
+                <label for="page-size" class="form-label"
+                  >Tampil per halaman</label
+                >
+                <select id="page-size" class="form-select">
+                  <option value="10">10</option>
+                  <option value="25" selected>25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+              <div
+                class="col-md-3 d-flex align-items-end justify-content-md-end"
+              >
+                <div class="btn-group" role="group" aria-label="Pagination">
+                  <button id="btn-prev" class="btn btn-outline-secondary">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <span
+                    id="page-info"
+                    class="btn btn-outline-secondary disabled"
+                    >Hal 1/1</span
+                  >
+                  <button id="btn-next" class="btn btn-outline-secondary">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Print title -->
+            <h2 class="print-title">
+              Daftar Hadir <span id="print-count"></span>
+            </h2>
+
+            <!-- Tabel -->
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  <h4 class="mb-0">Daftar Hadir</h4>
+                  <div class="text-secondary">
+                    <span id="count">0</span> peserta
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead>
+                      <tr>
+                        <th style="width: 60px">#</th>
+                        <th>Nama Lengkap</th>
+                        <th class="col-instansi">Instansi</th>
+                        <th class="col-jabatan">Jabatan</th>
+                        <th>Waktu Kehadiran</th>
+                        <th>Tanda Tangan</th>
+                        <th class="col-aksi" style="width: 80px">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
 
-      <!-- FOOTER -->
-      <footer class="footer-professional">
-        <div class="container">
-          <div class="footer-divider"></div>
-          <div class="text-center copyright">
-            &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai
-            Tengah. All rights reserved.
+        <!-- FOOTER (sticky, sejajar konten) -->
+        <footer class="footer-professional">
+          <div class="container-left">
+            <div class="footer-divider"></div>
+            <div class="text-center">
+              &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai
+              Tengah.
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
 
     <!-- Modal preview tanda tangan -->
@@ -341,7 +475,6 @@
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"
             ></button>
           </div>
           <div class="modal-body text-center">
@@ -365,7 +498,6 @@
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"
             ></button>
           </div>
           <div class="modal-body" id="confirmText">Yakin?</div>
@@ -395,7 +527,6 @@
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"
             ></button>
           </div>
           <div class="modal-body text-center">
@@ -411,12 +542,12 @@
       </div>
     </div>
 
-    <!-- JS -->
+    <!-- JS libs -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./assets/js/config.js"></script>
-    <script src="./assets/js/auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
 
     <script>
       // Tahun & tema
@@ -424,22 +555,22 @@
         new Date().getFullYear();
       const htmlEl = document.documentElement,
         themeBtn = document.getElementById("theme-toggle");
-      function updIco() {
-        themeBtn.querySelector("i").className =
+      function syncIcon() {
+        themeBtn.innerHTML =
           htmlEl.getAttribute("data-theme") === "dark"
-            ? "bi bi-sun-fill"
-            : "bi bi-moon-fill";
+            ? '<i class="bi bi-sun-fill"></i>'
+            : '<i class="bi bi-moon-fill"></i>';
       }
       themeBtn.addEventListener("click", () => {
         const t =
           htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
         htmlEl.setAttribute("data-theme", t);
         localStorage.setItem("theme", t);
-        updIco();
+        syncIcon();
       });
-      updIco();
+      syncIcon();
 
-      // Supabase client
+      // Supabase
       const sb = supabase.createClient(
         window.SUPABASE_URL,
         window.SUPABASE_ANON_KEY
@@ -457,15 +588,13 @@
       const $btnNext = document.getElementById("btn-next");
       const $pageInfo = document.getElementById("page-info");
 
-      // State
       let EVENTS = [],
         sourceList = [],
         filteredList = [],
         page = 1,
-        realtimeChannel = null;
-      let currentEventId = null;
+        realtimeChannel = null,
+        currentEventId = null;
 
-      // helpers
       const esc = (s) =>
         String(s ?? "")
           .replace(/&/g, "&amp;")
@@ -481,14 +610,12 @@
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, "")
           .slice(0, 60);
-      function escCSV(v) {
-        return `"${String(v ?? "").replace(/"/g, '""')}"`;
-      }
-      function makeCSV(headers, rows) {
-        const head = headers.map(escCSV).join(",");
-        const body = rows.map((r) => r.map(escCSV).join(",")).join("\n");
-        return "\uFEFF" + head + "\n" + body; // BOM untuk Excel
-      }
+      const escCSV = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+      const makeCSV = (h, rows) =>
+        "\uFEFF" +
+        h.map(escCSV).join(",") +
+        "\n" +
+        rows.map((r) => r.map(escCSV).join(",")).join("\n");
       function downloadBlob(name, blob) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -500,80 +627,68 @@
         setTimeout(() => URL.revokeObjectURL(url), 500);
       }
 
-      // ===== Modal Konfirmasi (FIX: modal langsung tertutup) =====
       function confirmModal(message) {
         return new Promise((resolve) => {
-          const modalEl = document.getElementById("confirmModal");
+          const mEl = document.getElementById("confirmModal");
           document.getElementById("confirmText").textContent =
             message || "Yakin?";
-          const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-
-          let confirmed = false;
-          const yesBtn = document.getElementById("confirmYes");
-
+          const m = bootstrap.Modal.getOrCreateInstance(mEl);
+          let ok = false;
+          const yes = document.getElementById("confirmYes");
           const onYes = () => {
-            confirmed = true;
-            modal.hide();
+            ok = true;
+            m.hide();
           };
           const onHidden = () => {
-            yesBtn.removeEventListener("click", onYes);
-            modalEl.removeEventListener("hidden.bs.modal", onHidden);
-            resolve(confirmed);
+            yes.removeEventListener("click", onYes);
+            mEl.removeEventListener("hidden.bs.modal", onHidden);
+            resolve(ok);
           };
-
-          yesBtn.addEventListener("click", onYes);
-          modalEl.addEventListener("hidden.bs.modal", onHidden);
-          modal.show();
+          yes.addEventListener("click", onYes);
+          mEl.addEventListener("hidden.bs.modal", onHidden);
+          m.show();
         });
       }
 
-      // ========== LOAD EVENTS ==========
       async function loadEventsOnce() {
         const { data, error } = await sb
           .from("events")
           .select("id,title,datetime,location,status")
           .order("datetime", { ascending: false });
         if (error) {
-          console.error(error);
           alert("Gagal memuat daftar acara.");
           return;
         }
         EVENTS = data || [];
-
         if (!EVENTS.length) {
-          $select.innerHTML = `<option value="">(belum ada acara)</option>`;
+          $select.innerHTML = '<option value="">(belum ada acara)</option>';
           return;
         }
         $select.innerHTML = EVENTS.map(
           (e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`
         ).join("");
-
         const urlEventId = new URLSearchParams(location.search).get("event");
         if (urlEventId && EVENTS.find((e) => e.id === urlEventId))
           $select.value = urlEventId;
-
         loadForEvent($select.value);
       }
 
-      // ========== LOAD ATTENDEES FOR SELECTED EVENT ==========
       async function loadForEvent(eventId) {
         if (!eventId) return;
         currentEventId = eventId;
-
         const ev = EVENTS.find((e) => e.id === eventId);
-        $meta.innerHTML = `
-          <span class="me-3"><i class="bi bi-calendar-event"></i> ${esc(
-            fmtDT(ev?.datetime)
-          )}</span>
-          <span class="me-3"><i class="bi bi-geo-alt"></i> ${esc(
-            ev?.location || ""
-          )}</span>
-          <span class="badge ${
-            ev?.status === "done" ? "text-bg-success" : "text-bg-primary"
-          }">${esc(ev?.status || "")}</span>
-        `;
+        $meta.innerHTML = `<span class="me-3"><i class="bi bi-calendar-event"></i> ${esc(
+          fmtDT(ev?.datetime)
+        )}</span>
+                           <span class="me-3"><i class="bi bi-geo-alt"></i> ${esc(
+                             ev?.location || ""
+                           )}</span>
+                           <span class="badge ${
+                             ev?.status === "done"
+                               ? "text-bg-success"
+                               : "text-bg-primary"
+                           }">${esc(ev?.status || "")}</span>`;
 
-        // hentikan realtime lama
         if (realtimeChannel) {
           try {
             sb.removeChannel(realtimeChannel);
@@ -581,14 +696,12 @@
           realtimeChannel = null;
         }
 
-        // ambil peserta HANYA untuk event tersebut
         const { data, error } = await sb
           .from("attendees")
           .select("id,name,instansi,jabatan,email,phone,ts,signature_url")
           .eq("event_id", eventId)
           .order("ts", { ascending: true });
         if (error) {
-          console.error(error);
           alert("Gagal memuat peserta.");
           return;
         }
@@ -605,7 +718,6 @@
         }));
         applySearch(true);
 
-        // Export CSV
         document.getElementById("btn-export").onclick = () => {
           const headers = [
             "No",
@@ -625,14 +737,14 @@
             a.phone || "",
             a.ts ? new Date(a.ts).toLocaleString("id-ID") : "",
           ]);
-          const csvText = makeCSV(headers, rows);
           downloadBlob(
             `absensi-${slug(ev?.title) || "acara"}-${eventId.slice(0, 8)}.csv`,
-            new Blob([csvText], { type: "text/csv;charset=utf-8" })
+            new Blob([makeCSV(headers, rows)], {
+              type: "text/csv;charset=utf-8",
+            })
           );
         };
 
-        // Copy Link
         document.getElementById("btn-copy").onclick = async () => {
           const base = new URL(".", location.href);
           const url = new URL("form-kehadiran.html", base);
@@ -641,7 +753,6 @@
           alert("Link form telah disalin:\n" + url);
         };
 
-        // QR Code (toCanvas + toBlob)
         document.getElementById("btn-qr").onclick = () => {
           const base = new URL(".", location.href);
           const url = new URL("form-kehadiran.html", base);
@@ -675,7 +786,7 @@
 
         document.getElementById("btn-print").onclick = () => window.print();
 
-        // realtime: INSERT + DELETE khusus event ini
+        // realtime: INSERT + DELETE
         realtimeChannel = sb
           .channel(`attendees-${eventId}`)
           .on(
@@ -686,8 +797,8 @@
               table: "attendees",
               filter: `event_id=eq.${eventId}`,
             },
-            (payload) => {
-              const r = payload.new;
+            (p) => {
+              const r = p.new;
               const item = {
                 id: r.id,
                 name: r.name,
@@ -705,9 +816,8 @@
                 (item.name || "").toLowerCase().includes(q) ||
                 (item.instansi || "").toLowerCase().includes(q) ||
                 (item.jabatan || "").toLowerCase().includes(q)
-              ) {
+              )
                 filteredList.push(item);
-              }
               renderTable();
             }
           )
@@ -719,8 +829,8 @@
               table: "attendees",
               filter: `event_id=eq.${eventId}`,
             },
-            (payload) => {
-              const id = String(payload.old?.id ?? "");
+            (p) => {
+              const id = String(p.old?.id ?? "");
               sourceList = sourceList.filter((x) => String(x.id) !== id);
               filteredList = filteredList.filter((x) => String(x.id) !== id);
               renderTable();
@@ -729,7 +839,6 @@
           .subscribe();
       }
 
-      // ===== filtering + pagination =====
       function applySearch(resetPage) {
         const q = ($search.value || "").toLowerCase().trim();
         filteredList = q
@@ -762,10 +871,17 @@
         $count.textContent = total;
         if ($printCnt) $printCnt.textContent = `${total} peserta`;
         if (!rows.length) {
-          $tbody.innerHTML = `<tr><td colspan="7" class="text-center text-secondary">Belum ada peserta hadir.</td></tr>`;
+          $tbody.innerHTML =
+            '<tr><td colspan="7" class="text-center text-secondary">Belum ada peserta hadir.</td></tr>';
         } else {
           $tbody.innerHTML = rows
             .map((a, i) => {
+              const extraMobile =
+                a.instansi || a.jabatan
+                  ? `<div class="d-md-none text-secondary small">${esc(
+                      a.instansi || "-"
+                    )}${a.jabatan ? " • " + esc(a.jabatan) : ""}</div>`
+                  : "";
               const ttd = a.signatureDataUrl
                 ? `<img class="signature-thumbnail" src="${esc(
                     a.signatureDataUrl
@@ -773,15 +889,15 @@
                 : "-";
               return `<tr>
               <td>${startIndex + i + 1}</td>
-              <td>${esc(a.name)}</td>
-              <td>${esc(a.instansi)}</td>
-              <td>${esc(a.jabatan)}</td>
+              <td>${esc(a.name)}${extraMobile}</td>
+              <td class="col-instansi">${esc(a.instansi)}</td>
+              <td class="col-jabatan">${esc(a.jabatan)}</td>
               <td>${esc(fmtDT(a.ts))}</td>
               <td>${ttd}</td>
-              <td class="text-nowrap">
+              <td class="col-aksi text-nowrap">
                 <button class="btn btn-sm btn-outline-danger btn-del" data-id="${esc(
                   a.id
-                )}" title="Hapus"><i class="bi bi-trash"></i></button>
+                )}"><i class="bi bi-trash"></i></button>
               </td>
             </tr>`;
             })
@@ -792,8 +908,15 @@
         $btnNext.disabled = page >= totalPages;
       }
 
-      // ===== init =====
       (function init() {
+        AdminAuth.requireAdmin();
+        document
+          .getElementById("btn-logout")
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            AdminAuth.logout();
+          });
+
         $select.addEventListener("change", (e) => loadForEvent(e.target.value));
         $search.addEventListener("input", () => applySearch(true));
         $pageSize.addEventListener("change", () => {
@@ -814,7 +937,7 @@
           }
         });
 
-        // preview ttd
+        // Preview ttd
         $tbody.addEventListener("click", (e) => {
           const img = e.target.closest(".signature-thumbnail");
           if (!img) return;
@@ -822,11 +945,11 @@
           new bootstrap.Modal(document.getElementById("signatureModal")).show();
         });
 
-        // HAPUS peserta (modal langsung close, baris langsung hilang)
+        // Hapus peserta
         $tbody.addEventListener("click", async (e) => {
           const btn = e.target.closest(".btn-del");
           if (!btn) return;
-          const id = btn.getAttribute("data-id");
+          const id = btn.dataset.id;
           if (!id) return;
           const ok = await confirmModal("Hapus peserta ini dari daftar hadir?");
           if (!ok) return;
@@ -845,15 +968,29 @@
         });
 
         loadEventsOnce();
-      })();
-    </script>
 
-    <script>
-      AdminAuth.requireAdmin();
-      document.getElementById("btn-logout")?.addEventListener("click", (e) => {
-        e.preventDefault();
-        AdminAuth.logout();
-      });
+        // Offcanvas safety (biar tidak macet)
+        const sidebarEl = document.getElementById("sidebar");
+        const oc = bootstrap.Offcanvas.getOrCreateInstance(sidebarEl, {
+          backdrop: true,
+          scroll: true,
+        });
+        sidebarEl
+          .querySelectorAll(
+            '[data-bs-dismiss="offcanvas"], .nav-link, #btn-logout'
+          )
+          .forEach((el) =>
+            el.addEventListener("click", () => {
+              try {
+                oc.hide();
+              } catch (_) {}
+            })
+          );
+        sidebarEl.addEventListener("hidden.bs.offcanvas", () => {
+          document.body.style.overflow = "";
+          document.body.classList.remove("offcanvas-backdrop", "modal-open");
+        });
+      })();
     </script>
   </body>
 </html>
