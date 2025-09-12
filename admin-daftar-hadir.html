@@ -60,7 +60,6 @@
         overflow-x: hidden;
       }
 
-      /* Sidebar (offcanvas on mobile, fixed on desktop) */
       .sidebar {
         --bs-offcanvas-width: var(--sidebar-w);
         background: var(--bg-sidebar);
@@ -96,12 +95,11 @@
         }
       }
 
-      /* Main content wrapper —> STICKY FOOTER works because of min-height + flex column */
       .main-content-wrapper {
         width: 100%;
         display: flex;
         flex-direction: column;
-        min-height: 100vh; /* KUNCI footer nempel bawah */
+        min-height: 100vh;
       }
       @media (min-width: 992px) {
         .main-content-wrapper {
@@ -122,7 +120,7 @@
         .container-left {
           padding-left: 0;
         }
-      } /* mepet kiri di desktop */
+      }
 
       .btn-icon {
         width: 40px;
@@ -171,11 +169,10 @@
         background: #374151;
       }
 
-      /* ===== FOOTER (sticky) ===== */
       .footer-professional {
         background: #3b82f6;
         color: #e5e7eb;
-        margin-top: auto; /* dorong ke bawah */
+        margin-top: auto;
         padding: 1rem 0;
         font-size: 0.95rem;
       }
@@ -184,7 +181,6 @@
         margin: 0.5rem 0;
       }
 
-      /* ===== TABLE: ringkas di HP ===== */
       @media (max-width: 767.98px) {
         .col-instansi,
         .col-jabatan,
@@ -193,20 +189,29 @@
         }
       }
 
-      /* ===== PRINT ===== */
+      /* ===== PRINT STYLES ===== */
+      /* Sembunyikan elemen print di tampilan web biasa */
+      .print-header,
+      .print-separator,
       .print-title {
         display: none;
       }
+
       @media print {
         @page {
           size: A4 portrait;
           margin: 18mm 12mm;
         }
+        body {
+          font-family: "Times New Roman", serif; /* Font standar untuk laporan */
+        }
         #sidebar,
         .top-header,
         .footer-professional,
         #toolbar,
-        #search-row {
+        #search-row,
+        .col-aksi {
+          /* Sembunyikan kolom aksi saat print */
           display: none !important;
         }
         .main-content-wrapper {
@@ -218,7 +223,7 @@
           box-shadow: none !important;
         }
         .table {
-          font-size: 12px;
+          font-size: 10pt; /* Ukuran font standar untuk tabel laporan */
           width: 100%;
         }
         .table thead {
@@ -229,19 +234,68 @@
           border: 1px solid #000 !important;
           padding: 6px 8px !important;
           color: #000 !important;
+          background-color: #fff !important; /* Pastikan background putih */
         }
         .table thead th {
-          background: #efefef !important;
+          background: #e9ecef !important; /* Warna abu-abu terang untuk header tabel */
+          font-weight: bold;
         }
         .signature-thumbnail {
           height: 28px !important;
           width: auto;
+          background: none;
+          border: none;
+        }
+
+        /* -- KOP SURAT -- */
+        .print-header {
+          display: flex !important;
+          align-items: center;
+          text-align: center;
+          margin-bottom: 0.5rem;
+          color: #000 !important;
+        }
+        .print-logo {
+          width: 85px; /* Sesuaikan ukuran logo */
+          height: auto;
+          margin-right: 1.5rem;
+        }
+        .print-header-text {
+          flex-grow: 1;
+          line-height: 1.3;
+        }
+        .print-header-text h4 {
+          font-size: 16pt;
+          margin: 0;
+        }
+        .print-header-text h3 {
+          font-size: 18pt;
+          font-weight: bold;
+          margin: 0;
+        }
+        .print-header-text p {
+          font-size: 9pt;
+          margin: 4px 0 0;
+        }
+        .print-separator {
+          display: block !important;
+          border: none;
+          border-top: 3px double #000;
+          margin: 0 0 1rem 0;
         }
         .print-title {
           display: block !important;
-          font-size: 22px;
-          font-weight: 700;
-          margin: 12px 0 8px;
+          text-align: center;
+          margin-bottom: 1.5rem !important;
+        }
+        .print-title h4 {
+          font-weight: bold;
+          text-decoration: underline;
+          font-size: 14pt;
+        }
+        .print-title h5,
+        .print-title p {
+          font-size: 12pt;
         }
       }
     </style>
@@ -348,8 +402,9 @@
                     <button id="btn-export" class="btn btn-success">
                       <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
                     </button>
+                    <!-- Tombol print diganti namanya menjadi Cetak Laporan -->
                     <button id="btn-print" class="btn btn-danger">
-                      <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                      <i class="bi bi-printer"></i> Cetak Laporan
                     </button>
                   </div>
                   <button
@@ -410,10 +465,34 @@
               </div>
             </div>
 
-            <!-- Print title -->
-            <h2 class="print-title">
-              Daftar Hadir <span id="print-count"></span>
-            </h2>
+            <!-- KOP SURAT UNTUK PRINT -->
+            <div class="print-header">
+              <img
+                src="assets/img/logo_hst.png"
+                alt="Logo HST"
+                class="print-logo"
+              />
+              <div class="print-header-text">
+                <h4>PEMERINTAH KABUPATEN HULU SUNGAI TENGAH</h4>
+                <h3>DINAS KOMUNIKASI DAN INFORMATIKA</h3>
+                <p>
+                  Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai,
+                  Kalimantan Selatan 71351<br />
+                  Telepon (0517) 3791750, Faksimile (0517) 3791750<br />
+                  Laman: diskominfo.hstkab.go.id, Pos-el diskominfo@hstkab.go.id
+                </p>
+              </div>
+            </div>
+            <hr class="print-separator" />
+            <div class="print-title">
+              <h4 class="mb-1">DAFTAR HADIR PESERTA</h4>
+              <h5 id="print-event-title" class="mb-0 fw-normal">
+                (Nama Acara)
+              </h5>
+              <p id="print-event-meta" class="small mt-1">
+                (Waktu dan Lokasi Acara)
+              </p>
+            </div>
 
             <!-- Tabel -->
             <div class="card border-0 shadow-sm">
@@ -421,10 +500,7 @@
                 <div
                   class="d-flex justify-content-between align-items-center mb-2"
                 >
-                  <h4 class="mb-0">Daftar Hadir</h4>
-                  <div class="text-secondary">
-                    <span id="count">0</span> peserta
-                  </div>
+                  <h4 class="mb-0">Daftar Hadir (<span id="count">0</span>)</h4>
                 </div>
                 <div class="table-responsive">
                   <table class="table table-hover align-middle">
@@ -460,7 +536,7 @@
       </div>
     </div>
 
-    <!-- Modal preview tanda tangan -->
+    <!-- Modals -->
     <div
       class="modal fade"
       id="signatureModal"
@@ -487,8 +563,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Modal konfirmasi -->
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background: var(--card-bg)">
@@ -507,17 +581,14 @@
               class="btn btn-secondary"
               data-bs-dismiss="modal"
             >
-              Batal
-            </button>
-            <button type="button" id="confirmYes" class="btn btn-danger">
+              Batal</button
+            ><button type="button" id="confirmYes" class="btn btn-danger">
               Ya, Hapus
             </button>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Modal QR -->
     <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background: var(--card-bg)">
@@ -550,7 +621,6 @@
     <script src="assets/js/auth.js"></script>
 
     <script>
-      // Tahun & tema
       document.getElementById("copyright-year").textContent =
         new Date().getFullYear();
       const htmlEl = document.documentElement,
@@ -570,23 +640,23 @@
       });
       syncIcon();
 
-      // Supabase
       const sb = supabase.createClient(
         window.SUPABASE_URL,
         window.SUPABASE_ANON_KEY
       );
 
-      // Elemen
       const $select = document.getElementById("event-select");
       const $meta = document.getElementById("event-meta");
       const $tbody = document.getElementById("tbody");
       const $count = document.getElementById("count");
-      const $printCnt = document.getElementById("print-count");
       const $search = document.getElementById("search-input");
       const $pageSize = document.getElementById("page-size");
       const $btnPrev = document.getElementById("btn-prev");
       const $btnNext = document.getElementById("btn-next");
       const $pageInfo = document.getElementById("page-info");
+      // Elemen baru untuk print
+      const $printEventTitle = document.getElementById("print-event-title");
+      const $printEventMeta = document.getElementById("print-event-meta");
 
       let EVENTS = [],
         sourceList = [],
@@ -603,7 +673,15 @@
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#39;");
       const fmtDT = (iso) =>
-        iso ? new Date(iso).toLocaleString("id-ID") : "-";
+        iso
+          ? new Date(iso).toLocaleString("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "-";
       const slug = (s) =>
         (s || "")
           .toLowerCase()
@@ -679,15 +757,19 @@
         const ev = EVENTS.find((e) => e.id === eventId);
         $meta.innerHTML = `<span class="me-3"><i class="bi bi-calendar-event"></i> ${esc(
           fmtDT(ev?.datetime)
-        )}</span>
-                           <span class="me-3"><i class="bi bi-geo-alt"></i> ${esc(
-                             ev?.location || ""
-                           )}</span>
-                           <span class="badge ${
-                             ev?.status === "done"
-                               ? "text-bg-success"
-                               : "text-bg-primary"
-                           }">${esc(ev?.status || "")}</span>`;
+        )}</span><span class="me-3"><i class="bi bi-geo-alt"></i> ${esc(
+          ev?.location || ""
+        )}</span><span class="badge ${
+          ev?.status === "done" ? "text-bg-success" : "text-bg-primary"
+        }">${esc(ev?.status || "")}</span>`;
+
+        // Mengisi judul dinamis untuk keperluan print
+        if ($printEventTitle)
+          $printEventTitle.textContent = ev?.title || "(Nama Acara)";
+        if ($printEventMeta)
+          $printEventMeta.textContent = `${fmtDT(ev?.datetime)} • ${
+            ev?.location || "Lokasi tidak ditentukan"
+          }`;
 
         if (realtimeChannel) {
           try {
@@ -705,7 +787,6 @@
           alert("Gagal memuat peserta.");
           return;
         }
-
         sourceList = (data || []).map((a) => ({
           id: a.id,
           name: a.name,
@@ -726,7 +807,7 @@
             "Jabatan",
             "Email",
             "HP",
-            "Waktu (WIB)",
+            "Waktu Hadir",
           ];
           const rows = sourceList.map((a, i) => [
             i + 1,
@@ -744,18 +825,30 @@
             })
           );
         };
-
         document.getElementById("btn-copy").onclick = async () => {
-          const base = new URL(".", location.href);
-          const url = new URL("form-kehadiran.html", base);
+          const url = new URL(
+            "form-kehadiran.html",
+            location.origin +
+              location.pathname.substring(
+                0,
+                location.pathname.lastIndexOf("/")
+              ) +
+              "/"
+          );
           url.searchParams.set("event", eventId);
           await navigator.clipboard.writeText(url.toString());
           alert("Link form telah disalin:\n" + url);
         };
-
         document.getElementById("btn-qr").onclick = () => {
-          const base = new URL(".", location.href);
-          const url = new URL("form-kehadiran.html", base);
+          const url = new URL(
+            "form-kehadiran.html",
+            location.origin +
+              location.pathname.substring(
+                0,
+                location.pathname.lastIndexOf("/")
+              ) +
+              "/"
+          );
           url.searchParams.set("event", eventId);
           const canvas = document.getElementById("qrCanvas");
           QRCode.toCanvas(
@@ -783,10 +876,8 @@
             );
           }, "image/png");
         };
-
         document.getElementById("btn-print").onclick = () => window.print();
 
-        // realtime: INSERT + DELETE
         realtimeChannel = sb
           .channel(`attendees-${eventId}`)
           .on(
@@ -869,7 +960,6 @@
       function renderTable() {
         const { rows, startIndex, total, totalPages } = pageData();
         $count.textContent = total;
-        if ($printCnt) $printCnt.textContent = `${total} peserta`;
         if (!rows.length) {
           $tbody.innerHTML =
             '<tr><td colspan="7" class="text-center text-secondary">Belum ada peserta hadir.</td></tr>';
@@ -887,19 +977,15 @@
                     a.signatureDataUrl
                   )}" alt="ttd">`
                 : "-";
-              return `<tr>
-              <td>${startIndex + i + 1}</td>
-              <td>${esc(a.name)}${extraMobile}</td>
-              <td class="col-instansi">${esc(a.instansi)}</td>
-              <td class="col-jabatan">${esc(a.jabatan)}</td>
-              <td>${esc(fmtDT(a.ts))}</td>
-              <td>${ttd}</td>
-              <td class="col-aksi text-nowrap">
-                <button class="btn btn-sm btn-outline-danger btn-del" data-id="${esc(
-                  a.id
-                )}"><i class="bi bi-trash"></i></button>
-              </td>
-            </tr>`;
+              return `<tr><td>${startIndex + i + 1}</td><td>${esc(
+                a.name
+              )}${extraMobile}</td><td class="col-instansi">${esc(
+                a.instansi
+              )}</td><td class="col-jabatan">${esc(a.jabatan)}</td><td>${esc(
+                fmtDT(a.ts)
+              )}</td><td>${ttd}</td><td class="col-aksi text-nowrap"><button class="btn btn-sm btn-outline-danger btn-del" data-id="${esc(
+                a.id
+              )}"><i class="bi bi-trash"></i></button></td></tr>`;
             })
             .join("");
         }
@@ -916,7 +1002,6 @@
             e.preventDefault();
             AdminAuth.logout();
           });
-
         $select.addEventListener("change", (e) => loadForEvent(e.target.value));
         $search.addEventListener("input", () => applySearch(true));
         $pageSize.addEventListener("change", () => {
@@ -936,16 +1021,12 @@
             renderTable();
           }
         });
-
-        // Preview ttd
         $tbody.addEventListener("click", (e) => {
           const img = e.target.closest(".signature-thumbnail");
           if (!img) return;
           document.getElementById("modalSignatureImage").src = img.src;
           new bootstrap.Modal(document.getElementById("signatureModal")).show();
         });
-
-        // Hapus peserta
         $tbody.addEventListener("click", async (e) => {
           const btn = e.target.closest(".btn-del");
           if (!btn) return;
@@ -966,10 +1047,7 @@
           );
           renderTable();
         });
-
         loadEventsOnce();
-
-        // Offcanvas safety (biar tidak macet)
         const sidebarEl = document.getElementById("sidebar");
         const oc = bootstrap.Offcanvas.getOrCreateInstance(sidebarEl, {
           backdrop: true,

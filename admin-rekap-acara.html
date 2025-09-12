@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rekap Acara Live - Admin Panel</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+      /* --- Variabel CSS --- */
+      :root {
+        --sidebar-w: 260px;
+        --content-gutter-x: clamp(12px, 0.9vw, 22px);
+      }
+      :root[data-theme="light"] {
+        --bg-main: #f8f9fa;
+        --bg-sidebar: #fff;
+        --text-primary: #212529;
+        --text-secondary: #6c757d;
+        --border-color: #dee2e6;
+        --card-bg: #fff;
+        --nav-hover: rgba(0, 0, 0, 0.05);
+      }
+      :root[data-theme="dark"] {
+        --bg-main: #1a202c;
+        --bg-sidebar: #2d3748;
+        --text-primary: #e2e8f0;
+        --text-secondary: #a0aec0;
+        --border-color: #4a5568;
+        --card-bg: #2d3748;
+        --nav-hover: rgba(255, 255, 255, 0.05);
+      }
+
+      /* --- Tata Letak Utama --- */
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg-main);
+        color: var(--text-primary);
+        font-family: "Poppins", sans-serif;
+      }
+      .main-wrapper {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      /* --- Sidebar --- */
+      .sidebar {
+        --bs-offcanvas-width: var(--sidebar-w);
+        background-color: var(--bg-sidebar);
+        z-index: 1050;
+      }
+      .sidebar .nav-link {
+        color: var(--text-secondary);
+        font-weight: 500;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+      }
+      .sidebar .nav-link .bi {
+        margin-right: 12px;
+        font-size: 1.1rem;
+      }
+      .sidebar .nav-link:hover {
+        background: var(--nav-hover);
+        color: var(--text-primary);
+      }
+      .sidebar .nav-link.active {
+        color: #3b82f6;
+        font-weight: 600;
+      }
+      @media (min-width: 992px) {
+        .sidebar {
+          position: fixed;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: var(--sidebar-w);
+          border-right: 1px solid var(--border-color);
+        }
+      }
+
+      /* --- Konten Utama --- */
+      .main-content-wrapper {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      @media (min-width: 992px) {
+        .main-content-wrapper {
+          margin-left: var(--sidebar-w);
+          width: calc(100% - var(--sidebar-w));
+        }
+      }
+
+      .main-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem 0;
+      }
+      .main-content .container-left {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      @media (min-width: 768px) {
+        .main-content {
+          padding: 2rem 0;
+        }
+      }
+      .top-header {
+        background-color: var(--card-bg);
+        border-bottom: 1px solid var(--border-color);
+      }
+      .container-left {
+        padding-left: var(--content-gutter-x);
+        padding-right: var(--content-gutter-x);
+      }
+      @media (min-width: 992px) {
+        .top-header .container-left {
+          padding-left: var(--content-gutter-x);
+          padding-right: var(--content-gutter-x);
+        }
+        .main-content .container-left {
+          padding-left: 0;
+        }
+      }
+
+      /* --- Footer --- */
+      .footer-professional {
+        background: #3b82f6;
+        color: #e5e7eb;
+        padding: 1.25rem 0;
+        font-size: 0.95rem;
+      }
+      .footer-professional .footer-divider {
+        border-top: 1px solid #4b92f7;
+        margin: 0.75rem 0;
+      }
+      .footer-professional .copyright {
+        font-size: 0.875rem;
+      }
+
+      /* --- Gaya untuk Tabel Berjalan (Credit Roll) --- */
+      .table-wrapper {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 400px;
+        overflow: hidden;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        position: relative;
+      }
+      .table-body-scroll-container {
+        flex-grow: 1;
+        overflow: hidden;
+        position: relative;
+      }
+      .table-body-scroll-container:hover .table-scroll-content {
+        animation-play-state: paused;
+      }
+      .table-scroll-content {
+        position: absolute;
+        width: 100%;
+      }
+      .table-scroll-content .table {
+        margin-bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      (function () {
+        const t = localStorage.getItem("theme") || "dark";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+
+    <div class="main-wrapper">
+      <!-- SIDEBAR -->
+      <div
+        id="sidebar"
+        class="offcanvas-lg offcanvas-start sidebar"
+        data-bs-scroll="true"
+        data-bs-backdrop="true"
+        tabindex="-1"
+      >
+        <div class="offcanvas-header d-lg-none">
+          <h5 class="offcanvas-title">AbsensiPro</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Tutup"
+          ></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column p-0">
+          <div class="p-4 d-none d-lg-block">
+            <h4 class="fw-bold m-0">AbsensiPro</h4>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="admin-dashboard.html"
+                ><i class="bi bi-speedometer2"></i> Dashboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="admin-manajemen-acara.html"
+                ><i class="bi bi-calendar-event"></i> Manajemen Acara</a
+              >
+            </li>
+          </ul>
+          <div class="p-3 mt-auto">
+            <a href="#" id="btn-logout" class="btn btn-outline-danger w-100"
+              ><i class="bi bi-box-arrow-right"></i> Logout</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- KONTEN -->
+      <div class="main-content-wrapper">
+        <header class="top-header">
+          <div
+            class="container-left d-flex align-items-center justify-content-between py-2"
+          >
+            <div class="d-flex align-items-center gap-2">
+              <button
+                class="btn btn-outline-secondary d-lg-none"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#sidebar"
+              >
+                <i class="bi bi-list"></i>
+              </button>
+              <h1 class="h5 m-0 d-none d-sm-block">Rekap Kehadiran (Live)</h1>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button
+                id="theme-toggle"
+                class="btn btn-outline-secondary"
+                type="button"
+              >
+                <i class="bi bi-sun-fill"></i>
+              </button>
+              <span class="ms-1 d-none d-sm-inline"
+                >Selamat datang, Hakiem</span
+              >
+            </div>
+          </div>
+        </header>
+
+        <main class="main-content">
+          <div class="container-left">
+            <!-- Toolbar -->
+            <div class="row g-3 align-items-center mb-3">
+              <div class="col-md-4">
+                <a
+                  href="admin-manajemen-acara.html"
+                  class="btn btn-outline-secondary"
+                  ><i class="bi bi-arrow-left me-2"></i>Kembali</a
+                >
+              </div>
+              <div class="col-md-8">
+                <label for="event-select" class="form-label fw-bold"
+                  >Pilih Acara untuk Ditampilkan:</label
+                >
+                <select id="event-select" class="form-select form-select-lg">
+                  <option>Memuat daftar acara...</option>
+                </select>
+              </div>
+            </div>
+            <h2 id="event-title" class="h4 text-center mb-3"></h2>
+
+            <!-- Tabel Rekap Berjalan -->
+            <div class="table-wrapper">
+              <div class="table-header">
+                <table class="table align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 70px">No</th>
+                      <th>Nama Peserta</th>
+                      <th>Jabatan</th>
+                      <th>Asal Instansi</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="table-body-scroll-container" id="scroll-container">
+                <div class="table-scroll-content" id="scroll-content">
+                  <!-- Konten tabel dinamis akan dimasukkan di sini oleh JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer class="footer-professional">
+          <div class="container-left">
+            <div class="footer-divider"></div>
+            <div class="text-center copyright">
+              &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai
+              Tengah.
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Libs -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // --- Logika Dasar ---
+        document.getElementById("copyright-year").textContent =
+          new Date().getFullYear();
+        const themeToggle = document.getElementById("theme-toggle");
+        function updateIcon() {
+          themeToggle.querySelector("i").className =
+            document.documentElement.getAttribute("data-theme") === "dark"
+              ? "bi bi-sun-fill"
+              : "bi bi-moon-fill";
+        }
+        themeToggle.addEventListener("click", () => {
+          const t =
+            document.documentElement.getAttribute("data-theme") === "dark"
+              ? "light"
+              : "dark";
+          document.documentElement.setAttribute("data-theme", t);
+          localStorage.setItem("theme", t);
+          updateIcon();
+        });
+        updateIcon();
+        const sb = supabase.createClient(
+          window.SUPABASE_URL,
+          window.SUPABASE_ANON_KEY
+        );
+        AdminAuth.requireAdmin();
+        document
+          .getElementById("btn-logout")
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            AdminAuth.logout();
+          });
+
+        // --- Logika Halaman Rekap ---
+        const $eventSelect = document.getElementById("event-select");
+        const $eventTitle = document.getElementById("event-title");
+        const $scrollContainer = document.getElementById("scroll-container");
+        const $scrollContent = document.getElementById("scroll-content");
+
+        let attendeesList = [];
+        let activeChannel = null;
+        const animationName = "credit-roll-animation";
+        let animationStyleSheet = null;
+
+        function setupAndRunAnimation() {
+          if (animationStyleSheet) {
+            animationStyleSheet.remove();
+            animationStyleSheet = null;
+          }
+          $scrollContent.style.animation = "none";
+
+          setTimeout(() => {
+            const contentHeight = $scrollContent.scrollHeight;
+            const containerHeight = $scrollContainer.clientHeight;
+
+            if (contentHeight <= containerHeight) return;
+
+            // Durasi dihitung berdasarkan ketinggian total (konten + kontainer)
+            const totalDistance = contentHeight + containerHeight;
+            const duration = totalDistance / 50; // Kecepatan: 50 piksel per detik
+
+            const keyframes = `@keyframes ${animationName} { 
+                    0% { transform: translateY(${containerHeight}px); } 
+                    100% { transform: translateY(-${contentHeight}px); } 
+                }`;
+            animationStyleSheet = document.createElement("style");
+            animationStyleSheet.id = animationName;
+            animationStyleSheet.innerText = keyframes;
+            document.head.appendChild(animationStyleSheet);
+
+            $scrollContent.style.animation = `${animationName} ${duration}s linear infinite`;
+          }, 100);
+        }
+
+        function renderScrollingList() {
+          if (attendeesList.length === 0) {
+            $scrollContent.innerHTML = `<table class="table"><tbody><tr><td colspan="4" class="text-center text-secondary py-5">Menunggu peserta...</td></tr></tbody></table>`;
+            return;
+          }
+
+          const normalOrderList = [...attendeesList].reverse();
+          const rows = normalOrderList
+            .map(
+              (att, index) => `
+                <tr>
+                  <td style="width: 70px;">${index + 1}</td>
+                  <td>${att.name || "-"}</td>
+                  <td>${att.jabatan || "-"}</td>
+                  <td>${att.instansi || "-"}</td>
+                </tr>`
+            )
+            .join("");
+
+          $scrollContent.innerHTML = `<table class="table table-striped align-middle"><tbody>${rows}</tbody></table>`;
+          setupAndRunAnimation();
+        }
+
+        function handleNewAttendee(newAttendee) {
+          if (attendeesList.some((att) => att.id === newAttendee.id)) return;
+
+          attendeesList.unshift(newAttendee);
+          renderScrollingList();
+        }
+
+        async function loadRecapForEvent(eventId) {
+          if (activeChannel) sb.removeChannel(activeChannel);
+          if (!eventId) {
+            $eventTitle.textContent = "Silakan pilih acara";
+            $scrollContent.innerHTML = `<table class="table"><tbody><tr><td colspan="4" class="text-center text-secondary py-5">Pilih acara dari daftar di atas.</td></tr></tbody></table>`;
+            return;
+          }
+
+          $scrollContent.innerHTML = `<table class="table"><tbody><tr><td colspan="4" class="text-center text-secondary py-5">Memuat data...</td></tr></tbody></table>`;
+          const [eventRes, attendeesRes] = await Promise.all([
+            sb.from("events").select("title").eq("id", eventId).single(),
+            sb
+              .from("attendees")
+              .select("id, name, jabatan, instansi")
+              .eq("event_id", eventId)
+              .order("ts", { ascending: false }),
+          ]);
+
+          $eventTitle.textContent = eventRes.data
+            ? `Rekap Kehadiran: ${eventRes.data.title}`
+            : "Acara tidak ditemukan";
+          attendeesList = attendeesRes.data || [];
+          renderScrollingList();
+
+          activeChannel = sb
+            .channel(`recap-channel-${eventId}`)
+            .on(
+              "postgres_changes",
+              {
+                event: "INSERT",
+                schema: "public",
+                table: "attendees",
+                filter: `event_id=eq.${eventId}`,
+              },
+              (payload) => handleNewAttendee(payload.new)
+            )
+            .subscribe();
+        }
+
+        async function main() {
+          // HANYA AMBIL ACARA DENGAN STATUS 'active' ATAU 'upcoming'
+          const { data: events } = await sb
+            .from("events")
+            .select("id, title")
+            .in("status", ["active", "upcoming"])
+            .order("datetime", { ascending: false });
+
+          if (events) {
+            if (events.length === 0) {
+              $eventSelect.innerHTML = `<option value="">-- Tidak ada acara aktif --</option>`;
+            } else {
+              $eventSelect.innerHTML =
+                `<option value="">-- Pilih Acara --</option>` +
+                events
+                  .map((e) => `<option value="${e.id}">${e.title}</option>`)
+                  .join("");
+            }
+
+            const urlEventId = new URLSearchParams(window.location.search).get(
+              "event"
+            );
+            if (urlEventId && events.some((e) => e.id === urlEventId)) {
+              $eventSelect.value = urlEventId;
+            }
+            loadRecapForEvent($eventSelect.value);
+          }
+          $eventSelect.addEventListener("change", (e) =>
+            loadRecapForEvent(e.target.value)
+          );
+        }
+        main();
+      });
+    </script>
+  </body>
+</html>
