@@ -34,12 +34,16 @@
       :root[data-theme="dark"] {
         --bg-main: #1a202c;
         --bg-sidebar: #2d3748;
-        --text-primary: #e2e8f0;
-        --text-secondary: #a0aec0;
+        --text-primary: #f8fafc; /* lebih terang */
+        --text-secondary: #cbd5e1; /* lebih terang */
         --border-color: #4a5568;
         --card-bg: #2d3748;
         --nav-link-hover-bg: rgba(255, 255, 255, 0.05);
       }
+      
+      /* Pertegas kontras teks utilitas Bootstrap di dark mode */
+      [data-theme="dark"] .text-secondary { color: var(--text-secondary) !important; }
+      [data-theme="dark"] .text-muted { color: var(--text-secondary) !important; }
 
       /* --- TATA LETAK UTAMA --- */
       html,
@@ -107,6 +111,7 @@
         .main-content-wrapper {
           margin-left: var(--sidebar-w);
           width: calc(100% - var(--sidebar-w));
+          padding-left: 1rem; /* Menambahkan jarak antara sidebar dan konten */
         }
       }
 
@@ -114,6 +119,20 @@
       .top-header {
         background-color: var(--card-bg);
         border-bottom: 1px solid var(--border-color);
+        padding-left: 0.5rem; /* Jarak kiri untuk header */
+        padding-right: 0.5rem; /* Jarak kanan untuk header */
+      }
+      @media (min-width: 768px) {
+        .top-header {
+          padding-left: 1rem; /* Jarak kiri lebih besar untuk tablet */
+          padding-right: 1rem; /* Jarak kanan lebih besar untuk tablet */
+        }
+      }
+      @media (min-width: 992px) {
+        .top-header {
+          padding-left: 1.5rem; /* Jarak kiri lebih besar untuk desktop */
+          padding-right: 1.5rem; /* Jarak kanan lebih besar untuk desktop */
+        }
       }
       .container-left {
         padding-left: var(--content-gutter-x);
@@ -133,17 +152,32 @@
       .main-content {
         padding-top: 1rem;
         padding-bottom: 1rem;
+        padding-left: 0.5rem; /* Jarak kiri untuk konten */
+        padding-right: 0.5rem; /* Jarak kanan untuk konten */
       }
       @media (min-width: 768px) {
         .main-content {
           padding-top: 2rem;
           padding-bottom: 2rem;
+          padding-left: 1rem; /* Jarak kiri lebih besar untuk tablet */
+          padding-right: 1rem; /* Jarak kanan lebih besar untuk tablet */
+        }
+      }
+      @media (min-width: 992px) {
+        .main-content {
+          padding-left: 1.5rem; /* Jarak kiri lebih besar untuk desktop */
+          padding-right: 1.5rem; /* Jarak kanan lebih besar untuk desktop */
         }
       }
 
       .card {
         background-color: var(--card-bg);
         border-color: var(--border-color);
+      }
+      .card-header {
+        color: var(--text-primary);
+        background-color: var(--card-bg);
+        border-bottom: 1px solid var(--border-color);
       }
       .list-group-item {
         background-color: var(--card-bg);
@@ -155,8 +189,18 @@
         background: #3b82f6;
         color: #e5e7eb;
         margin-top: auto;
-        padding: 1.5rem 0;
+        padding: 1.5rem 0.5rem; /* Menambahkan jarak kiri dan kanan */
         font-size: 0.95rem;
+      }
+      @media (min-width: 768px) {
+        .footer-professional {
+          padding: 1.5rem 1rem; /* Jarak lebih besar untuk tablet */
+        }
+      }
+      @media (min-width: 992px) {
+        .footer-professional {
+          padding: 1.5rem 1.5rem; /* Jarak lebih besar untuk desktop */
+        }
       }
       .footer-professional .footer-divider {
         border-top: 1px solid #4b92f7;
@@ -380,6 +424,14 @@
         document.documentElement.setAttribute("data-theme", t);
         localStorage.setItem("theme", t);
         updateIcon();
+        // Rerender chart agar warna mengikuti tema
+        try {
+          if (attendanceChartInstance) {
+            attendanceChartInstance.destroy();
+            attendanceChartInstance = null;
+          }
+        } catch (_) {}
+        loadChart();
       });
       updateIcon();
 
@@ -404,6 +456,15 @@
       const chartCtx = document
         .getElementById("attendanceChart")
         .getContext("2d");
+      function getThemeColors() {
+        const css = getComputedStyle(document.documentElement);
+        return {
+          textPrimary: css.getPropertyValue("--text-primary").trim() || "#e2e8f0",
+          textSecondary: css.getPropertyValue("--text-secondary").trim() || "#a0aec0",
+          border: css.getPropertyValue("--border-color").trim() || "#4a5568",
+          cardBg: css.getPropertyValue("--card-bg").trim() || "#2d3748",
+        };
+      }
       function safeNum(n) {
         return typeof n === "number" && isFinite(n) ? n : 0;
       }
@@ -469,6 +530,7 @@
         }
       }
 
+      let attendanceChartInstance = null;
       async function loadChart() {
         const { data: events, error } = await sb
           .from("events")
@@ -490,7 +552,8 @@
           .reverse()
           .map((e) => e.title);
         const values = counts.slice().reverse();
-        new Chart(chartCtx, {
+        const c = getThemeColors();
+        attendanceChartInstance = new Chart(chartCtx, {
           type: "bar",
           data: {
             labels,
@@ -505,8 +568,27 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } },
-            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                ticks: { color: c.textSecondary },
+                grid: { color: c.border },
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { color: c.textSecondary },
+                grid: { color: c.border },
+              },
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                titleColor: c.textPrimary,
+                bodyColor: c.textPrimary,
+                backgroundColor: c.cardBg,
+                borderColor: c.border,
+                borderWidth: 1,
+              },
+            },
           },
         });
       }

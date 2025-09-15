@@ -105,12 +105,27 @@
         .main-content-wrapper {
           margin-left: var(--sidebar-w);
           width: calc(100% - var(--sidebar-w));
+          padding-left: 1rem; /* Menambahkan jarak antara sidebar dan konten */
         }
       }
 
       .top-header {
         background: var(--card-bg);
         border-bottom: 1px solid var(--border-color);
+        padding-left: 0.5rem; /* Jarak kiri untuk header */
+        padding-right: 0.5rem; /* Jarak kanan untuk header */
+      }
+      @media (min-width: 768px) {
+        .top-header {
+          padding-left: 1rem; /* Jarak kiri lebih besar untuk tablet */
+          padding-right: 1rem; /* Jarak kanan lebih besar untuk tablet */
+        }
+      }
+      @media (min-width: 992px) {
+        .top-header {
+          padding-left: 1.5rem; /* Jarak kiri lebih besar untuk desktop */
+          padding-right: 1.5rem; /* Jarak kanan lebih besar untuk desktop */
+        }
       }
       .container-left {
         padding-left: var(--content-gutter-x);
@@ -139,10 +154,20 @@
 
       .main-content {
         padding: 1rem 0;
+        padding-left: 0.5rem; /* Jarak kiri untuk konten */
+        padding-right: 0.5rem; /* Jarak kanan untuk konten */
       }
       @media (min-width: 768px) {
         .main-content {
           padding: 2rem 0;
+          padding-left: 1rem; /* Jarak kiri lebih besar untuk tablet */
+          padding-right: 1rem; /* Jarak kanan lebih besar untuk tablet */
+        }
+      }
+      @media (min-width: 992px) {
+        .main-content {
+          padding-left: 1.5rem; /* Jarak kiri lebih besar untuk desktop */
+          padding-right: 1.5rem; /* Jarak kanan lebih besar untuk desktop */
         }
       }
 
@@ -173,8 +198,18 @@
         background: #3b82f6;
         color: #e5e7eb;
         margin-top: auto;
-        padding: 1rem 0;
+        padding: 1rem 0.5rem; /* Menambahkan jarak kiri dan kanan */
         font-size: 0.95rem;
+      }
+      @media (min-width: 768px) {
+        .footer-professional {
+          padding: 1rem 1rem; /* Jarak lebih besar untuk tablet */
+        }
+      }
+      @media (min-width: 992px) {
+        .footer-professional {
+          padding: 1rem 1.5rem; /* Jarak lebih besar untuk desktop */
+        }
       }
       .footer-professional .footer-divider {
         border-top: 1px solid rgba(255, 255, 255, 0.25);
@@ -593,7 +628,9 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background: var(--card-bg)">
           <div class="modal-header">
-            <h5 class="modal-title">QR Code Form Kehadiran</h5>
+            <h5 class="modal-title">
+              <i class="bi bi-qr-code me-2"></i>QR Code Form Kehadiran
+            </h5>
             <button
               type="button"
               class="btn-close"
@@ -601,12 +638,21 @@
             ></button>
           </div>
           <div class="modal-body text-center">
-            <canvas id="qrCanvas" style="max-width: 100%"></canvas>
-            <div class="small text-secondary mt-2" id="qrLink"></div>
+            <div class="mb-3">
+              <canvas id="qrCanvas" style="max-width: 100%; border: 1px solid var(--border-color); border-radius: 8px;"></canvas>
+            </div>
+            <div class="small text-secondary mt-2" id="qrLink" style="word-break: break-all;"></div>
+            <div class="small text-muted mt-2">
+              <i class="bi bi-info-circle me-1"></i>
+              Scan QR code ini untuk mengakses form kehadiran
+            </div>
           </div>
           <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Tutup
+            </button>
             <button id="btn-download-qr" class="btn btn-primary">
-              Download PNG
+              <i class="bi bi-download me-2"></i>Download PNG
             </button>
           </div>
         </div>
@@ -800,6 +846,10 @@
         applySearch(true);
 
         document.getElementById("btn-export").onclick = () => {
+          if (!currentEventId) {
+            alert("Silakan pilih acara terlebih dahulu.");
+            return;
+          }
           const headers = [
             "No",
             "Nama",
@@ -819,13 +869,17 @@
             a.ts ? new Date(a.ts).toLocaleString("id-ID") : "",
           ]);
           downloadBlob(
-            `absensi-${slug(ev?.title) || "acara"}-${eventId.slice(0, 8)}.csv`,
+            `absensi-${slug(ev?.title) || "acara"}-${currentEventId.slice(0, 8)}.csv`,
             new Blob([makeCSV(headers, rows)], {
               type: "text/csv;charset=utf-8",
             })
           );
         };
         document.getElementById("btn-copy").onclick = async () => {
+          if (!currentEventId) {
+            alert("Silakan pilih acara terlebih dahulu.");
+            return;
+          }
           const url = new URL(
             "form-kehadiran.html",
             location.origin +
@@ -835,11 +889,21 @@
               ) +
               "/"
           );
-          url.searchParams.set("event", eventId);
+          url.searchParams.set("event", currentEventId);
           await navigator.clipboard.writeText(url.toString());
           alert("Link form telah disalin:\n" + url);
         };
         document.getElementById("btn-qr").onclick = () => {
+          if (!currentEventId) {
+            alert("Silakan pilih acara terlebih dahulu.");
+            return;
+          }
+          
+          const btn = document.getElementById("btn-qr");
+          const originalText = btn.innerHTML;
+          btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Membuat QR...';
+          btn.disabled = true;
+          
           const url = new URL(
             "form-kehadiran.html",
             location.origin +
@@ -849,17 +913,30 @@
               ) +
               "/"
           );
-          url.searchParams.set("event", eventId);
+          url.searchParams.set("event", currentEventId);
           const canvas = document.getElementById("qrCanvas");
+          
           QRCode.toCanvas(
             canvas,
             url.toString(),
-            { width: 300, margin: 2 },
+            { 
+              width: 300, 
+              margin: 2,
+              color: {
+                dark: '#000000',
+                light: '#FFFFFF'
+              }
+            },
             (err) => {
+              btn.innerHTML = originalText;
+              btn.disabled = false;
+              
               if (err) {
-                alert("Gagal membuat QR.");
+                console.error("QR Code generation error:", err);
+                alert("Gagal membuat QR Code. Silakan coba lagi.");
                 return;
               }
+              
               document.getElementById("qrLink").textContent = url.toString();
               new bootstrap.Modal(document.getElementById("qrModal")).show();
             }
@@ -870,8 +947,9 @@
           if (!canvas) return;
           canvas.toBlob((blob) => {
             if (!blob) return alert("QR belum siap.");
+            const ev = EVENTS.find((e) => e.id === currentEventId);
             downloadBlob(
-              `qr-${slug(ev?.title) || "acara"}-${eventId.slice(0, 8)}.png`,
+              `qr-form-${slug(ev?.title) || "acara"}-${currentEventId.slice(0, 8)}.png`,
               blob
             );
           }, "image/png");
@@ -879,14 +957,14 @@
         document.getElementById("btn-print").onclick = () => window.print();
 
         realtimeChannel = sb
-          .channel(`attendees-${eventId}`)
+          .channel(`attendees-${currentEventId}`)
           .on(
             "postgres_changes",
             {
               event: "INSERT",
               schema: "public",
               table: "attendees",
-              filter: `event_id=eq.${eventId}`,
+              filter: `event_id=eq.${currentEventId}`,
             },
             (p) => {
               const r = p.new;
@@ -918,7 +996,7 @@
               event: "DELETE",
               schema: "public",
               table: "attendees",
-              filter: `event_id=eq.${eventId}`,
+              filter: `event_id=eq.${currentEventId}`,
             },
             (p) => {
               const id = String(p.old?.id ?? "");

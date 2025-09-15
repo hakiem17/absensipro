@@ -104,12 +104,27 @@
         .main-content-wrapper {
           margin-left: var(--sidebar-w);
           width: calc(100% - var(--sidebar-w));
+          padding-left: 1rem; /* Menambahkan jarak antara sidebar dan konten */
         }
       }
 
       .top-header {
         background: var(--card-bg);
         border-bottom: 1px solid var(--border-color);
+        padding-left: 0.5rem; /* Jarak kiri untuk header */
+        padding-right: 0.5rem; /* Jarak kanan untuk header */
+      }
+      @media (min-width: 768px) {
+        .top-header {
+          padding-left: 1rem; /* Jarak kiri lebih besar untuk tablet */
+          padding-right: 1rem; /* Jarak kanan lebih besar untuk tablet */
+        }
+      }
+      @media (min-width: 992px) {
+        .top-header {
+          padding-left: 1.5rem; /* Jarak kiri lebih besar untuk desktop */
+          padding-right: 1.5rem; /* Jarak kanan lebih besar untuk desktop */
+        }
       }
       .container-left {
         padding-left: var(--content-gutter-x);
@@ -123,10 +138,20 @@
 
       .main-content {
         padding: 1rem 0;
+        padding-left: 0.5rem; /* Jarak kiri untuk konten */
+        padding-right: 0.5rem; /* Jarak kanan untuk konten */
       }
       @media (min-width: 768px) {
         .main-content {
           padding: 2rem 0;
+          padding-left: 1rem; /* Jarak kiri lebih besar untuk tablet */
+          padding-right: 1rem; /* Jarak kanan lebih besar untuk tablet */
+        }
+      }
+      @media (min-width: 992px) {
+        .main-content {
+          padding-left: 1.5rem; /* Jarak kiri lebih besar untuk desktop */
+          padding-right: 1.5rem; /* Jarak kanan lebih besar untuk desktop */
         }
       }
 
@@ -187,8 +212,18 @@
         background: #3b82f6;
         color: #e5e7eb;
         margin-top: auto;
-        padding: 1.25rem 0;
+        padding: 1.25rem 0.5rem; /* Menambahkan jarak kiri dan kanan */
         font-size: 0.95rem;
+      }
+      @media (min-width: 768px) {
+        .footer-professional {
+          padding: 1.25rem 1rem; /* Jarak lebih besar untuk tablet */
+        }
+      }
+      @media (min-width: 992px) {
+        .footer-professional {
+          padding: 1.25rem 1.5rem; /* Jarak lebih besar untuk desktop */
+        }
       }
       .footer-professional .footer-divider {
         border-top: 1px solid #4b92f7;
