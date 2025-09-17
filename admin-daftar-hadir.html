@@ -219,6 +219,7 @@
       @media (max-width: 767.98px) {
         .col-instansi,
         .col-jabatan,
+        .col-gender,
         .col-aksi {
           display: none;
         }
@@ -545,6 +546,7 @@
                         <th>Nama Lengkap</th>
                         <th class="col-instansi">Instansi</th>
                         <th class="col-jabatan">Jabatan</th>
+                        <th class="col-gender">Jenis Kelamin</th>
                         <th>Waktu Kehadiran</th>
                         <th>Tanda Tangan</th>
                         <th class="col-aksi" style="width: 80px">Aksi</th>
@@ -740,6 +742,12 @@
         h.map(escCSV).join(",") +
         "\n" +
         rows.map((r) => r.map(escCSV).join(",")).join("\n");
+      function genderLabel(g) {
+        const v = (g || "").toLowerCase();
+        if (v === "male") return "Laki-Laki";
+        if (v === "female") return "Perempuan";
+        return "";
+      }
       function downloadBlob(name, blob) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -826,7 +834,7 @@
 
         const { data, error } = await sb
           .from("attendees")
-          .select("id,name,instansi,jabatan,email,phone,ts,signature_url")
+          .select("id,name,instansi,jabatan,gender,email,phone,ts,signature_url")
           .eq("event_id", eventId)
           .order("ts", { ascending: true });
         if (error) {
@@ -838,6 +846,7 @@
           name: a.name,
           instansi: a.instansi,
           jabatan: a.jabatan,
+          gender: a.gender || null,
           email: a.email,
           phone: a.phone,
           ts: a.ts,
@@ -855,6 +864,7 @@
             "Nama",
             "Instansi",
             "Jabatan",
+            "Jenis Kelamin",
             "Email",
             "HP",
             "Waktu Hadir",
@@ -864,6 +874,7 @@
             a.name || "",
             a.instansi || "",
             a.jabatan || "",
+            genderLabel(a.gender),
             a.email || "",
             a.phone || "",
             a.ts ? new Date(a.ts).toLocaleString("id-ID") : "",
@@ -1015,7 +1026,9 @@
               (a) =>
                 (a.name || "").toLowerCase().includes(q) ||
                 (a.instansi || "").toLowerCase().includes(q) ||
-                (a.jabatan || "").toLowerCase().includes(q)
+                (a.jabatan || "").toLowerCase().includes(q) ||
+                (a.gender || "").toLowerCase().includes(q) ||
+                genderLabel(a.gender).toLowerCase().includes(q)
             )
           : sourceList.slice();
         if (resetPage) page = 1;
@@ -1059,7 +1072,9 @@
                 a.name
               )}${extraMobile}</td><td class="col-instansi">${esc(
                 a.instansi
-              )}</td><td class="col-jabatan">${esc(a.jabatan)}</td><td>${esc(
+              )}</td><td class="col-jabatan">${esc(a.jabatan)}</td><td class="col-gender">${esc(
+                genderLabel(a.gender)
+              )}</td><td>${esc(
                 fmtDT(a.ts)
               )}</td><td>${ttd}</td><td class="col-aksi text-nowrap"><button class="btn btn-sm btn-outline-danger btn-del" data-id="${esc(
                 a.id

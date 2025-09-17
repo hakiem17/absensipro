@@ -190,6 +190,21 @@
               </div>
 
               <div class="mb-3">
+                <label class="form-label">Jenis Kelamin</label>
+                <div class="d-flex gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gender" id="gender-m" value="male" />
+                    <label class="form-check-label" for="gender-m">Laki-laki</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gender" id="gender-f" value="female" />
+                    <label class="form-check-label" for="gender-f">Perempuan</label>
+                  </div>
+                </div>
+                <div class="form-text help-text">Opsional.</div>
+              </div>
+
+              <div class="mb-3">
                 <label class="form-label" for="signature-canvas"
                   >Tanda Tangan / Signature</label
                 >
@@ -267,6 +282,7 @@
       const $phone = document.getElementById("phone");
       const $jabatan = document.getElementById("jabatan");
       const $instansi = document.getElementById("instansi");
+      const $genderRadios = () => (document.querySelector('input[name="gender"]:checked')?.value || "");
       const $titleBox = document.getElementById("event-title");
       const $badLink = document.getElementById("bad-link");
 
@@ -302,6 +318,14 @@
 
       const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       const trim = (v) => (v ?? "").toString().trim();
+      function normalizePhone(input) {
+        const raw = trim(input);
+        if (!raw) return "";
+        let s = raw.replace(/[^0-9+]/g, "");
+        if (s.startsWith("+")) s = s.slice(1);
+        if (s.startsWith("0")) s = "62" + s.slice(1);
+        return s;
+      }
       const esc = (s) =>
         (s ?? "").toString().replace(
           /[&<>"']/g,
@@ -384,22 +408,31 @@
           // 1) Upload signature bila ada coretan
           let signature_url = null;
           if (signaturePad && !signaturePad.isEmpty()) {
-            const dataURL = signaturePad.toDataURL("image/png");
-            const blob = await (await fetch(dataURL)).blob();
+            const blob = await new Promise((resolve, reject) => {
+              try {
+                const c = document.getElementById("signature-canvas");
+                c.toBlob((b) => (b ? resolve(b) : reject(new Error("Gagal membuat blob tanda tangan."))), "image/png");
+              } catch (e) {
+                reject(e);
+              }
+            });
+
             const rand = Math.random().toString(36).slice(2, 8);
             const path = `event_${eventId}/${Date.now()}_${rand}.png`;
 
-            const up = await sb.storage
+            const { data: upData, error: upErr } = await sb.storage
               .from("signatures")
-              .upload(path, blob, { contentType: "image/png", upsert: false });
+              .upload(path, blob, {
+                contentType: "image/png",
+                upsert: true,
+                cacheControl: "3600",
+              });
 
-            if (!up.error) {
-              const { data: pub } = sb.storage
-                .from("signatures")
-                .getPublicUrl(path);
+            if (upErr) {
+              console.error("Upload signature error:", upErr);
+            } else if (upData) {
+              const { data: pub } = sb.storage.from("signatures").getPublicUrl(path);
               signature_url = pub?.publicUrl || null;
-            } else {
-              console.error("Upload error:", up.error);
             }
           }
 
@@ -410,12 +443,27 @@
             instansi: trim($instansi.value) || null,
             jabatan: trim($jabatan.value) || null,
             email: trim($email.value) || null,
-            phone: trim($phone.value) || null,
+            phone: normalizePhone($phone.value) || null,
             ts: new Date().toISOString(),
             signature_url,
+            gender: (function(){ const g=$genderRadios(); return g?g:null; })(),
           };
-          const ins = await sb.from("attendees").insert(payload);
-          if (ins.error) throw ins.error;
+          // Insert terlebih dahulu. Jika kena unik, fallback ke UPDATE
+          let ins = await sb.from("attendees").insert(payload);
+          if (ins.error) {
+            // Jika insert gagal karena constraint unik (23505 / 409), fallback ke UPDATE berdasarkan event_id+phone
+            const code = String(ins.error.code || "");
+            if ((code === "23505" || ins.status === 409) && payload.phone) {
+              const upd = await sb
+                .from("attendees")
+                .update(payload)
+                .eq("event_id", eventId)
+                .eq("phone", payload.phone);
+              if (upd.error) throw upd.error;
+            } else {
+              throw ins.error;
+            }
+          }
 
           // 3) Beres
           $form.reset();
