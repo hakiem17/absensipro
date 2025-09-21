@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-bs-theme="dark">
+<html lang="id" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -16,113 +16,402 @@
     />
 
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+      /* --- MODERN CSS VARIABLES --- */
       :root {
-        --card-bg: #2d3748;
-        --card-border: #4a5568;
-        --event-title-bg: #2c3340;
-        --footer-bg: #3b82f6;
-        --footer-fg: #e5e7eb;
+        --border-radius: 12px;
+        --border-radius-lg: 16px;
+        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --gradient-info: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
       }
-      [data-bs-theme="light"] {
-        --card-bg: #ffffff;
-        --card-border: #e5e7eb;
-        --event-title-bg: #f5f5f5;
+
+      :root[data-theme="light"] {
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --text-muted: #94a3b8;
+        --border-color: #e2e8f0;
+        --border-hover: #cbd5e1;
+        --nav-link-hover-bg: #f1f5f9;
+        --nav-link-active-bg: #eff6ff;
+        --nav-link-active-color: #3b82f6;
+        --header-bg: #ffffff;
+        --footer-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --event-title-bg: #f8fafc;
       }
-      html,
-      body {
+
+      :root[data-theme="dark"] {
+        --bg-main: #0f172a;
+        --bg-card: #334155;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border-color: #475569;
+        --border-hover: #64748b;
+        --nav-link-hover-bg: rgba(255, 255, 255, 0.05);
+        --nav-link-active-bg: rgba(59, 130, 246, 0.1);
+        --nav-link-active-color: #60a5fa;
+        --header-bg: #1e293b;
+        --footer-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        --event-title-bg: #1e293b;
+      }
+
+      /* --- MODERN RESET & BASE --- */
+      * {
+        box-sizing: border-box;
+      }
+
+      html, body {
         height: 100%;
+        margin: 0;
+        padding: 0;
       }
+
       body {
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
       }
+
       main {
         flex: 1 1 auto;
       }
 
+      /* --- MODERN NAVBAR --- */
       .navbar {
-        background: var(--card-bg);
-        border-bottom: 1px solid var(--card-border);
+        background: var(--header-bg);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 0;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
       }
-      .form-container {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 12px;
-        padding: 28px;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-      }
-      .event-title {
-        background: var(--event-title-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 8px;
-        padding: 14px;
-        text-align: center;
+
+      .navbar-brand {
+        font-size: 1.25rem;
         font-weight: 700;
-        margin-bottom: 22px;
+        color: var(--text-primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
-      .signature-pad-wrapper {
+
+      .navbar-brand i {
+        font-size: 1.5rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+      }
+
+      .nav-link:hover {
+        background: var(--nav-link-hover-bg);
+        color: var(--text-primary);
+      }
+
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+        cursor: pointer;
+      }
+
+      .theme-toggle:hover {
+        background: var(--nav-link-hover-bg);
+        color: var(--text-primary);
+      }
+
+      /* --- MODERN FORM CONTAINER --- */
+      .form-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
         position: relative;
-        border: 1px solid var(--card-border);
-        border-radius: 0.5rem;
-        height: 220px;
-        background: rgba(255, 255, 255, 0.02);
         overflow: hidden;
       }
+
+      .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+      }
+
+      /* --- MODERN EVENT TITLE --- */
+      .event-title {
+        background: var(--event-title-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .event-title::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+        animation: shimmer 3s infinite;
+      }
+
+      @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+      }
+
+      .event-title .fw-bold {
+        font-size: 1.25rem;
+        color: var(--text-primary);
+        position: relative;
+        z-index: 1;
+      }
+
+      .event-title .small {
+        color: var(--text-secondary);
+        position: relative;
+        z-index: 1;
+      }
+
+      /* --- MODERN FORM CONTROLS --- */
+      .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .form-control {
+        background: var(--bg-main);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        transition: var(--transition);
+        color: var(--text-primary);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--nav-link-active-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background: var(--bg-card);
+      }
+
+      .form-control::placeholder {
+        color: var(--text-muted);
+      }
+
+      .form-check-input {
+        background: var(--bg-main);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+      }
+
+      .form-check-input:checked {
+        background-color: var(--nav-link-active-color);
+        border-color: var(--nav-link-active-color);
+      }
+
+      .form-check-label {
+        color: var(--text-primary);
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      /* --- MODERN SIGNATURE PAD --- */
+      .signature-pad-wrapper {
+        position: relative;
+        border: 2px dashed var(--border-color);
+        border-radius: var(--border-radius);
+        height: 220px;
+        background: var(--bg-main);
+        overflow: hidden;
+        transition: var(--transition);
+      }
+
+      .signature-pad-wrapper:hover {
+        border-color: var(--nav-link-active-color);
+        background: var(--nav-link-hover-bg);
+      }
+
       #signature-canvas {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
-        border-radius: 0.5rem;
+        border-radius: var(--border-radius);
         cursor: crosshair;
         touch-action: none;
       }
+
+      /* --- MODERN BUTTONS --- */
+      .btn {
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        transition: var(--transition);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+      }
+
+      .btn-primary {
+        background: var(--gradient-primary);
+        border: none;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-outline-secondary {
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        background: transparent;
+      }
+
+      .btn-outline-secondary:hover {
+        background: var(--nav-link-hover-bg);
+        color: var(--text-primary);
+        transform: translateY(-1px);
+      }
+
+      /* --- MODERN FOOTER --- */
       .footer-bar {
         background: var(--footer-bg);
-        color: var(--footer-fg);
-        padding: 18px 0;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        padding: 1.5rem 0;
+        text-align: center;
+        font-size: 0.875rem;
+        margin-top: auto;
       }
+
+      /* --- MODERN UTILITIES --- */
       .help-text {
-        color: #94a3b8;
-        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+
+      .text-gradient {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* --- RESPONSIVE DESIGN --- */
+      @media (max-width: 768px) {
+        .form-container {
+          padding: 1.5rem;
+          margin: 1rem;
+        }
+        
+        .event-title {
+          padding: 1rem;
+        }
+        
+        .signature-pad-wrapper {
+          height: 180px;
+        }
+      }
+
+      /* --- DARK MODE TEXT OVERRIDES --- */
+      [data-theme="dark"] .text-secondary { 
+        color: var(--text-secondary) !important; 
+      }
+      [data-theme="dark"] .text-muted { 
+        color: var(--text-muted) !important; 
       }
     </style>
   </head>
   <body>
     <script>
       (function () {
-        const t = localStorage.getItem("theme");
-        if (t) document.documentElement.setAttribute("data-bs-theme", t);
+        const t = localStorage.getItem("theme") || "dark";
+        document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
 
-    <!-- NAVBAR -->
+    <!-- MODERN NAVBAR -->
     <nav class="navbar navbar-expand-lg">
       <div class="container">
-        <a class="navbar-brand fw-semibold" href="pilih-acara.html"
-          >AbsensiPro</a
-        >
+        <a class="navbar-brand" href="pilih-acara.html">
+          <i class="bi bi-calendar-check"></i>
+          <span>AbsensiPro</span>
+        </a>
         <div class="ms-auto d-flex align-items-center gap-2">
-          <a class="nav-link" href="pilih-acara.html">Home</a>
-          <a class="nav-link" href="login.html">Login</a>
+          <a class="nav-link" href="pilih-acara.html">
+            <i class="bi bi-house me-1"></i>
+            Home
+          </a>
+          <a class="nav-link" href="login.html">
+            <i class="bi bi-box-arrow-in-right me-1"></i>
+            Login
+          </a>
           <button
-            class="btn btn-sm btn-secondary"
+            class="theme-toggle"
             id="theme-toggle"
             type="button"
+            aria-label="Ubah tema"
           >
-            ☀️
+            <i class="bi bi-sun-fill"></i>
           </button>
         </div>
       </div>
     </nav>
 
-    <!-- CONTENT -->
+    <!-- MODERN CONTENT -->
     <main class="container my-5">
       <div class="row justify-content-center">
         <div class="col-lg-8">
-          <h1 class="text-center mb-4">Form Kehadiran</h1>
+          <!-- Page Header -->
+          <div class="text-center mb-5">
+            <h1 class="h2 mb-2 text-gradient">Form Kehadiran</h1>
+            <p class="text-muted">Isi form di bawah ini untuk mendaftarkan kehadiran Anda</p>
+          </div>
 
           <div class="form-container">
             <div class="event-title" id="event-title">Memuat judul acara…</div>
@@ -261,14 +550,21 @@
       document.getElementById("copyright-year").textContent =
         new Date().getFullYear();
       const htmlEl = document.documentElement;
-      document.getElementById("theme-toggle").addEventListener("click", () => {
-        const next =
-          htmlEl.getAttribute("data-bs-theme") === "dark" ? "light" : "dark";
-        htmlEl.setAttribute("data-bs-theme", next);
+      const themeToggle = document.getElementById("theme-toggle");
+      
+      function updateThemeIcon() {
+        const isDark = htmlEl.getAttribute("data-theme") === "dark";
+        themeToggle.innerHTML = isDark ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-fill"></i>';
+      }
+      
+      themeToggle.addEventListener("click", () => {
+        const next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        htmlEl.setAttribute("data-theme", next);
         localStorage.setItem("theme", next);
-        document.getElementById("theme-toggle").textContent =
-          next === "dark" ? "☀️" : "🌙";
+        updateThemeIcon();
       });
+      
+      updateThemeIcon();
 
       const sb = supabase.createClient(
         window.SUPABASE_URL,

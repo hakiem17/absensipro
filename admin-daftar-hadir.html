@@ -15,207 +15,598 @@
     />
 
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
+      /* --- MODERN CSS VARIABLES --- */
       :root {
-        --sidebar-w: 260px;
-        --content-gutter-x: clamp(12px, 0.9vw, 22px);
+        --sidebar-w: 280px;
+        --header-h: 70px;
+        --border-radius: 12px;
+        --border-radius-lg: 16px;
+        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --gradient-info: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
       }
 
-      /* THEME */
       :root[data-theme="light"] {
-        --bg-main: #f8f9fa;
-        --bg-sidebar: #fff;
-        --text-primary: #212529;
-        --text-secondary: #6c757d;
-        --border-color: #dee2e6;
-        --card-bg: #fff;
-        --hover: #f1f5f9;
+        --bg-main: #f8fafc;
+        --bg-sidebar: #ffffff;
+        --bg-card: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --text-muted: #94a3b8;
+        --border-color: #e2e8f0;
+        --border-hover: #cbd5e1;
+        --nav-link-hover-bg: #f1f5f9;
+        --nav-link-active-bg: #eff6ff;
+        --nav-link-active-color: #3b82f6;
+        --header-bg: #ffffff;
+        --footer-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       }
+
       :root[data-theme="dark"] {
-        --bg-main: #111827;
-        --bg-sidebar: #1f2937;
+        --bg-main: #0f172a;
+        --bg-sidebar: #1e293b;
+        --bg-card: #334155;
         --text-primary: #f8fafc;
         --text-secondary: #cbd5e1;
-        --border-color: #374151;
-        --card-bg: #1f2937;
-        --hover: #2b3546;
+        --text-muted: #94a3b8;
+        --border-color: #475569;
+        --border-hover: #64748b;
+        --nav-link-hover-bg: rgba(255, 255, 255, 0.05);
+        --nav-link-active-bg: rgba(59, 130, 246, 0.1);
+        --nav-link-active-color: #60a5fa;
+        --header-bg: #1e293b;
+        --footer-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
       }
 
-      html,
-      body {
+      /* --- MODERN RESET & BASE --- */
+      * {
+        box-sizing: border-box;
+      }
+
+      html, body {
         height: 100%;
+        margin: 0;
+        padding: 0;
       }
+
       body {
-        background: var(--bg-main);
+        background-color: var(--bg-main);
         color: var(--text-primary);
-        font-family: "Poppins", sans-serif;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
-      /* ===== LAYOUT ===== */
+      /* --- MODERN LAYOUT SYSTEM --- */
       .main-wrapper {
-        display: flex;
+        display: grid;
+        grid-template-columns: 0 1fr;
+        grid-template-rows: var(--header-h) 1fr auto;
+        grid-template-areas: 
+          "sidebar header"
+          "sidebar main"
+          "sidebar footer";
         min-height: 100vh;
-        width: 100%;
-        overflow-x: hidden;
+        transition: var(--transition);
       }
 
-      .sidebar {
-        --bs-offcanvas-width: var(--sidebar-w);
-        background: var(--bg-sidebar);
-      }
-      .sidebar .nav-link {
-        color: var(--text-secondary);
-        font-weight: 500;
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
-      }
-      .sidebar .nav-link .bi {
-        margin-right: 12px;
-        font-size: 1.1rem;
-      }
-      .sidebar .nav-link.active {
-        color: #3b82f6;
-        font-weight: 700;
-      }
-      .sidebar .nav-link:hover {
-        background: var(--hover);
-        color: var(--text-primary);
-      }
       @media (min-width: 992px) {
-        .sidebar {
-          position: fixed;
-          inset: 0 auto 0 0;
-          width: var(--sidebar-w);
-          border-right: 1px solid var(--border-color);
-        }
-        .offcanvas-backdrop {
-          display: none !important;
+        .main-wrapper {
+          grid-template-columns: var(--sidebar-w) 1fr;
         }
       }
 
-      .main-content-wrapper {
-        width: 100%;
+      /* --- MODERN SIDEBAR --- */
+      .sidebar {
+        grid-area: sidebar;
+        background: var(--bg-sidebar);
+        border-right: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: var(--sidebar-w);
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: var(--transition);
+        box-shadow: var(--shadow-lg);
       }
+
       @media (min-width: 992px) {
-        .main-content-wrapper {
-          margin-left: var(--sidebar-w);
-          width: calc(100% - var(--sidebar-w));
-          padding-left: 1rem; /* Menambahkan jarak antara sidebar dan konten */
+        .sidebar {
+          position: static;
+          transform: translateX(0);
+          box-shadow: none;
         }
       }
 
-      .top-header {
-        background: var(--card-bg);
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .sidebar-header {
+        padding: 1.5rem;
         border-bottom: 1px solid var(--border-color);
-        padding-left: 0.5rem; /* Jarak kiri untuk header */
-        padding-right: 0.5rem; /* Jarak kanan untuk header */
-      }
-      @media (min-width: 768px) {
-        .top-header {
-          padding-left: 1rem; /* Jarak kiri lebih besar untuk tablet */
-          padding-right: 1rem; /* Jarak kanan lebih besar untuk tablet */
-        }
-      }
-      @media (min-width: 992px) {
-        .top-header {
-          padding-left: 1.5rem; /* Jarak kiri lebih besar untuk desktop */
-          padding-right: 1.5rem; /* Jarak kanan lebih besar untuk desktop */
-        }
-      }
-      .container-left {
-        padding-left: var(--content-gutter-x);
-        padding-right: var(--content-gutter-x);
-      }
-      @media (min-width: 992px) {
-        .container-left {
-          padding-left: 0;
-        }
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
       }
 
-      .btn-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        border: 1px solid var(--border-color);
-        display: inline-flex;
+      .sidebar-brand {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .sidebar-brand i {
+        font-size: 1.5rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding: 1rem 0;
+        overflow-y: auto;
+      }
+
+      .nav-item {
+        margin: 0.25rem 0;
+      }
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        border-radius: 0;
+        transition: var(--transition);
+        position: relative;
+      }
+
+      .nav-link:hover {
+        background: var(--nav-link-hover-bg);
+        color: var(--text-primary);
+        transform: translateX(4px);
+      }
+
+      .nav-link.active {
+        background: var(--nav-link-active-bg);
+        color: var(--nav-link-active-color);
+        font-weight: 600;
+      }
+
+      .nav-link.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--nav-link-active-color);
+        border-radius: 0 2px 2px 0;
+      }
+
+      .nav-link i {
+        font-size: 1.125rem;
+        width: 20px;
+        text-align: center;
+      }
+
+      .sidebar-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+      }
+
+      /* --- MODERN HEADER --- */
+      .top-header {
+        grid-area: header;
+        background: var(--header-bg);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.5rem;
+        height: var(--header-h);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .sidebar-toggle {
+        display: flex;
         align-items: center;
         justify-content: center;
-        background: transparent;
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+        cursor: pointer;
+      }
+
+      .sidebar-toggle:hover {
+        background: var(--nav-link-hover-bg);
         color: var(--text-primary);
       }
-      .btn-icon:hover {
-        background: var(--hover);
+
+      @media (min-width: 992px) {
+        .sidebar-toggle {
+          display: none;
+        }
+      }
+
+      .header-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+        cursor: pointer;
+      }
+
+      .theme-toggle:hover {
+        background: var(--nav-link-hover-bg);
+        color: var(--text-primary);
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      /* --- MODERN MAIN CONTENT --- */
+      .main-content-wrapper {
+        grid-area: main;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
       }
 
       .main-content {
-        padding: 1rem 0;
-        padding-left: 0.5rem; /* Jarak kiri untuk konten */
-        padding-right: 0.5rem; /* Jarak kanan untuk konten */
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
       }
-      @media (min-width: 768px) {
+
+      @media (max-width: 768px) {
         .main-content {
-          padding: 2rem 0;
-          padding-left: 1rem; /* Jarak kiri lebih besar untuk tablet */
-          padding-right: 1rem; /* Jarak kanan lebih besar untuk tablet */
-        }
-      }
-      @media (min-width: 992px) {
-        .main-content {
-          padding-left: 1.5rem; /* Jarak kiri lebih besar untuk desktop */
-          padding-right: 1.5rem; /* Jarak kanan lebih besar untuk desktop */
+          padding: 1rem;
         }
       }
 
-      .card {
-        background: var(--card-bg);
+      /* --- MODERN TOOLBAR --- */
+      .toolbar-container {
+        background: var(--bg-card);
         border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
       }
+
+      .toolbar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .toolbar-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+      }
+
+      .toolbar-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      /* --- MODERN SEARCH & FILTERS --- */
+      .search-filters {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .search-input {
+        background: var(--bg-main);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        transition: var(--transition);
+        width: 100%;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--nav-link-active-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .form-select {
+        background: var(--bg-main);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        transition: var(--transition);
+      }
+
+      .form-select:focus {
+        outline: none;
+        border-color: var(--nav-link-active-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      /* --- MODERN TABLE --- */
+      .table-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .table-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .table-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+      }
+
       .table {
-        --bs-table-bg: var(--card-bg);
+        --bs-table-bg: var(--bg-card);
         --bs-table-color: var(--text-primary);
         --bs-table-border-color: var(--border-color);
+        margin: 0;
+      }
+
+      .table th {
+        background: var(--nav-link-hover-bg);
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+      }
+
+      .table tbody tr:hover {
+        background: var(--nav-link-hover-bg);
       }
 
       .signature-thumbnail {
-        width: 100px;
-        height: 50px;
+        width: 80px;
+        height: 40px;
         object-fit: contain;
-        background: #f0f0f0;
+        background: var(--bg-main);
         border: 1px solid var(--border-color);
-        border-radius: 4px;
+        border-radius: var(--border-radius);
         cursor: pointer;
-      }
-      [data-theme="dark"] .signature-thumbnail {
-        background: #374151;
+        transition: var(--transition);
       }
 
+      .signature-thumbnail:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+      }
+
+      /* --- MODERN PAGINATION --- */
+      .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+        background: var(--bg-card);
+      }
+
+      .pagination-info {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .pagination-controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      /* --- MODERN BUTTONS --- */
+      .btn {
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        transition: var(--transition);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+      }
+
+      .btn-primary {
+        background: var(--gradient-primary);
+        border: none;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-success {
+        background: var(--gradient-success);
+        border: none;
+      }
+
+      .btn-danger {
+        background: var(--gradient-warning);
+        border: none;
+      }
+
+      .btn-outline-primary {
+        border: 1px solid var(--nav-link-active-color);
+        color: var(--nav-link-active-color);
+        background: transparent;
+      }
+
+      .btn-outline-primary:hover {
+        background: var(--nav-link-active-color);
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      .btn-outline-danger {
+        border: 1px solid #ef4444;
+        color: #ef4444;
+        background: transparent;
+      }
+
+      .btn-outline-danger:hover {
+        background: #ef4444;
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      /* --- MODERN MODAL --- */
+      .modal-content {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-lg);
+        background: var(--bg-card);
+      }
+
+      .modal-header {
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem;
+      }
+
+      .modal-title {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+      }
+
+      .modal-footer {
+        border-top: 1px solid var(--border-color);
+        padding: 1.5rem;
+      }
+
+      /* --- MODERN FOOTER --- */
       .footer-professional {
-        background: #3b82f6;
-        color: #e5e7eb;
-        margin-top: auto;
-        padding: 1rem 0.5rem; /* Menambahkan jarak kiri dan kanan */
-        font-size: 0.95rem;
-      }
-      @media (min-width: 768px) {
-        .footer-professional {
-          padding: 1rem 1rem; /* Jarak lebih besar untuk tablet */
-        }
-      }
-      @media (min-width: 992px) {
-        .footer-professional {
-          padding: 1rem 1.5rem; /* Jarak lebih besar untuk desktop */
-        }
-      }
-      .footer-professional .footer-divider {
-        border-top: 1px solid rgba(255, 255, 255, 0.25);
-        margin: 0.5rem 0;
+        grid-area: footer;
+        background: var(--footer-bg);
+        color: #ffffff;
+        padding: 1.5rem 2rem;
+        text-align: center;
+        font-size: 0.875rem;
       }
 
+      .footer-divider {
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        margin: 1rem 0;
+      }
+
+      /* --- MODERN OVERLAY --- */
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+      }
+
+      .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      @media (min-width: 992px) {
+        .sidebar-overlay {
+          display: none;
+        }
+      }
+
+      /* --- RESPONSIVE TABLE --- */
       @media (max-width: 767.98px) {
         .col-instansi,
         .col-jabatan,
@@ -225,8 +616,7 @@
         }
       }
 
-      /* ===== PRINT STYLES ===== */
-      /* Sembunyikan elemen print di tampilan web biasa */
+      /* --- PRINT STYLES --- */
       .print-header,
       .print-separator,
       .print-title {
@@ -239,7 +629,7 @@
           margin: 18mm 12mm;
         }
         body {
-          font-family: "Times New Roman", serif; /* Font standar untuk laporan */
+          font-family: "Times New Roman", serif;
         }
         #sidebar,
         .top-header,
@@ -247,7 +637,6 @@
         #toolbar,
         #search-row,
         .col-aksi {
-          /* Sembunyikan kolom aksi saat print */
           display: none !important;
         }
         .main-content-wrapper {
@@ -259,7 +648,7 @@
           box-shadow: none !important;
         }
         .table {
-          font-size: 10pt; /* Ukuran font standar untuk tabel laporan */
+          font-size: 10pt;
           width: 100%;
         }
         .table thead {
@@ -270,10 +659,10 @@
           border: 1px solid #000 !important;
           padding: 6px 8px !important;
           color: #000 !important;
-          background-color: #fff !important; /* Pastikan background putih */
+          background-color: #fff !important;
         }
         .table thead th {
-          background: #e9ecef !important; /* Warna abu-abu terang untuk header tabel */
+          background: #e9ecef !important;
           font-weight: bold;
         }
         .signature-thumbnail {
@@ -283,7 +672,6 @@
           border: none;
         }
 
-        /* -- KOP SURAT -- */
         .print-header {
           display: flex !important;
           align-items: center;
@@ -292,7 +680,7 @@
           color: #000 !important;
         }
         .print-logo {
-          width: 85px; /* Sesuaikan ukuran logo */
+          width: 85px;
           height: auto;
           margin-right: 1.5rem;
         }
@@ -334,6 +722,22 @@
           font-size: 12pt;
         }
       }
+
+      /* --- MODERN UTILITIES --- */
+      .text-gradient {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* --- DARK MODE TEXT OVERRIDES --- */
+      [data-theme="dark"] .text-secondary { 
+        color: var(--text-secondary) !important; 
+      }
+      [data-theme="dark"] .text-muted { 
+        color: var(--text-muted) !important; 
+      }
     </style>
   </head>
   <body>
@@ -344,137 +748,138 @@
       })();
     </script>
 
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <div class="main-wrapper">
-      <!-- SIDEBAR -->
-      <nav
-        id="sidebar"
-        class="offcanvas-lg offcanvas-start sidebar"
-        data-bs-scroll="true"
-        data-bs-backdrop="true"
-        tabindex="-1"
-        aria-labelledby="sidebarLabel"
-      >
-        <div class="offcanvas-header d-lg-none">
-          <h5 class="offcanvas-title" id="sidebarLabel">AbsensiPro</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="offcanvas"
-            aria-label="Tutup"
-          ></button>
+      <!-- Modern Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="#" class="sidebar-brand">
+            <i class="bi bi-calendar-check"></i>
+            <span>AbsensiPro</span>
+          </a>
         </div>
-        <div class="offcanvas-body d-flex flex-column p-0">
-          <div class="p-4 d-none d-lg-block">
-            <h4 class="fw-bold m-0">AbsensiPro</h4>
-          </div>
+        
+        <nav class="sidebar-nav">
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link" href="admin-dashboard.html"
-                ><i class="bi bi-speedometer2"></i> Dashboard</a
-              >
+              <a class="nav-link" href="admin-dashboard.html">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+              </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="#"
-                ><i class="bi bi-calendar-event"></i> Manajemen Acara</a
-              >
+              <a class="nav-link" href="admin-manajemen-acara.html">
+                <i class="bi bi-calendar-event"></i>
+                <span>Manajemen Acara</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="#">
+                <i class="bi bi-people"></i>
+                <span>Daftar Hadir</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-rekap-acara.html">
+                <i class="bi bi-display"></i>
+                <span>Rekap Acara (Live)</span>
+              </a>
             </li>
           </ul>
-          <div class="p-3 mt-auto">
-            <a href="#" id="btn-logout" class="btn btn-outline-danger w-100"
-              ><i class="bi bi-box-arrow-right"></i> Logout</a
-            >
-          </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+          <button id="btn-logout" class="btn btn-outline-danger w-100">
+            <i class="bi bi-box-arrow-right me-2"></i>
+            Logout
+          </button>
         </div>
-      </nav>
+      </aside>
 
-      <!-- MAIN -->
+      <!-- Main Content Area -->
       <div class="main-content-wrapper">
-        <!-- HEADER -->
+        <!-- Modern Header -->
         <header class="top-header">
-          <div
-            class="container-left d-flex align-items-center justify-content-between py-2"
-          >
-            <div class="d-flex align-items-center gap-2">
-              <button
-                class="btn-icon d-lg-none"
-                type="button"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#sidebar"
-              >
-                <i class="bi bi-list"></i>
-              </button>
-              <h1 class="h5 m-0 d-none d-sm-block">Daftar Hadir</h1>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <button
-                id="theme-toggle"
-                class="btn-icon"
-                type="button"
-                aria-label="Ubah tema"
-              ></button>
-              <span class="d-none d-sm-inline">Selamat datang, Hakiem</span>
+          <div class="header-left">
+            <button class="sidebar-toggle" id="sidebarToggle">
+              <i class="bi bi-list"></i>
+            </button>
+            <h1 class="header-title">Daftar Hadir</h1>
+          </div>
+          
+          <div class="header-right">
+            <button id="theme-toggle" class="theme-toggle">
+              <i class="bi bi-sun-fill"></i>
+            </button>
+            <div class="user-info">
+              <i class="bi bi-person-circle"></i>
+              <span>Selamat datang, Hakiem</span>
             </div>
           </div>
         </header>
 
-        <!-- CONTENT -->
+        <!-- Main Content -->
         <main class="main-content">
-          <div class="container-left">
-            <!-- Toolbar -->
-            <div id="toolbar" class="mb-3">
-              <a
-                href="admin-manajemen-acara.html"
-                class="btn btn-outline-secondary mb-3"
-                ><i class="bi bi-arrow-left"></i> Kembali</a
-              >
-              <div class="row g-3 align-items-end">
-                <div class="col-md-5">
-                  <label class="form-label" for="event-select">Acara</label>
-                  <select id="event-select" class="form-select"></select>
-                  <div class="small text-secondary mt-2" id="event-meta"></div>
-                </div>
-                <div class="col-md-7 text-md-end">
-                  <div class="btn-group me-2 mb-2 mb-md-0">
-                    <button id="btn-export" class="btn btn-success">
-                      <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
-                    </button>
-                    <!-- Tombol print diganti namanya menjadi Cetak Laporan -->
-                    <button id="btn-print" class="btn btn-danger">
-                      <i class="bi bi-printer"></i> Cetak Laporan
-                    </button>
-                  </div>
-                  <button
-                    id="btn-copy"
-                    class="btn btn-outline-info me-2 mb-2 mb-md-0"
-                  >
-                    <i class="bi bi-link-45deg"></i> Copy Link Form
-                  </button>
-                  <button
-                    id="btn-qr"
-                    class="btn btn-outline-primary mb-2 mb-md-0"
-                  >
-                    <i class="bi bi-qr-code"></i> QR Form
-                  </button>
-                </div>
+          <!-- Page Header -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h2 class="h4 mb-1 text-gradient">Daftar Hadir Peserta</h2>
+              <p class="text-muted mb-0">Kelola dan pantau kehadiran peserta acara</p>
+            </div>
+            <a href="admin-manajemen-acara.html" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>
+              Kembali
+            </a>
+          </div>
+
+          <!-- Modern Toolbar -->
+          <div class="toolbar-container">
+            <div class="toolbar-header">
+              <h3 class="toolbar-title">Pilih Acara</h3>
+              <div class="toolbar-actions">
+                <button id="btn-export" class="btn btn-success">
+                  <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                  Export CSV
+                </button>
+                <button id="btn-print" class="btn btn-danger">
+                  <i class="bi bi-printer me-2"></i>
+                  Cetak Laporan
+                </button>
+                <button id="btn-copy" class="btn btn-outline-primary">
+                  <i class="bi bi-link-45deg me-2"></i>
+                  Copy Link Form
+                </button>
+                <button id="btn-qr" class="btn btn-outline-primary">
+                  <i class="bi bi-qr-code me-2"></i>
+                  QR Form
+                </button>
               </div>
             </div>
-
-            <!-- Search + Paging -->
-            <div id="search-row" class="row g-3 mb-3">
+            
+            <div class="row g-3">
               <div class="col-md-6">
-                <label for="search-input" class="form-label"
-                  >Cari peserta</label
-                >
+                <label class="form-label" for="event-select">Acara</label>
+                <select id="event-select" class="form-select"></select>
+                <div class="small text-secondary mt-2" id="event-meta"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modern Search & Filters -->
+          <div class="search-filters">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="search-input" class="form-label">Cari Peserta</label>
                 <input
                   id="search-input"
-                  class="form-control"
+                  class="search-input"
                   placeholder="Ketik nama, instansi, atau jabatan..."
                 />
               </div>
               <div class="col-md-3">
-                <label for="page-size" class="form-label"
-                  >Tampil per halaman</label
-                >
+                <label for="page-size" class="form-label">Tampil per Halaman</label>
                 <select id="page-size" class="form-select">
                   <option value="10">10</option>
                   <option value="25" selected>25</option>
@@ -482,92 +887,88 @@
                   <option value="100">100</option>
                 </select>
               </div>
-              <div
-                class="col-md-3 d-flex align-items-end justify-content-md-end"
-              >
-                <div class="btn-group" role="group" aria-label="Pagination">
+              <div class="col-md-3 d-flex align-items-end">
+                <div class="pagination-controls">
                   <button id="btn-prev" class="btn btn-outline-secondary">
                     <i class="bi bi-chevron-left"></i>
                   </button>
-                  <span
-                    id="page-info"
-                    class="btn btn-outline-secondary disabled"
-                    >Hal 1/1</span
-                  >
+                  <span id="page-info" class="btn btn-outline-secondary disabled">
+                    Hal 1/1
+                  </span>
                   <button id="btn-next" class="btn btn-outline-secondary">
                     <i class="bi bi-chevron-right"></i>
                   </button>
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- KOP SURAT UNTUK PRINT -->
-            <div class="print-header">
-              <img
-                src="assets/img/logo_hst.png"
-                alt="Logo HST"
-                class="print-logo"
-              />
-              <div class="print-header-text">
-                <h4>PEMERINTAH KABUPATEN HULU SUNGAI TENGAH</h4>
-                <h3>DINAS KOMUNIKASI DAN INFORMATIKA</h3>
-                <p>
-                  Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai,
-                  Kalimantan Selatan 71351<br />
-                  Telepon (0517) 3791750, Faksimile (0517) 3791750<br />
-                  Laman: diskominfo.hstkab.go.id, Pos-el diskominfo@hstkab.go.id
-                </p>
-              </div>
-            </div>
-            <hr class="print-separator" />
-            <div class="print-title">
-              <h4 class="mb-1">DAFTAR HADIR PESERTA</h4>
-              <h5 id="print-event-title" class="mb-0 fw-normal">
-                (Nama Acara)
-              </h5>
-              <p id="print-event-meta" class="small mt-1">
-                (Waktu dan Lokasi Acara)
+          <!-- KOP SURAT UNTUK PRINT -->
+          <div class="print-header">
+            <img
+              src="assets/img/logo_hst.png"
+              alt="Logo HST"
+              class="print-logo"
+            />
+            <div class="print-header-text">
+              <h4>PEMERINTAH KABUPATEN HULU SUNGAI TENGAH</h4>
+              <h3>DINAS KOMUNIKASI DAN INFORMATIKA</h3>
+              <p>
+                Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai,
+                Kalimantan Selatan 71351<br />
+                Telepon (0517) 3791750, Faksimile (0517) 3791750<br />
+                Laman: diskominfo.hstkab.go.id, Pos-el diskominfo@hstkab.go.id
               </p>
             </div>
+          </div>
+          <hr class="print-separator" />
+          <div class="print-title">
+            <h4 class="mb-1">DAFTAR HADIR PESERTA</h4>
+            <h5 id="print-event-title" class="mb-0 fw-normal">
+              (Nama Acara)
+            </h5>
+            <p id="print-event-meta" class="small mt-1">
+              (Waktu dan Lokasi Acara)
+            </p>
+          </div>
 
-            <!-- Tabel -->
-            <div class="card border-0 shadow-sm">
-              <div class="card-body">
-                <div
-                  class="d-flex justify-content-between align-items-center mb-2"
-                >
-                  <h4 class="mb-0">Daftar Hadir (<span id="count">0</span>)</h4>
-                </div>
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle">
-                    <thead>
-                      <tr>
-                        <th style="width: 60px">#</th>
-                        <th>Nama Lengkap</th>
-                        <th class="col-instansi">Instansi</th>
-                        <th class="col-jabatan">Jabatan</th>
-                        <th class="col-gender">Jenis Kelamin</th>
-                        <th>Waktu Kehadiran</th>
-                        <th>Tanda Tangan</th>
-                        <th class="col-aksi" style="width: 80px">Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody id="tbody"></tbody>
-                  </table>
-                </div>
+          <!-- Modern Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h3 class="table-title">Daftar Hadir (<span id="count">0</span>)</h3>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th style="width: 60px">#</th>
+                    <th>Nama Lengkap</th>
+                    <th class="col-instansi">Instansi</th>
+                    <th class="col-jabatan">Jabatan</th>
+                    <th class="col-gender">Jenis Kelamin</th>
+                    <th>Waktu Kehadiran</th>
+                    <th>Tanda Tangan</th>
+                    <th class="col-aksi" style="width: 80px">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+              </table>
+            </div>
+            
+            <div class="pagination-container">
+              <div class="pagination-info">
+                Menampilkan data kehadiran peserta
               </div>
             </div>
           </div>
         </main>
 
-        <!-- FOOTER (sticky, sejajar konten) -->
+        <!-- Modern Footer -->
         <footer class="footer-professional">
-          <div class="container-left">
-            <div class="footer-divider"></div>
-            <div class="text-center">
-              &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai
-              Tengah.
-            </div>
+          <div class="footer-divider"></div>
+          <div class="text-center">
+            &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai Tengah.
           </div>
         </footer>
       </div>
@@ -1141,27 +1542,52 @@
           renderTable();
         });
         loadEventsOnce();
-        const sidebarEl = document.getElementById("sidebar");
-        const oc = bootstrap.Offcanvas.getOrCreateInstance(sidebarEl, {
-          backdrop: true,
-          scroll: true,
-        });
-        sidebarEl
-          .querySelectorAll(
-            '[data-bs-dismiss="offcanvas"], .nav-link, #btn-logout'
-          )
-          .forEach((el) =>
-            el.addEventListener("click", () => {
-              try {
-                oc.hide();
-              } catch (_) {}
-            })
-          );
-        sidebarEl.addEventListener("hidden.bs.offcanvas", () => {
+        
+        // Modern Sidebar Toggle
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        function toggleSidebar() {
+          sidebar.classList.toggle("show");
+          sidebarOverlay.classList.toggle("show");
+          document.body.style.overflow = sidebar.classList.contains("show") ? "hidden" : "";
+        }
+
+        function hideSidebar() {
+          sidebar.classList.remove("show");
+          sidebarOverlay.classList.remove("show");
           document.body.style.overflow = "";
-          document.body.classList.remove("offcanvas-backdrop", "modal-open");
+        }
+
+        // Event listeners for modern sidebar
+        sidebarToggle?.addEventListener("click", toggleSidebar);
+        sidebarOverlay?.addEventListener("click", hideSidebar);
+        
+        // Close sidebar when clicking nav links (mobile)
+        sidebar.querySelectorAll(".nav-link").forEach(link => {
+          link.addEventListener("click", () => {
+            if (window.innerWidth < 992) {
+              hideSidebar();
+            }
+          });
+        });
+
+        // Close sidebar on escape key
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && sidebar.classList.contains("show")) {
+            hideSidebar();
+          }
+        });
+
+        // Handle window resize
+        window.addEventListener("resize", () => {
+          if (window.innerWidth >= 992) {
+            hideSidebar();
+          }
         });
       })();
     </script>
   </body>
 </html>
+

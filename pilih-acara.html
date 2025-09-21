@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pilih Acara</title>
+    <title>Pilih Acara - AbsensiPro</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -14,146 +14,493 @@
     />
 
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
       :root {
         --content-gutter-x: clamp(16px, 2.5vw, 28px);
+        --border-radius: 16px;
+        --border-radius-sm: 8px;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
       }
 
-      /* Theme vars */
+      /* Modern Theme System */
       :root[data-theme="light"] {
-        --bg-main: #f8fafc;
+        --bg-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --bg-secondary: #f8fafc;
         --card-bg: #ffffff;
+        --card-bg-hover: #f8fafc;
         --text-primary: #0f172a;
-        --text-secondary: #475569; /* slate-700 */
+        --text-secondary: #475569;
+        --text-muted: #64748b;
         --border-color: #e2e8f0;
+        --border-hover: #cbd5e1;
         --hover: #f1f5f9;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
         --pill-active: #dcfce7;
         --pill-active-text: #166534;
-        --pill-upcoming: #e0f2fe;
-        --pill-upcoming-text: #0369a1;
-        /* Footer tokens */
-        --footer-bg: #3b82f6;
-        --footer-fg: #e5e7eb;
-      }
-      :root[data-theme="dark"] {
-        --bg-main: #111827;
-        --card-bg: #1f2937; /* lebih kontras */
-        --text-primary: #f8fafc;
-        --text-secondary: #cbd5e1; /* slate-300: jelas di dark */
-        --border-color: #374151;
-        --hover: #2b3546;
-        --pill-active: #064e3b;
-        --pill-active-text: #a7f3d0;
-        --pill-upcoming: #0b3b5c;
-        --pill-upcoming-text: #93c5fd;
-        /* Footer tokens */
-        --footer-bg: #3b82f6;
-        --footer-fg: #e5e7eb;
+        --pill-upcoming: #dbeafe;
+        --pill-upcoming-text: #1e40af;
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-card: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
       }
 
-      html,
-      body {
-        height: 100%;
+      :root[data-theme="dark"] {
+        --bg-main: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        --bg-secondary: #0f172a;
+        --card-bg: #1e293b;
+        --card-bg-hover: #334155;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border-color: #334155;
+        --border-hover: #475569;
+        --hover: #334155;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --pill-active: #064e3b;
+        --pill-active-text: #a7f3d0;
+        --pill-upcoming: #1e3a8a;
+        --pill-upcoming-text: #93c5fd;
+        --gradient-primary: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        --gradient-card: linear-gradient(145deg, #1e293b 0%, #334155 100%);
       }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
         background: var(--bg-main);
         color: var(--text-primary);
-        font-family: "Poppins", sans-serif;
-        /* Sticky footer layout */
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.6;
         display: flex;
         flex-direction: column;
-      }
-      main {
-        flex: 1 1 auto;
+        overflow-x: hidden;
       }
 
-      .topbar {
-        background: var(--card-bg);
-        border-bottom: 1px solid var(--border-color);
+      /* Modern Header */
+      .modern-header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        transition: all 0.3s ease;
       }
-      .container-left {
-        padding-left: var(--content-gutter-x);
-        padding-right: var(--content-gutter-x);
+
+      [data-theme="light"] .modern-header {
+        background: rgba(255, 255, 255, 0.8);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        padding: 1rem var(--content-gutter-x);
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .logo:hover {
+        transform: translateY(-1px);
+        color: var(--accent);
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gradient-primary);
+        border-radius: var(--border-radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .btn-modern {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-modern:hover {
+        background: var(--hover);
+        border-color: var(--border-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-modern:active {
+        transform: translateY(0);
+      }
+
+      /* Hero Section */
+      .hero-section {
+        padding: 4rem var(--content-gutter-x) 2rem;
+        text-align: center;
         max-width: 1200px;
         margin: 0 auto;
       }
 
-      .btn-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--border-color);
-        color: var(--text-primary);
-        background: transparent;
-      }
-      .btn-icon:hover {
-        background: var(--hover);
+      .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
-      .title-lg {
-        font-weight: 700;
-        letter-spacing: 0.2px;
+      [data-theme="light"] .hero-title {
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
-      .subtitle {
+
+      .hero-subtitle {
+        font-size: 1.25rem;
         color: var(--text-secondary);
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Events Grid */
+      .events-container {
+        padding: 2rem var(--content-gutter-x) 4rem;
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
       .events-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 1.5rem;
       }
+
       @media (min-width: 768px) {
         .events-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-      @media (min-width: 1200px) {
-        .events-grid {
-          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-columns: repeat(2, 1fr);
         }
       }
 
-      .card {
-        background: var(--card-bg);
-        border-color: var(--border-color);
+      @media (min-width: 1024px) {
+        .events-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
       }
+
+      /* Modern Event Card */
+      .event-card {
+        background: var(--gradient-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+      }
+
+      .event-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .event-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--accent);
+      }
+
+      .event-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .event-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
       .event-title {
+        font-size: 1.25rem;
         font-weight: 700;
-        color: var(--text-primary); /* <-- TAMBAHKAN BARIS INI */
+        color: var(--text-primary);
+        line-height: 1.3;
+        margin: 0;
       }
-      .event-meta {
-        color: var(--text-secondary);
-        font-size: 0.94rem;
-      }
+
       .event-badge {
-        padding: 0.25rem 0.55rem;
+        padding: 0.375rem 0.75rem;
         border-radius: 9999px;
         font-weight: 600;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
+
       .badge-active {
         background: var(--pill-active);
         color: var(--pill-active-text);
       }
+
       .badge-upcoming {
         background: var(--pill-upcoming);
         color: var(--pill-upcoming-text);
       }
-      .event-card .bi {
-        vertical-align: -0.15rem;
+
+      .event-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
       }
 
-      /* Footer seperti menu lain (bar biru) */
-      .footer-bar {
-        background: var(--footer-bg);
-        color: var(--footer-fg);
-        padding: 18px 0;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      .event-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .event-meta-item .bi {
+        color: var(--accent);
+        font-size: 1rem;
+      }
+
+      /* Better contrast for light mode */
+      [data-theme="light"] .event-meta-item {
+        color: var(--text-secondary);
+      }
+
+      [data-theme="light"] .event-meta-item .bi {
+        color: var(--accent);
+      }
+
+      .event-actions {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .btn-primary-modern {
+        flex: 1;
+        background: var(--gradient-primary);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-sm);
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .btn-primary-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-primary-modern:hover::before {
+        left: 100%;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-secondary);
+      }
+
+      .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+        color: var(--text-muted);
+      }
+
+      .empty-state-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+      }
+
+      .empty-state-text {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+        color: var(--text-secondary);
+      }
+
+      /* Light mode empty state */
+      [data-theme="light"] .empty-state {
+        color: var(--text-secondary);
+      }
+
+      [data-theme="light"] .empty-state-icon {
+        color: var(--text-muted);
+      }
+
+      /* Footer */
+      .modern-footer {
+        background: var(--card-bg);
+        border-top: 1px solid var(--border-color);
+        padding: 2rem var(--content-gutter-x);
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      /* Loading Animation */
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border-color);
+        border-radius: 50%;
+        border-top-color: var(--accent);
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      /* Ensure text visibility in light mode */
+      [data-theme="light"] .text-secondary {
+        color: var(--text-secondary) !important;
+      }
+
+      [data-theme="light"] .hero-subtitle {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .hero-section {
+          padding: 2rem var(--content-gutter-x) 1rem;
+        }
+
+        .events-container {
+          padding: 1rem var(--content-gutter-x) 2rem;
+        }
+
+        .event-card {
+          padding: 1.25rem;
+        }
+
+        .header-content {
+          padding: 0.75rem var(--content-gutter-x);
+        }
+      }
+
+      /* Smooth Animations */
+      .fade-in {
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .slide-up {
+        animation: slideUp 0.6s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
   </head>
@@ -166,24 +513,31 @@
       })();
     </script>
 
-    <!-- TOP BAR -->
-    <header class="topbar">
-      <div
-        class="container-left d-flex align-items-center justify-content-between py-3"
-      >
-        <div class="fw-bold">AbsensiPro</div>
-        <div class="d-flex align-items-center gap-2">
+    <!-- MODERN HEADER -->
+    <header class="modern-header">
+      <div class="header-content">
+        <a href="#" class="logo">
+          <div class="logo-icon">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <span>AbsensiPro</span>
+        </a>
+        <div class="header-actions">
           <button
             id="theme-toggle"
-            class="btn-icon"
+            class="btn-modern"
             aria-label="Ubah tema"
-          ></button>
+            title="Toggle theme"
+          >
+            <i class="bi bi-sun-fill"></i>
+          </button>
           <button
-            class="btn-icon"
+            class="btn-modern"
             type="button"
             data-bs-toggle="offcanvas"
             data-bs-target="#menuOffcanvas"
             aria-label="Menu"
+            title="Menu"
           >
             <i class="bi bi-list"></i>
           </button>
@@ -191,7 +545,7 @@
       </div>
     </header>
 
-    <!-- MENU -->
+    <!-- MENU OFFCANVAS -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="menuOffcanvas">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title">Menu</h5>
@@ -211,30 +565,38 @@
       </div>
     </div>
 
-    <!-- CONTENT -->
-    <main class="py-4 py-md-5">
-      <div class="container-left">
-        <h1 class="title-lg display-6 text-center mb-2">
-          Daftar Acara Tersedia
-        </h1>
-        <p class="subtitle text-center mb-4">
-          Silakan pilih acara yang akan Anda hadiri untuk mengisi daftar hadir.
-        </p>
+    <!-- HERO SECTION -->
+    <section class="hero-section fade-in">
+      <h1 class="hero-title">
+        Pilih Acara Anda
+      </h1>
+      <p class="hero-subtitle">
+        Silakan pilih acara yang akan Anda hadiri untuk mengisi daftar hadir secara digital
+      </p>
+    </section>
 
-        <div id="events-grid" class="events-grid">
-          <!-- cards injected -->
+    <!-- EVENTS CONTAINER -->
+    <section class="events-container">
+      <div id="events-grid" class="events-grid">
+        <!-- Event cards will be injected here -->
+      </div>
+      
+      <!-- Empty State -->
+      <div id="empty" class="empty-state d-none">
+        <div class="empty-state-icon">
+          <i class="bi bi-calendar-x"></i>
         </div>
-
-        <p id="empty" class="subtitle text-center my-4 d-none">
-          Belum ada acara aktif.
+        <h3 class="empty-state-title">Belum Ada Acara</h3>
+        <p class="empty-state-text">
+          Saat ini belum ada acara yang tersedia. Silakan hubungi administrator untuk informasi lebih lanjut.
         </p>
       </div>
-    </main>
+    </section>
 
-    <!-- FOOTER (bar biru & sticky) -->
-    <footer class="footer-bar">
-      <div class="container-left text-center">
-        &copy; <span id="year"></span> Diskominfo Hulu Sungai Tengah.
+    <!-- MODERN FOOTER -->
+    <footer class="modern-footer">
+      <div class="text-center">
+        &copy; <span id="year"></span> Diskominfo Hulu Sungai Tengah. All Rights Reserved.
       </div>
     </footer>
 
@@ -294,53 +656,82 @@
             : '<span class="event-badge badge-upcoming">Upcoming</span>';
 
         return `
-          <div class="card event-card shadow-sm">
-            <div class="card-body d-flex flex-column h-100">
-              <div class="d-flex justify-content-between align-items-start mb-1">
-                <h5 class="event-title mb-0">${ev.title}</h5>
-                ${badge}
+          <div class="event-card slide-up">
+            <div class="event-header">
+              <h3 class="event-title">${ev.title}</h3>
+              ${badge}
+            </div>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-calendar-event"></i>
+                <span>${fmtDateLong(ev.datetime)}</span>
               </div>
-              <div class="event-meta mb-3">
-                <div class="mb-1"><i class="bi bi-calendar-event me-1"></i>${fmtDateLong(
-                  ev.datetime
-                )}</div>
-                ${
-                  ev.location
-                    ? `<div><i class="bi bi-geo-alt me-1"></i>${ev.location}</div>`
-                    : ""
-                }
-              </div>
-              <div class="mt-auto">
-                <a class="btn btn-primary w-100" href="${href}">Isi Daftar Hadir</a>
-              </div>
+              ${
+                ev.location
+                  ? `<div class="event-meta-item">
+                      <i class="bi bi-geo-alt"></i>
+                      <span>${ev.location}</span>
+                    </div>`
+                  : ""
+              }
+            </div>
+            <div class="event-actions">
+              <a class="btn-primary-modern" href="${href}">
+                <i class="bi bi-pen"></i>
+                Isi Daftar Hadir
+              </a>
             </div>
           </div>`;
       }
 
       async function loadEvents() {
-        // 1) Ambil yang AKTIF dulu (tanggal terbaru desc)
-        const a = await sb
-          .from("events")
-          .select("id,title,datetime,location,status")
-          .eq("status", "active")
-          .order("datetime", { ascending: false });
-        // 2) Lalu UPCOMING (tanggal terbaru desc)
-        const u = await sb
-          .from("events")
-          .select("id,title,datetime,location,status")
-          .eq("status", "upcoming")
-          .order("datetime", { ascending: false });
+        // Show loading state
+        $grid.innerHTML = `
+          <div class="text-center py-5">
+            <div class="loading-spinner"></div>
+            <p class="mt-3 text-secondary">Memuat acara...</p>
+          </div>
+        `;
 
-        const data = [...(a.data || []), ...(u.data || [])];
+        try {
+          // 1) Ambil yang AKTIF dulu (tanggal terbaru desc)
+          const a = await sb
+            .from("events")
+            .select("id,title,datetime,location,status")
+            .eq("status", "active")
+            .order("datetime", { ascending: false });
+          // 2) Lalu UPCOMING (tanggal terbaru desc)
+          const u = await sb
+            .from("events")
+            .select("id,title,datetime,location,status")
+            .eq("status", "upcoming")
+            .order("datetime", { ascending: false });
 
-        if (!data.length) {
-          $grid.innerHTML = "";
-          $empty.classList.remove("d-none");
-          return;
+          const data = [...(a.data || []), ...(u.data || [])];
+
+          if (!data.length) {
+            $grid.innerHTML = "";
+            $empty.classList.remove("d-none");
+            return;
+          }
+
+          $empty.classList.add("d-none");
+          
+          // Add staggered animation delay
+          $grid.innerHTML = data.map((ev, index) => {
+            const cardHtml = card(ev);
+            return cardHtml.replace('slide-up', `slide-up`).replace('class="event-card', `class="event-card" style="animation-delay: ${index * 0.1}s"`);
+          }).join("");
+        } catch (error) {
+          console.error('Error loading events:', error);
+          $grid.innerHTML = `
+            <div class="text-center py-5">
+              <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+              <h4 class="mt-3">Gagal Memuat Acara</h4>
+              <p class="text-secondary">Silakan refresh halaman atau hubungi administrator.</p>
+            </div>
+          `;
         }
-
-        $empty.classList.add("d-none");
-        $grid.innerHTML = data.map(card).join("");
       }
 
       loadEvents();
