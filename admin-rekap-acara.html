@@ -202,6 +202,9 @@
         border-radius: 0.5rem;
         position: relative;
       }
+      .table-wrapper .table { table-layout: fixed; margin-bottom: 0; }
+      .table-wrapper .table th,
+      .table-wrapper .table td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .table-body-scroll-container {
         flex-grow: 1;
         overflow: hidden;
@@ -327,12 +330,22 @@
             <div class="table-wrapper">
               <div class="table-header">
                 <table class="table align-middle">
+                  <colgroup>
+                    <col style="width:72px" />
+                    <col style="width:280px" />
+                    <col style="width:220px" />
+                    <col style="width:200px" />
+                    <col style="width:160px" />
+                    <col style="width:240px" />
+                  </colgroup>
                   <thead class="table-light">
                     <tr>
-                      <th style="width: 70px">No</th>
-                      <th>Nama Peserta</th>
+                      <th>No</th>
+                      <th>Nama Lengkap</th>
+                      <th>Instansi</th>
                       <th>Jabatan</th>
-                      <th>Asal Instansi</th>
+                      <th>Jenis Kelamin</th>
+                      <th>Waktu Kehadiran</th>
                     </tr>
                   </thead>
                 </table>
@@ -420,8 +433,6 @@
             const contentHeight = $scrollContent.scrollHeight;
             const containerHeight = $scrollContainer.clientHeight;
 
-            if (contentHeight <= containerHeight) return;
-
             // Durasi dihitung berdasarkan ketinggian total (konten + kontainer)
             const totalDistance = contentHeight + containerHeight;
             const duration = totalDistance / 50; // Kecepatan: 50 piksel per detik
@@ -439,9 +450,16 @@
           }, 100);
         }
 
+        function genderLabel(g) {
+          const v = (g || "").toLowerCase();
+          if (v === "male") return "Laki-Laki";
+          if (v === "female") return "Perempuan";
+          return "";
+        }
+
         function renderScrollingList() {
           if (attendeesList.length === 0) {
-            $scrollContent.innerHTML = `<table class="table"><tbody><tr><td colspan="4" class="text-center text-secondary py-5">Menunggu peserta...</td></tr></tbody></table>`;
+            $scrollContent.innerHTML = `<table class="table"><tbody><tr><td colspan="6" class="text-center text-secondary py-5">Menunggu peserta...</td></tr></tbody></table>`;
             return;
           }
 
@@ -452,13 +470,24 @@
                 <tr>
                   <td style="width: 70px;">${index + 1}</td>
                   <td>${att.name || "-"}</td>
-                  <td>${att.jabatan || "-"}</td>
                   <td>${att.instansi || "-"}</td>
+                  <td>${att.jabatan || "-"}</td>
+                  <td>${genderLabel(att.gender) || "-"}</td>
+                  <td>${att.ts ? new Date(att.ts).toLocaleString('id-ID') : '-'}</td>
                 </tr>`
             )
             .join("");
 
-          $scrollContent.innerHTML = `<table class="table table-striped align-middle"><tbody>${rows}</tbody></table>`;
+          const colgroup = `
+            <colgroup>
+              <col style=\"width:72px\" />
+              <col style=\"width:280px\" />
+              <col style=\"width:220px\" />
+              <col style=\"width:200px\" />
+              <col style=\"width:160px\" />
+              <col style=\"width:240px\" />
+            </colgroup>`;
+          $scrollContent.innerHTML = `<table class="table table-striped align-middle">${colgroup}<tbody>${rows}</tbody></table>`;
           setupAndRunAnimation();
         }
 
@@ -473,16 +502,16 @@
           if (activeChannel) sb.removeChannel(activeChannel);
           if (!eventId) {
             $eventTitle.textContent = "Silakan pilih acara";
-            $scrollContent.innerHTML = `<table class="table"><tbody><tr><td colspan="4" class="text-center text-secondary py-5">Pilih acara dari daftar di atas.</td></tr></tbody></table>`;
+            $scrollContent.innerHTML = `<table class="table"><tbody><tr><td colspan="6" class="text-center text-secondary py-5">Pilih acara dari daftar di atas.</td></tr></tbody></table>`;
             return;
           }
 
-          $scrollContent.innerHTML = `<table class="table"><tbody><tr><td colspan="4" class="text-center text-secondary py-5">Memuat data...</td></tr></tbody></table>`;
+          $scrollContent.innerHTML = `<table class="table"><tbody><tr><td colspan="6" class="text-center text-secondary py-5">Memuat data...</td></tr></tbody></table>`;
           const [eventRes, attendeesRes] = await Promise.all([
             sb.from("events").select("title").eq("id", eventId).single(),
             sb
               .from("attendees")
-              .select("id, name, jabatan, instansi")
+              .select("id, name, jabatan, instansi, gender, ts")
               .eq("event_id", eventId)
               .order("ts", { ascending: false }),
           ]);
