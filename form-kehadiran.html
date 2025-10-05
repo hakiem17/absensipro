@@ -230,7 +230,7 @@
         padding: 0.75rem 1rem;
         font-size: 0.875rem;
         transition: var(--transition);
-        color: var(--text-primary);
+        color: var(--text-primary) !important;
       }
 
       .form-control:focus {
@@ -238,6 +238,11 @@
         border-color: var(--nav-link-active-color);
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         background: var(--bg-card);
+        color: var(--text-primary) !important;
+      }
+
+      .form-control:not(:placeholder-shown) {
+        color: var(--text-primary) !important;
       }
 
       .form-control::placeholder {
@@ -364,6 +369,27 @@
       }
       [data-theme="dark"] .text-muted { 
         color: var(--text-muted) !important; 
+      }
+
+      /* --- FORM INPUT DARK MODE FIXES --- */
+      [data-theme="dark"] .form-control {
+        color: var(--text-primary) !important;
+        background-color: var(--bg-main) !important;
+      }
+      
+      [data-theme="dark"] .form-control:focus {
+        color: var(--text-primary) !important;
+        background-color: var(--bg-card) !important;
+      }
+      
+      [data-theme="dark"] .form-control::placeholder {
+        color: var(--text-muted) !important;
+      }
+      
+      [data-theme="dark"] input[type="text"],
+      [data-theme="dark"] input[type="email"],
+      [data-theme="dark"] input[type="tel"] {
+        color: var(--text-primary) !important;
       }
     </style>
   </head>
@@ -562,6 +588,11 @@
         htmlEl.setAttribute("data-theme", next);
         localStorage.setItem("theme", next);
         updateThemeIcon();
+        
+        // Update signature pad pen color when theme changes
+        if (signaturePad) {
+          signaturePad.penColor = next === "dark" ? "#ffffff" : "#111827";
+        }
       });
       
       updateThemeIcon();
@@ -601,9 +632,11 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
+        // Get current theme to set appropriate pen color
+        const isDark = htmlEl.getAttribute("data-theme") === "dark";
         signaturePad = new SignaturePad(canvas, {
           backgroundColor: "rgba(0,0,0,0)",
-          penColor: "#111827",
+          penColor: isDark ? "#ffffff" : "#111827",
         });
         resizeCanvas();
       });
@@ -704,31 +737,180 @@
           // 1) Upload signature bila ada coretan
           let signature_url = null;
           if (signaturePad && !signaturePad.isEmpty()) {
-            const blob = await new Promise((resolve, reject) => {
-              try {
-                const c = document.getElementById("signature-canvas");
-                c.toBlob((b) => (b ? resolve(b) : reject(new Error("Gagal membuat blob tanda tangan."))), "image/png");
-              } catch (e) {
-                reject(e);
-              }
+            // Double check that signature pad actually has content
+            const canvas = document.getElementById("signature-canvas");
+            const ctx = canvas.getContext("2d");
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const hasContent = imageData.data.some((pixel, index) => {
+              // Check if any pixel has non-transparent alpha (every 4th value is alpha)
+              return index % 4 === 3 && pixel > 0;
             });
-
-            const rand = Math.random().toString(36).slice(2, 8);
-            const path = `event_${eventId}/${Date.now()}_${rand}.png`;
-
-            const { data: upData, error: upErr } = await sb.storage
-              .from("signatures")
-              .upload(path, blob, {
-                contentType: "image/png",
-                upsert: true,
-                cacheControl: "3600",
+            
+            if (!hasContent) {
+              console.log("Signature pad appears empty, skipping upload");
+            } else {
+            try {
+              console.log("Starting signature upload...");
+              
+              const blob = await new Promise((resolve, reject) => {
+                try {
+                  const c = document.getElementById("signature-canvas");
+                  c.toBlob((b) => {
+                    if (b) {
+                      console.log("Blob created successfully, size:", b.size);
+                      resolve(b);
+                    } else {
+                      console.error("Failed to create blob");
+                      reject(new Error("Gagal membuat blob tanda tangan."));
+                    }
+                  }, "image/png");
+                } catch (e) {
+                  console.error("Error creating blob:", e);
+                  reject(e);
+                }
               });
 
-            if (upErr) {
-              console.error("Upload signature error:", upErr);
-            } else if (upData) {
-              const { data: pub } = sb.storage.from("signatures").getPublicUrl(path);
-              signature_url = pub?.publicUrl || null;
+              // Retry mechanism for signature upload
+              const maxRetries = 3;
+              let retryCount = 0;
+              let uploadSuccess = false;
+
+              while (retryCount < maxRetries && !uploadSuccess) {
+                try {
+                  const rand = Math.random().toString(36).slice(2, 8);
+                  const path = `event_${eventId}/${Date.now()}_${rand}_${retryCount}.png`;
+                  console.log(`Upload attempt ${retryCount + 1}/${maxRetries}, path:`, path);
+
+                  // Check if storage bucket exists and is accessible
+                  console.log("Checking storage buckets...");
+                  const { data: bucketList, error: bucketError } = await sb.storage.listBuckets();
+                  
+                  if (bucketError) {
+                    console.error("Cannot access storage buckets:", bucketError);
+                    console.error("Bucket error details:", {
+                      message: bucketError.message,
+                      statusCode: bucketError.statusCode,
+                      error: bucketError.error
+                    });
+                    throw new Error("Storage tidak dapat diakses");
+                  }
+                  
+                  console.log("Available buckets:", bucketList);
+                  
+                  const signaturesBucket = bucketList?.find(bucket => bucket.name === "signatures");
+                  if (!signaturesBucket) {
+                    console.error("Signatures bucket not found in available buckets:", bucketList?.map(b => b.name));
+                    console.error("Creating signatures bucket...");
+                    
+                    // Try to create the bucket
+                    const { data: createData, error: createError } = await sb.storage.createBucket("signatures", {
+                      public: true,
+                      allowedMimeTypes: ["image/png", "image/jpeg", "image/gif"],
+                      fileSizeLimit: 5242880 // 5MB
+                    });
+                    
+                    if (createError) {
+                      console.error("Failed to create signatures bucket:", createError);
+                      throw new Error("Bucket 'signatures' tidak ditemukan dan gagal dibuat");
+                    } else {
+                      console.log("Signatures bucket created successfully:", createData);
+                    }
+                  } else {
+                    console.log("Signatures bucket found:", signaturesBucket);
+                  }
+
+                  const { data: upData, error: upErr } = await sb.storage
+                    .from("signatures")
+                    .upload(path, blob, {
+                      contentType: "image/png",
+                      upsert: true,
+                      cacheControl: "3600",
+                    });
+
+                  if (upErr) {
+                    console.error(`Upload attempt ${retryCount + 1} failed:`, upErr);
+                    console.error("Error details:", {
+                      message: upErr.message,
+                      statusCode: upErr.statusCode,
+                      error: upErr.error,
+                      details: upErr.details,
+                      hint: upErr.hint
+                    });
+                    
+                    // Check if it's a permission error
+                    if (upErr.message && upErr.message.includes("permission")) {
+                      console.error("PERMISSION ERROR: Bucket 'signatures' mungkin tidak memiliki permission yang benar");
+                      console.error("Pastikan bucket 'signatures' memiliki public access");
+                    }
+                    
+                    // Check if it's a bucket not found error
+                    if (upErr.message && upErr.message.includes("not found")) {
+                      console.error("BUCKET NOT FOUND: Bucket 'signatures' tidak ditemukan");
+                    }
+                    
+                    retryCount++;
+                    if (retryCount < maxRetries) {
+                      console.log(`Retrying in 1 second... (${retryCount}/${maxRetries})`);
+                      await new Promise(resolve => setTimeout(resolve, 1000));
+                      continue;
+                    } else {
+                      console.error("All upload attempts failed");
+                      break;
+                    }
+                  } else if (upData) {
+                    console.log("Upload successful:", upData);
+                    const { data: pub } = sb.storage.from("signatures").getPublicUrl(path);
+                    signature_url = pub?.publicUrl || null;
+                    console.log("Public URL:", signature_url);
+                    uploadSuccess = true;
+                  } else {
+                    console.warn("Upload completed but no data returned");
+                    retryCount++;
+                    if (retryCount < maxRetries) {
+                      console.log(`Retrying in 1 second... (${retryCount}/${maxRetries})`);
+                      await new Promise(resolve => setTimeout(resolve, 1000));
+                      continue;
+                    }
+                  }
+                } catch (retryError) {
+                  console.error(`Retry attempt ${retryCount + 1} failed:`, retryError);
+                  retryCount++;
+                  if (retryCount < maxRetries) {
+                    console.log(`Retrying in 1 second... (${retryCount}/${maxRetries})`);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    continue;
+                  } else {
+                    console.error("All retry attempts failed");
+                    break;
+                  }
+                }
+              }
+
+              if (!uploadSuccess) {
+                console.warn("Signature upload failed after all retries, trying base64 fallback...");
+                
+                // Fallback: Convert signature to base64 and store in database
+                try {
+                  const canvas = document.getElementById("signature-canvas");
+                  const base64Signature = canvas.toDataURL("image/png");
+                  console.log("Base64 signature created, length:", base64Signature.length);
+                  
+                  // Store base64 signature as fallback when storage upload fails
+                  console.log("Base64 signature (first 100 chars):", base64Signature.substring(0, 100) + "...");
+                  
+                  // Use base64 as signature_url when storage upload fails
+                  signature_url = base64Signature;
+                  console.log("Using base64 signature as fallback, length:", signature_url.length);
+                  
+                } catch (base64Error) {
+                  console.error("Base64 fallback also failed:", base64Error);
+                }
+              }
+
+            } catch (signatureError) {
+              console.error("Signature upload failed:", signatureError);
+              // Continue without signature rather than failing the entire form
+            }
             }
           }
 
@@ -744,6 +926,13 @@
             signature_url,
             gender: (function(){ const g=$genderRadios(); return g?g:null; })(),
           };
+          
+          console.log("Final payload before database insert:", {
+            name: payload.name,
+            signature_url: payload.signature_url,
+            has_signature: !!payload.signature_url,
+            signature_length: payload.signature_url ? payload.signature_url.length : 0
+          });
           // Insert terlebih dahulu. Jika kena unik, fallback ke UPDATE
           let ins = await sb.from("attendees").insert(payload);
           if (ins.error) {
@@ -756,9 +945,12 @@
                 .eq("event_id", eventId)
                 .eq("phone", payload.phone);
               if (upd.error) throw upd.error;
+              console.log("Database UPDATE successful with signature_url:", payload.signature_url);
             } else {
               throw ins.error;
             }
+          } else {
+            console.log("Database INSERT successful with signature_url:", payload.signature_url);
           }
 
           // 3) Beres
