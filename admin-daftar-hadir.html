@@ -619,14 +619,15 @@
       /* --- PRINT STYLES --- */
       .print-header,
       .print-separator,
-      .print-title {
+      .print-title,
+      .print-signature-block {
         display: none;
       }
 
       @media print {
         @page {
           size: A4 portrait;
-          margin: 18mm 12mm;
+          margin: 5mm 3mm 5mm 3mm;
         }
         body {
           font-family: "Times New Roman", serif;
@@ -639,8 +640,17 @@
         .col-aksi {
           display: none !important;
         }
+        
+        /* Fix grid layout for print - remove sidebar space */
+        .main-wrapper {
+          display: block !important;
+          grid-template-columns: none !important;
+          grid-template-areas: none !important;
+        }
+        
         .main-content-wrapper {
           margin-left: 0 !important;
+          padding-left: 0 !important;
           width: 100% !important;
         }
         .card {
@@ -671,7 +681,19 @@
           background: none;
           border: none;
         }
-
+        
+        /* Hide unwanted columns in print */
+        .col-aksi {
+          display: none !important;
+        }
+        
+        /* Hide Waktu Kehadiran column in print (column 6) */
+        .table th:nth-child(6),
+        .table td:nth-child(6) {
+          display: none !important;
+        }
+        
+        /* Show letterhead in print */
         .print-header {
           display: flex !important;
           align-items: center;
@@ -721,6 +743,142 @@
         .print-title p {
           font-size: 12pt;
         }
+        
+        /* Show signature block in print */
+        .print-signature-block {
+          display: block !important;
+          margin-top: 3rem;
+          text-align: right;
+          page-break-inside: avoid;
+        }
+        .signature-info {
+          display: inline-block;
+          text-align: center;
+          line-height: 1;
+        }
+        .signature-title {
+          font-size: 12pt;
+          font-weight: bold;
+          margin-bottom: 0.5rem;
+        }
+        .signature-position,
+        .signature-location {
+          font-size: 11pt;
+          margin-bottom: 0.25rem;
+        }
+        .signature-spacing {
+          height: 1.5rem;
+        }
+        .signature-name {
+          font-size: 11pt;
+          font-weight: bold;
+          margin-bottom: 0.1rem;
+        }
+        .signature-rank,
+        .signature-nip {
+          font-size: 10pt;
+          margin-bottom: 0.1rem;
+        }
+        
+        /* Hide unnecessary components in print */
+        .toolbar-container,
+        .search-filters,
+        .pagination-container,
+        .table-header {
+          display: none !important;
+        }
+        
+        /* Fix table layout and spacing for print */
+        .table-container {
+          margin: 0 !important;
+          padding: 0 !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+        
+        .table-responsive {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        
+        .table {
+          margin: 0 !important;
+          width: 100% !important;
+        }
+        
+        .table th,
+        .table td {
+          padding: 4px 6px !important;
+          font-size: 9pt !important;
+        }
+        
+        /* Reduce left spacing */
+        body {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        
+        .main-content {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        
+        .main-wrapper {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        
+        /* Remove any container padding/margin */
+        .container,
+        .container-fluid {
+          margin: 0 !important;
+          padding: 0 !important;
+          max-width: none !important;
+        }
+        
+        /* Additional spacing fixes */
+        * {
+          margin-left: 0 !important;
+          padding-left: 0 !important;
+        }
+        
+        .table-container,
+        .table-responsive,
+        .table {
+          margin-left: 0 !important;
+          padding-left: 0 !important;
+        }
+        
+        /* Aggressive left margin elimination */
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          position: relative !important;
+        }
+        
+        .main-wrapper {
+          position: relative !important;
+          left: 0 !important;
+          margin-left: 0 !important;
+          padding-left: 0 !important;
+        }
+        
+        .main-content {
+          position: relative !important;
+          left: 0 !important;
+          margin-left: 0 !important;
+          padding-left: 0 !important;
+        }
+        
+        /* Force table to start from left edge */
+        .table-container {
+          position: relative !important;
+          left: 0 !important;
+          margin-left: 0 !important;
+          padding-left: 0 !important;
+          transform: translateX(0) !important;
+        }
+
       }
 
       /* --- MODERN UTILITIES --- */
@@ -847,6 +1005,10 @@
                   <i class="bi bi-printer me-2"></i>
                   Cetak Laporan
                 </button>
+                <button id="btn-signature-settings" class="btn btn-outline-secondary">
+                  <i class="bi bi-person-badge me-2"></i>
+                  Pengaturan Penandatangan
+                </button>
                 <button id="btn-copy" class="btn btn-outline-primary">
                   <i class="bi bi-link-45deg me-2"></i>
                   Copy Link Form
@@ -962,6 +1124,19 @@
               </div>
             </div>
           </div>
+
+          <!-- SIGNATURE BLOCK FOR PRINT -->
+          <div class="print-signature-block">
+            <div class="signature-info">
+              <div class="signature-title">Mengetahui</div>
+              <div class="signature-position" id="print-signature-position">Kepala Dinas Komunikasi dan Informatika</div>
+              <div class="signature-location">Kabupaten Hulu Sungai Tengah</div>
+              <div class="signature-spacing"></div>
+              <div class="signature-name" id="print-signature-name">Darkuni, S.Hut</div>
+              <div class="signature-rank" id="print-signature-rank">Pembina Tk.l</div>
+              <div class="signature-nip" id="print-signature-nip">NIP. 19730131 200501 1 007</div>
+            </div>
+          </div>
         </main>
 
         <!-- Modern Footer -->
@@ -1001,6 +1176,43 @@
         </div>
       </div>
     </div>
+
+    <!-- Signature Settings Modal -->
+    <div class="modal fade" id="signatureSettingsModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--bg-card)">
+          <div class="modal-header">
+            <h5 class="modal-title">Pengaturan Penandatangan</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="signature-form">
+              <div class="mb-3">
+                <label for="signature-name" class="form-label">Nama Lengkap</label>
+                <input type="text" class="form-control" id="signature-name" placeholder="Contoh: Darkuni, S.Hut">
+              </div>
+              <div class="mb-3">
+                <label for="signature-position" class="form-label">Jabatan Dinas</label>
+                <input type="text" class="form-control" id="signature-position" placeholder="Contoh: Kepala Dinas Komunikasi dan Informatika">
+              </div>
+              <div class="mb-3">
+                <label for="signature-rank" class="form-label">Pangkat Golongan</label>
+                <input type="text" class="form-control" id="signature-rank" placeholder="Contoh: Pembina Tk.l">
+              </div>
+              <div class="mb-3">
+                <label for="signature-nip" class="form-label">NIP</label>
+                <input type="text" class="form-control" id="signature-nip" placeholder="Contoh: 19730131 200501 1 007">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-primary" id="save-signature">Simpan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background: var(--card-bg)">
@@ -1103,7 +1315,7 @@
       const $btnPrev = document.getElementById("btn-prev");
       const $btnNext = document.getElementById("btn-next");
       const $pageInfo = document.getElementById("page-info");
-      // Elemen baru untuk print
+      // Elemen untuk print
       const $printEventTitle = document.getElementById("print-event-title");
       const $printEventMeta = document.getElementById("print-event-meta");
 
@@ -1367,6 +1579,41 @@
           }, "image/png");
         };
         document.getElementById("btn-print").onclick = () => window.print();
+        
+        // Signature settings functionality
+        document.getElementById("btn-signature-settings").onclick = () => {
+          // Load saved signature data
+          const savedSignature = JSON.parse(localStorage.getItem('signatureData') || '{}');
+          document.getElementById("signature-name").value = savedSignature.name || '';
+          document.getElementById("signature-position").value = savedSignature.position || '';
+          document.getElementById("signature-rank").value = savedSignature.rank || '';
+          document.getElementById("signature-nip").value = savedSignature.nip || '';
+          
+          new bootstrap.Modal(document.getElementById("signatureSettingsModal")).show();
+        };
+        
+        document.getElementById("save-signature").onclick = () => {
+          const signatureData = {
+            name: document.getElementById("signature-name").value,
+            position: document.getElementById("signature-position").value,
+            rank: document.getElementById("signature-rank").value,
+            nip: document.getElementById("signature-nip").value
+          };
+          
+          // Save to localStorage
+          localStorage.setItem('signatureData', JSON.stringify(signatureData));
+          
+          // Update print elements
+          document.getElementById("print-signature-name").textContent = signatureData.name || 'Darkuni, S.Hut';
+          document.getElementById("print-signature-position").textContent = signatureData.position || 'Kepala Dinas Komunikasi dan Informatika';
+          document.getElementById("print-signature-rank").textContent = signatureData.rank || 'Pembina Tk.l';
+          document.getElementById("print-signature-nip").textContent = signatureData.nip ? `NIP. ${signatureData.nip}` : 'NIP. 19730131 200501 1 007';
+          
+          // Close modal
+          bootstrap.Modal.getInstance(document.getElementById("signatureSettingsModal")).hide();
+          
+          alert('Data penandatangan berhasil disimpan!');
+        };
 
         realtimeChannel = sb
           .channel(`attendees-${currentEventId}`)
@@ -1454,7 +1701,7 @@
         $count.textContent = total;
         if (!rows.length) {
           $tbody.innerHTML =
-            '<tr><td colspan="7" class="text-center text-secondary">Belum ada peserta hadir.</td></tr>';
+            '<tr><td colspan="6" class="text-center text-secondary">Belum ada peserta hadir.</td></tr>';
         } else {
           $tbody.innerHTML = rows
             .map((a, i) => {
@@ -1542,6 +1789,21 @@
           renderTable();
         });
         loadEventsOnce();
+        
+        // Load saved signature data on page load
+        const savedSignature = JSON.parse(localStorage.getItem('signatureData') || '{}');
+        if (savedSignature.name) {
+          document.getElementById("print-signature-name").textContent = savedSignature.name;
+        }
+        if (savedSignature.position) {
+          document.getElementById("print-signature-position").textContent = savedSignature.position;
+        }
+        if (savedSignature.rank) {
+          document.getElementById("print-signature-rank").textContent = savedSignature.rank;
+        }
+        if (savedSignature.nip) {
+          document.getElementById("print-signature-nip").textContent = `NIP. ${savedSignature.nip}`;
+        }
         
         // Modern Sidebar Toggle
         const sidebar = document.getElementById("sidebar");

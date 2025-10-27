@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -43,7 +43,7 @@
         --nav-link-hover-bg: #f1f5f9;
         --nav-link-active-bg: #eff6ff;
         --nav-link-active-color: #3b82f6;
-        --header-bg: #ffffff;
+        --header-bg: #3b82f6;
         --footer-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         --event-title-bg: #f8fafc;
       }
@@ -104,7 +104,7 @@
       .navbar-brand {
         font-size: 1.25rem;
         font-weight: 700;
-        color: var(--text-primary);
+        color: #ffffff;
         text-decoration: none;
         display: flex;
         align-items: center;
@@ -113,14 +113,11 @@
 
       .navbar-brand i {
         font-size: 1.5rem;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: #ffffff;
       }
 
       .nav-link {
-        color: var(--text-secondary);
+        color: #ffffff;
         text-decoration: none;
         font-weight: 500;
         padding: 0.5rem 1rem;
@@ -129,8 +126,8 @@
       }
 
       .nav-link:hover {
-        background: var(--nav-link-hover-bg);
-        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
       }
 
       .theme-toggle {
@@ -396,8 +393,8 @@
   <body>
     <script>
       (function () {
-        const t = localStorage.getItem("theme") || "dark";
-        document.documentElement.setAttribute("data-theme", t);
+        // Dark mode temporarily disabled - force light theme
+        document.documentElement.setAttribute("data-theme", "light");
       })();
     </script>
 
@@ -417,6 +414,7 @@
             <i class="bi bi-box-arrow-in-right me-1"></i>
             Login
           </a>
+          <!-- Dark mode toggle temporarily disabled
           <button
             class="theme-toggle"
             id="theme-toggle"
@@ -425,6 +423,7 @@
           >
             <i class="bi bi-sun-fill"></i>
           </button>
+          -->
         </div>
       </div>
     </nav>
@@ -454,6 +453,9 @@
                   placeholder="Masukkan nama Anda"
                   required
                 />
+                <div class="form-text help-text text-danger">
+                  Wajib diisi.
+                </div>
               </div>
 
               <div class="mb-3">
@@ -483,40 +485,50 @@
               </div>
 
               <div class="mb-3">
-                <label for="jabatan" class="form-label">Jabatan</label>
+                <label for="jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
                 <input
                   id="jabatan"
                   class="form-control"
                   type="text"
                   placeholder="Masukkan jabatan Anda"
+                  required
                 />
+                <div class="form-text help-text text-danger">
+                  Wajib diisi.
+                </div>
               </div>
 
               <div class="mb-3">
                 <label for="instansi" class="form-label"
-                  >Instansi / Unit Kerja</label
+                  >Instansi / Unit Kerja <span class="text-danger">*</span></label
                 >
                 <input
                   id="instansi"
                   class="form-control"
                   type="text"
                   placeholder="Masukkan instansi Anda"
+                  required
                 />
+                <div class="form-text help-text text-danger">
+                  Wajib diisi.
+                </div>
               </div>
 
               <div class="mb-3">
-                <label class="form-label">Jenis Kelamin</label>
+                <label class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
                 <div class="d-flex gap-3">
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gender" id="gender-m" value="male" />
+                    <input class="form-check-input" type="radio" name="gender" id="gender-m" value="male" required />
                     <label class="form-check-label" for="gender-m">Laki-laki</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gender" id="gender-f" value="female" />
+                    <input class="form-check-input" type="radio" name="gender" id="gender-f" value="female" required />
                     <label class="form-check-label" for="gender-f">Perempuan</label>
                   </div>
                 </div>
-                <div class="form-text help-text">Opsional.</div>
+                <div class="form-text help-text text-danger">
+                  Wajib dipilih.
+                </div>
               </div>
 
               <div class="mb-3">
@@ -527,7 +539,7 @@
                   <canvas id="signature-canvas"></canvas>
                 </div>
                 <div class="form-text help-text">
-                  Opsional. Jika dibubuhkan, akan terunggah ke Storage.
+                  .Untuk tanda tangan digital, silakan tarik garis di sini.
                 </div>
               </div>
 
@@ -575,27 +587,28 @@
     <script>
       document.getElementById("copyright-year").textContent =
         new Date().getFullYear();
-      const htmlEl = document.documentElement;
-      const themeToggle = document.getElementById("theme-toggle");
-      
-      function updateThemeIcon() {
-        const isDark = htmlEl.getAttribute("data-theme") === "dark";
-        themeToggle.innerHTML = isDark ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-fill"></i>';
-      }
-      
-      themeToggle.addEventListener("click", () => {
-        const next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        htmlEl.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-        updateThemeIcon();
-        
-        // Update signature pad pen color when theme changes
-        if (signaturePad) {
-          signaturePad.penColor = next === "dark" ? "#ffffff" : "#111827";
-        }
-      });
-      
-      updateThemeIcon();
+      // Dark mode functionality temporarily disabled
+      // const htmlEl = document.documentElement;
+      // const themeToggle = document.getElementById("theme-toggle");
+      // 
+      // function updateThemeIcon() {
+      //   const isDark = htmlEl.getAttribute("data-theme") === "dark";
+      //   themeToggle.innerHTML = isDark ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-fill"></i>';
+      // }
+      // 
+      // themeToggle.addEventListener("click", () => {
+      //   const next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      //   htmlEl.setAttribute("data-theme", next);
+      //   localStorage.setItem("theme", next);
+      //   updateThemeIcon();
+      //   
+      //   // Update signature pad pen color when theme changes
+      //   if (signaturePad) {
+      //     signaturePad.penColor = next === "dark" ? "#ffffff" : "#111827";
+      //   }
+      // });
+      // 
+      // updateThemeIcon();
 
       const sb = supabase.createClient(
         window.SUPABASE_URL,
@@ -632,11 +645,10 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        // Get current theme to set appropriate pen color
-        const isDark = htmlEl.getAttribute("data-theme") === "dark";
+        // Dark mode disabled - use light theme pen color
         signaturePad = new SignaturePad(canvas, {
           backgroundColor: "rgba(0,0,0,0)",
-          penColor: isDark ? "#ffffff" : "#111827",
+          penColor: "#111827", // Light theme pen color
         });
         resizeCanvas();
       });
@@ -722,6 +734,26 @@
         if (!name) {
           alert("Nama wajib diisi.");
           $nama.focus();
+          return;
+        }
+        
+        const jabatan = trim($jabatan.value);
+        if (!jabatan) {
+          alert("Jabatan wajib diisi.");
+          $jabatan.focus();
+          return;
+        }
+        
+        const instansi = trim($instansi.value);
+        if (!instansi) {
+          alert("Instansi wajib diisi.");
+          $instansi.focus();
+          return;
+        }
+        
+        const gender = document.querySelector('input[name="gender"]:checked');
+        if (!gender) {
+          alert("Jenis Kelamin wajib dipilih.");
           return;
         }
         if (!eventId) {
