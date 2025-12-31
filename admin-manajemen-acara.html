@@ -520,6 +520,39 @@
         padding: 1.5rem;
       }
 
+      /* --- MODAL SCROLL FIX --- */
+      #modalMinutes .modal-dialog {
+        max-height: 90vh;
+        margin: 1.75rem auto;
+      }
+
+      #modalMinutes .modal-content {
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #modalMinutes .modal-body {
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1 1 auto;
+        padding: 1.5rem;
+        -webkit-overflow-scrolling: touch;
+        max-height: calc(90vh - 180px);
+      }
+
+      #modalMinutes .modal-header {
+        flex-shrink: 0;
+      }
+
+      #modalMinutes .modal-footer {
+        flex-shrink: 0;
+        position: sticky;
+        bottom: 0;
+        background: var(--bg-card);
+        z-index: 10;
+      }
+
       .form-label {
         font-weight: 500;
         color: var(--text-primary);
@@ -829,9 +862,235 @@
       </div>
     </div>
 
+    <!-- Modal Notulen Acara -->
+    <div class="modal fade" id="modalMinutes" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-file-text me-2"></i>
+              <span id="modal-minutes-title">Notulen Rapat</span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Tutup"
+            ></button>
+          </div>
+          <form id="form-minutes">
+            <div class="modal-body">
+              <input type="hidden" id="minutes-event-id" />
+              
+              <!-- Row 1: Agenda Rapat & Hari/Tanggal -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Agenda Rapat</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="minutes-agenda"
+                    readonly
+                    style="background-color: #f8f9fa;"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Hari/Tanggal</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="minutes-date"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Row 2: Waktu Rapat & Tempat -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Waktu Rapat</label>
+                  <input
+                    type="time"
+                    class="form-control"
+                    id="minutes-time"
+                    required
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Tempat</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="minutes-place"
+                    placeholder="Contoh: Ruang Rapat Diskominfo HST"
+                  />
+                </div>
+              </div>
+
+              <!-- Row 3: Pimpinan Rapat -->
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Pimpinan Rapat</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="minutes-leader"
+                    placeholder="Nama pimpinan rapat"
+                  />
+                </div>
+              </div>
+
+              <!-- Row 4: Surat Undangan -->
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Surat Undangan</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="minutes-invitation"
+                    placeholder="Contoh: 001/Diskominfo/2025"
+                  />
+                  <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Masukkan nomor surat undangan
+                  </div>
+                </div>
+              </div>
+
+              <!-- Row 5: Peserta Rapat -->
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Peserta Rapat</label>
+                  <textarea
+                    class="form-control"
+                    id="minutes-participants"
+                    rows="4"
+                    placeholder="Masukkan daftar peserta rapat (satu per baris atau dipisah koma)"
+                  ></textarea>
+                  <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Dapat diisi manual atau akan terisi otomatis dari daftar hadir
+                  </div>
+                </div>
+              </div>
+
+              <!-- Row 6: Kegiatan Rapat -->
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Kegiatan Rapat</label>
+                  
+                  <div class="mb-2">
+                    <label class="form-label small">Pembukaan</label>
+                    <textarea
+                      class="form-control"
+                      id="minutes-opening"
+                      rows="3"
+                      placeholder="Isi pembukaan rapat..."
+                    ></textarea>
+                  </div>
+
+                  <div class="mb-2">
+                    <label class="form-label small">Materi</label>
+                    <textarea
+                      class="form-control"
+                      id="minutes-material"
+                      rows="4"
+                      placeholder="Isi materi yang dibahas..."
+                    ></textarea>
+                  </div>
+
+                  <div class="mb-2">
+                    <label class="form-label small">Diskusi dan Tanggapan</label>
+                    <textarea
+                      class="form-control"
+                      id="minutes-discussion"
+                      rows="4"
+                      placeholder="Isi diskusi dan tanggapan peserta..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Row 7: Kesimpulan -->
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Kesimpulan</label>
+                  <textarea
+                    class="form-control"
+                    id="minutes-conclusion"
+                    rows="3"
+                    placeholder="Isi kesimpulan rapat..."
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- Row 8: Penutup -->
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Penutup</label>
+                  <textarea
+                    class="form-control"
+                    id="minutes-closing"
+                    rows="2"
+                    placeholder="Isi penutup rapat..."
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- Row 9: Upload Gambar -->
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Upload Gambar</label>
+                  <input
+                    type="file"
+                    class="form-control"
+                    id="minutes-images"
+                    accept=".jpg,.jpeg,.png,.gif"
+                    multiple
+                  />
+                  <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Format: JPG, PNG, GIF (Maks. 5MB per gambar, maksimal 4 gambar)
+                  </div>
+                  <div id="images-count" class="small text-muted mb-2" style="display: none;">
+                    <i class="bi bi-images me-1"></i>
+                    <span id="images-count-text">0/4 gambar dipilih</span>
+                  </div>
+                  <div id="images-preview" class="mt-3 row g-2"></div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-danger"
+                id="btn-print-pdf"
+              >
+                <i class="bi bi-file-pdf me-2"></i>Print PDF
+              </button>
+              <div class="ms-auto">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Batal
+                </button>
+                <button type="submit" class="btn btn-primary" id="btn-save-minutes">
+                  <i class="bi bi-check2 me-2"></i>Simpan Notulen
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- Libs -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="assets/js/config.js"></script>
     <script src="assets/js/auth.js"></script>
 
@@ -951,6 +1210,9 @@
               <a class="btn btn-sm btn-outline-primary" href="${viewUrl}">
                 <i class="bi bi-people me-1"></i>Daftar Hadir
               </a>
+              <button class="btn btn-sm btn-outline-info" data-action="minutes" data-event-id="${ev.id}">
+                <i class="bi bi-file-text me-1"></i>Notulen Acara
+              </button>
               <button class="btn btn-sm btn-outline-secondary" data-action="copy-link" data-url="${formUrl}">
                 <i class="bi bi-link-45deg me-1"></i>Salin Link
               </button>
@@ -1099,6 +1361,145 @@
               newStatus === "done" ? "Tandai Aktif" : "Tandai Selesai"
             }`;
           }
+        } else if (btn.dataset.action === "minutes") {
+          const eventId = btn.dataset.eventId || id;
+          
+          try {
+            // Load event data (tanpa minutes dulu untuk kompatibilitas)
+            let eventRes = await sb
+              .from("events")
+              .select("id, title, datetime, location")
+              .eq("id", eventId)
+              .single();
+            
+            // Coba load dengan minutes jika kolom ada
+            if (!eventRes.error) {
+              try {
+                const eventResWithMinutes = await sb
+                  .from("events")
+                  .select("id, title, datetime, location, minutes")
+                  .eq("id", eventId)
+                  .single();
+                if (!eventResWithMinutes.error) {
+                  eventRes = eventResWithMinutes;
+                }
+              } catch (e) {
+                // Kolom minutes mungkin belum ada, gunakan data tanpa minutes
+                console.warn("Kolom minutes belum ada di database:", e);
+              }
+            }
+            
+            if (eventRes.error) {
+              console.error("Error loading event:", eventRes.error);
+              alert("Gagal memuat data acara: " + (eventRes.error.message || "Unknown error"));
+              return;
+            }
+            
+            if (!eventRes.data) {
+              alert("Data acara tidak ditemukan.");
+              return;
+            }
+            
+            // Load attendees (optional, tidak block jika error)
+            let attendeesData = [];
+            try {
+              const attendeesRes = await sb
+                .from("attendees")
+                .select("name, instansi, jabatan")
+                .eq("event_id", eventId)
+                .order("name", { ascending: true });
+              
+              if (!attendeesRes.error && attendeesRes.data) {
+                attendeesData = attendeesRes.data;
+              }
+            } catch (err) {
+              console.warn("Error loading attendees (non-blocking):", err);
+            }
+          
+            const event = eventRes.data;
+            const eventTitle = event.title || "Acara";
+            
+            // Set event ID
+            document.getElementById("minutes-event-id").value = event.id;
+            
+            // Auto-fill dari data acara
+            document.getElementById("minutes-agenda").value = eventTitle;
+            if (event.datetime) {
+              const eventDate = new Date(event.datetime);
+              document.getElementById("minutes-date").value = eventDate.toISOString().split('T')[0];
+              document.getElementById("minutes-time").value = eventDate.toTimeString().slice(0, 5);
+            }
+            if (event.location) {
+              document.getElementById("minutes-place").value = event.location;
+            }
+            
+            // Load notulen yang sudah ada (JSON)
+            let minutesData = {};
+            if (event.minutes) {
+              try {
+                minutesData = JSON.parse(event.minutes);
+              } catch (e) {
+                // Jika bukan JSON, anggap sebagai text lama
+                minutesData = { oldText: event.minutes };
+              }
+            }
+            
+            // Populate form fields
+            document.getElementById("minutes-leader").value = minutesData.leader || "";
+            document.getElementById("minutes-participants").value = minutesData.participants || "";
+            document.getElementById("minutes-opening").value = minutesData.opening || "";
+            document.getElementById("minutes-material").value = minutesData.material || "";
+            document.getElementById("minutes-discussion").value = minutesData.discussion || "";
+            document.getElementById("minutes-conclusion").value = minutesData.conclusion || "";
+            document.getElementById("minutes-closing").value = minutesData.closing || "";
+            
+            // Auto-fill peserta dari daftar hadir jika belum ada
+            if (!minutesData.participants && attendeesData.length > 0) {
+              const participantsList = attendeesData.map(a => 
+                `${a.name}${a.jabatan ? ` - ${a.jabatan}` : ''}${a.instansi ? ` (${a.instansi})` : ''}`
+              ).join('\n');
+              document.getElementById("minutes-participants").value = participantsList;
+            }
+            
+            // Load nomor surat undangan jika ada
+            // Kompatibilitas backward: jika ada invitationUrl (data lama), kosongkan
+            // Jika ada invitationNumber, gunakan itu
+            document.getElementById("minutes-invitation").value = minutesData.invitationNumber || "";
+            
+            // Preview gambar jika ada
+            const imagesPreview = document.getElementById("images-preview");
+            imagesPreview.innerHTML = "";
+            // Simpan array images yang sudah ada untuk referensi
+            window.existingImages = minutesData.images || [];
+            if (window.existingImages.length > 0) {
+              window.existingImages.forEach((imgUrl, idx) => {
+                const col = document.createElement("div");
+                col.className = "col-md-3 mb-2";
+                col.setAttribute("data-image-url", imgUrl);
+                col.innerHTML = `
+                  <div class="position-relative">
+                    <img src="${imgUrl}" class="img-thumbnail" style="width: 100%; height: 150px; object-fit: cover;" />
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="removeExistingImage(this)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                `;
+                imagesPreview.appendChild(col);
+              });
+            }
+            
+            // Update counter setelah load gambar existing
+            setTimeout(() => updateImagesCount(), 100);
+            
+            document.getElementById("modal-minutes-title").textContent = `Notulen: ${eventTitle}`;
+            const modalMinutes = new bootstrap.Modal(document.getElementById("modalMinutes"));
+            modalMinutes.show();
+            
+          } catch (error) {
+            console.error("Error in minutes handler:", error);
+            alert("Terjadi kesalahan saat memuat data: " + (error.message || "Unknown error"));
+            return;
+          }
         } else if (btn.dataset.action === "edit") {
           const { data, error } = await sb
             .from("events")
@@ -1172,6 +1573,758 @@
         $modalTitle.textContent = "Tambah Acara";
       });
 
+      // Fungsi upload file ke Supabase Storage
+      async function uploadFile(file, bucket, folder = "minutes") {
+        try {
+          // Validasi ukuran file
+          const maxSize = 5 * 1024 * 1024; // 5MB
+          if (file.size > maxSize) {
+            throw new Error(`File ${file.name} melebihi 5MB (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+          }
+          
+          const fileName = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+          
+          const { data, error } = await sb.storage
+            .from(bucket)
+            .upload(fileName, file, {
+              cacheControl: '3600',
+              upsert: false
+            });
+          
+          if (error) {
+            console.error(`Upload error for ${file.name}:`, error);
+            // Cek apakah error karena bucket tidak ada atau permission
+            if (error.message && error.message.includes('Bucket not found')) {
+              throw new Error(`Bucket '${bucket}' tidak ditemukan. Pastikan bucket sudah dibuat di Supabase Storage.`);
+            } else if (error.message && error.message.includes('new row violates row-level security')) {
+              throw new Error(`Tidak memiliki permission untuk upload ke bucket '${bucket}'. Periksa RLS policies.`);
+            }
+            throw new Error(error.message || `Gagal upload ${file.name}`);
+          }
+          
+          if (!data || !data.path) {
+            throw new Error(`Upload gagal untuk ${file.name}: tidak ada data path`);
+          }
+          
+          const { data: publicData, error: urlError } = sb.storage
+            .from(bucket)
+            .getPublicUrl(data.path);
+          
+          if (urlError || !publicData || !publicData.publicUrl) {
+            throw new Error(`Gagal mendapatkan public URL untuk ${file.name}`);
+          }
+          
+          return publicData.publicUrl;
+        } catch (error) {
+          console.error(`Error in uploadFile for ${file.name}:`, error);
+          throw error;
+        }
+      }
+
+      // Fungsi untuk menghitung total gambar (existing + new)
+      function getTotalImagesCount() {
+        const existingCount = (window.existingImages || []).length;
+        const newFiles = document.getElementById("minutes-images")?.files || [];
+        const newCount = Array.from(newFiles).filter(f => f.type.startsWith('image/')).length;
+        return existingCount + newCount;
+      }
+
+      // Update counter gambar
+      function updateImagesCount() {
+        const total = getTotalImagesCount();
+        const countEl = document.getElementById("images-count");
+        const countText = document.getElementById("images-count-text");
+        
+        if (total > 0) {
+          countEl.style.display = "block";
+          countText.textContent = `${total}/4 gambar dipilih`;
+          
+          if (total >= 4) {
+            countText.className = "text-warning";
+            countText.textContent = `${total}/4 gambar dipilih (Maksimal tercapai)`;
+          } else {
+            countText.className = "text-muted";
+          }
+        } else {
+          countEl.style.display = "none";
+        }
+      }
+
+      // Preview gambar saat dipilih (tambahkan ke preview yang sudah ada)
+      document.getElementById("minutes-images")?.addEventListener("change", function(e) {
+        const preview = document.getElementById("images-preview");
+        const fileInput = e.target;
+        const existingCount = (window.existingImages || []).length;
+        let selectedFiles = Array.from(fileInput.files).filter(f => f.type.startsWith('image/'));
+        
+        // Validasi ukuran file (5MB per file)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const oversizedFiles = selectedFiles.filter(f => f.size > maxSize);
+        if (oversizedFiles.length > 0) {
+          alert(`Beberapa file melebihi 5MB:\n${oversizedFiles.map(f => `- ${f.name} (${(f.size / 1024 / 1024).toFixed(2)}MB)`).join('\n')}\n\nFile-file tersebut tidak akan ditambahkan.`);
+          // Filter out oversized files
+          selectedFiles = selectedFiles.filter(f => f.size <= maxSize);
+          // Update file input
+          const dt = new DataTransfer();
+          selectedFiles.forEach(file => dt.items.add(file));
+          fileInput.files = dt.files;
+        }
+        
+        // Validasi maksimal 4 gambar
+        if (existingCount + selectedFiles.length > 4) {
+          alert(`Maksimal 4 gambar. Anda sudah memiliki ${existingCount} gambar. Silakan pilih maksimal ${4 - existingCount} gambar lagi.`);
+          
+          // Reset file input
+          const dt = new DataTransfer();
+          const maxNew = Math.max(0, 4 - existingCount);
+          selectedFiles.slice(0, maxNew).forEach(file => {
+            dt.items.add(file);
+          });
+          fileInput.files = dt.files;
+          
+          // Update preview hanya untuk file yang valid
+          selectedFiles.slice(0, maxNew).forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const col = document.createElement("div");
+              col.className = "col-md-3 mb-2";
+              col.setAttribute("data-file-name", file.name);
+              col.innerHTML = `
+                <div class="position-relative">
+                  <img src="${e.target.result}" class="img-thumbnail" style="width: 100%; height: 150px; object-fit: cover;" />
+                  <span class="badge bg-info position-absolute top-0 start-0 m-1">${file.name}</span>
+                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="removeNewImage(this)">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              `;
+              preview.appendChild(col);
+              updateImagesCount();
+            };
+            reader.readAsDataURL(file);
+          });
+        } else {
+          // Normal flow jika tidak melebihi batas
+          selectedFiles.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const col = document.createElement("div");
+              col.className = "col-md-3 mb-2";
+              col.setAttribute("data-file-name", file.name);
+              col.innerHTML = `
+                <div class="position-relative">
+                  <img src="${e.target.result}" class="img-thumbnail" style="width: 100%; height: 150px; object-fit: cover;" />
+                  <span class="badge bg-info position-absolute top-0 start-0 m-1">${file.name}</span>
+                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="removeNewImage(this)">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              `;
+              preview.appendChild(col);
+              updateImagesCount();
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+        
+        updateImagesCount();
+      });
+
+      // Fungsi untuk remove new image dari preview
+      window.removeNewImage = function(btn) {
+        const col = btn.closest('.col-md-3');
+        const fileName = col.getAttribute('data-file-name');
+        // Remove dari file input
+        const fileInput = document.getElementById("minutes-images");
+        const dt = new DataTransfer();
+        Array.from(fileInput.files).forEach(file => {
+          if (file.name !== fileName) {
+            dt.items.add(file);
+          }
+        });
+        fileInput.files = dt.files;
+        col.remove();
+        updateImagesCount();
+      };
+
+      // Simpan Notulen
+      document
+        .getElementById("form-minutes")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const eventId = document.getElementById("minutes-event-id").value;
+          
+          if (!eventId) {
+            alert("Event ID tidak valid.");
+            return;
+          }
+
+          // Disable button untuk prevent double submit
+          const submitBtn = document.getElementById("btn-save-minutes");
+          const originalText = submitBtn.innerHTML;
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Menyimpan...';
+
+          try {
+            // Collect data dari form
+            const minutesData = {
+              agenda: document.getElementById("minutes-agenda").value,
+              date: document.getElementById("minutes-date").value,
+              time: document.getElementById("minutes-time").value,
+              place: document.getElementById("minutes-place").value,
+              leader: document.getElementById("minutes-leader").value,
+              participants: document.getElementById("minutes-participants").value,
+              opening: document.getElementById("minutes-opening").value,
+              material: document.getElementById("minutes-material").value,
+              discussion: document.getElementById("minutes-discussion").value,
+              conclusion: document.getElementById("minutes-conclusion").value,
+              closing: document.getElementById("minutes-closing").value,
+              invitationNumber: document.getElementById("minutes-invitation").value.trim() || null,
+              images: []
+            };
+
+            // Upload gambar jika ada (maksimal 4 total)
+            const imageFiles = Array.from(document.getElementById("minutes-images").files);
+            const existingImages = window.existingImages || [];
+            const totalImages = existingImages.length + imageFiles.filter(f => f.type.startsWith('image/')).length;
+            
+            if (totalImages > 4) {
+              alert("Maksimal 4 gambar. Silakan hapus beberapa gambar terlebih dahulu.");
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Simpan Notulen';
+              return;
+            }
+            
+            // Validasi ukuran file sebelum upload
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const oversizedFiles = imageFiles.filter(f => f.size > maxSize);
+            if (oversizedFiles.length > 0) {
+              alert(`Beberapa file melebihi 5MB:\n${oversizedFiles.map(f => `- ${f.name} (${(f.size / 1024 / 1024).toFixed(2)}MB)`).join('\n')}\n\nSilakan kompres atau pilih file lain.`);
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Simpan Notulen';
+              return;
+            }
+            
+            if (imageFiles.length > 0) {
+              const uploadResults = [];
+              const uploadErrors = [];
+              
+              for (const file of imageFiles) {
+                if (file.type.startsWith('image/')) {
+                  try {
+                    const imageUrl = await uploadFile(file, "signatures", "minutes-images");
+                    minutesData.images.push(imageUrl);
+                    uploadResults.push({ file: file.name, success: true });
+                  } catch (err) {
+                    console.error(`Error uploading ${file.name}:`, err);
+                    uploadErrors.push({ 
+                      file: file.name, 
+                      error: err.message || err.error?.message || "Unknown error" 
+                    });
+                  }
+                }
+              }
+              
+              // Tampilkan hasil upload
+              if (uploadErrors.length > 0) {
+                const errorMsg = `Gagal upload ${uploadErrors.length} dari ${imageFiles.length} gambar:\n\n` +
+                  uploadErrors.map(e => `- ${e.file}: ${e.error}`).join('\n') +
+                  `\n\nGambar yang berhasil diupload: ${uploadResults.length}`;
+                alert(errorMsg);
+              }
+              
+              // Jika semua gagal dan tidak ada existing images, beri warning
+              if (uploadResults.length === 0 && existingImages.length === 0) {
+                alert("Tidak ada gambar yang berhasil diupload. Notulen akan disimpan tanpa gambar.");
+              }
+            } else {
+              // Pertahankan gambar yang sudah ada (dari existingImages array)
+              if (window.existingImages && window.existingImages.length > 0) {
+                minutesData.images = [...window.existingImages];
+              }
+            }
+
+            // Simpan sebagai JSON
+            // Coba update dengan kolom minutes dulu
+            let result = await sb
+              .from("events")
+              .update({ minutes: JSON.stringify(minutesData) })
+              .eq("id", eventId);
+
+            // Jika error karena kolom tidak ada, coba tambahkan kolom dulu
+            if (result.error) {
+              console.error("Error saving minutes:", result.error);
+              
+              // Cek apakah error karena kolom tidak ada
+              const submitBtn = document.getElementById("btn-save-minutes");
+              if (result.error.message && (result.error.message.includes('column') || result.error.message.includes('does not exist') || result.error.code === '42703')) {
+                alert("Kolom 'minutes' belum ada di database.\n\nSilakan jalankan SQL berikut di Supabase SQL Editor:\n\nALTER TABLE events ADD COLUMN IF NOT EXISTS minutes TEXT;");
+                if (submitBtn) {
+                  submitBtn.disabled = false;
+                  submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Simpan Notulen';
+                }
+                return;
+              }
+              
+              // Error lainnya
+              alert("Gagal menyimpan notulen: " + (result.error.message || result.error.code || "Unknown error") + "\n\nCek console untuk detail.");
+              console.error("Full error:", result.error);
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Simpan Notulen';
+              }
+              return;
+            }
+
+            const modalMinutes = bootstrap.Modal.getInstance(document.getElementById("modalMinutes"));
+            modalMinutes.hide();
+            alert("Notulen berhasil disimpan!");
+          } catch (error) {
+            console.error("Error saving minutes:", error);
+            alert("Terjadi kesalahan saat menyimpan notulen: " + (error.message || "Unknown error") + "\n\nCek console untuk detail.");
+          } finally {
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+          }
+        });
+
+      // Fungsi untuk remove existing image dari preview
+      window.removeExistingImage = function(btn) {
+        const col = btn.closest('.col-md-3');
+        const imgUrl = col.getAttribute('data-image-url');
+        if (imgUrl && window.existingImages) {
+          window.existingImages = window.existingImages.filter(url => url !== imgUrl);
+        }
+        col.remove();
+        updateImagesCount();
+      };
+
+      // Fungsi escape HTML untuk PDF
+      function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML.replace(/\n/g, '<br>');
+      }
+
+      // Save PDF Notulen
+      document.getElementById("btn-print-pdf")?.addEventListener("click", async function() {
+        // Ambil semua data dari form
+        const agenda = document.getElementById("minutes-agenda").value || "-";
+        const date = document.getElementById("minutes-date").value || "-";
+        const time = document.getElementById("minutes-time").value || "-";
+        const place = document.getElementById("minutes-place").value || "-";
+        const leader = document.getElementById("minutes-leader").value || "-";
+        const invitationNumber = document.getElementById("minutes-invitation").value || "-";
+        const participants = document.getElementById("minutes-participants").value || "-";
+        const opening = document.getElementById("minutes-opening").value || "-";
+        const material = document.getElementById("minutes-material").value || "-";
+        const discussion = document.getElementById("minutes-discussion").value || "-";
+        const conclusion = document.getElementById("minutes-conclusion").value || "-";
+        const closing = document.getElementById("minutes-closing").value || "-";
+        
+        // Format tanggal
+        const dateObj = date !== "-" ? new Date(date + "T" + time) : null;
+        const formattedDate = dateObj ? dateObj.toLocaleDateString("id-ID", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        }) : "-";
+        const formattedTime = time !== "-" ? time : "-";
+
+        // Ambil gambar yang sudah ada
+        const existingImages = window.existingImages || [];
+        const imageElements = document.querySelectorAll("#images-preview img");
+        const allImages = [];
+        imageElements.forEach(img => {
+          if (img.src && !img.src.startsWith('data:')) {
+            allImages.push(img.src);
+          }
+        });
+        existingImages.forEach(url => {
+          if (!allImages.includes(url)) {
+            allImages.push(url);
+          }
+        });
+
+        // Buat HTML untuk print
+        const printContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>Notulen Rapat - ${agenda}</title>
+            <style>
+              @page {
+                size: 210mm 330mm; /* F4 size */
+                margin: 1cm;
+              }
+              body {
+                font-family: 'Times New Roman', serif;
+                font-size: 12pt;
+                line-height: 1.6;
+                color: #000;
+              }
+              .print-header {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 15px;
+                color: #000;
+              }
+              .print-logo {
+                width: 85px;
+                height: auto;
+                margin-right: 1.5rem;
+              }
+              .print-header-text {
+                line-height: 1.3;
+                text-align: center;
+              }
+              .print-header-text h4 {
+                font-size: 16pt;
+                margin: 0;
+                font-weight: normal;
+              }
+              .print-header-text h3 {
+                font-size: 18pt;
+                font-weight: bold;
+                margin: 0;
+              }
+              .print-header-text p {
+                font-size: 9pt;
+                margin: 4px 0 0;
+              }
+              .print-separator {
+                border: none;
+                border-top: 3px double #000;
+                margin: 0 0 20px 0;
+              }
+              .content {
+                margin-top: 20px;
+              }
+              .section {
+                margin-bottom: 20px;
+              }
+              .section-title {
+                font-weight: bold;
+                font-size: 13pt;
+                margin-bottom: 8px;
+                border-bottom: 1px solid #000;
+                padding-bottom: 3px;
+              }
+              .field {
+                margin-bottom: 12px;
+              }
+              .field-label {
+                font-weight: bold;
+                display: inline-block;
+                min-width: 150px;
+              }
+              .field-value {
+                display: inline-block;
+              }
+              .text-content {
+                text-align: justify;
+                margin-top: 8px;
+                white-space: pre-wrap;
+              }
+              .images-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin-top: 15px;
+              }
+              .image-item {
+                text-align: center;
+              }
+              .image-item img {
+                max-width: 100%;
+                height: auto;
+                border: 1px solid #ccc;
+                margin-bottom: 5px;
+              }
+              .footer {
+                margin-top: 60px;
+                text-align: right;
+              }
+              .signature {
+                display: inline-block;
+                text-align: left;
+              }
+              .signature-item {
+                margin-bottom: 0;
+                font-weight: normal;
+              }
+              .signature-space {
+                height: 60px;
+                margin: 0;
+              }
+              @media print {
+                body { margin: 0; }
+                .no-print { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            <!-- KOP SURAT -->
+            <div class="print-header">
+              <img
+                src="assets/img/logo_hst.png"
+                alt="Logo HST"
+                class="print-logo"
+              />
+              <div class="print-header-text">
+                <h4>PEMERINTAH KABUPATEN HULU SUNGAI TENGAH</h4>
+                <h3>DINAS KOMUNIKASI DAN INFORMATIKA</h3>
+                <p>
+                  Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai,
+                  Kalimantan Selatan 71351<br />
+                  Telepon (0517) 3791750, Faksimile (0517) 3791750<br />
+                  Laman: diskominfo.hstkab.go.id, Pos-el diskominfo@hstkab.go.id
+                </p>
+              </div>
+            </div>
+            <hr class="print-separator" />
+            
+            <div class="content">
+              <div class="section">
+                <div class="section-title">NOTULEN RAPAT</div>
+                
+                <div class="field">
+                  <span class="field-label">Agenda Rapat:</span>
+                  <span class="field-value">${escapeHtml(agenda)}</span>
+                </div>
+                
+                <div class="field">
+                  <span class="field-label">Hari/Tanggal:</span>
+                  <span class="field-value">${escapeHtml(formattedDate)}</span>
+                </div>
+                
+                <div class="field">
+                  <span class="field-label">Waktu:</span>
+                  <span class="field-value">${escapeHtml(formattedTime)} WITA</span>
+                </div>
+                
+                <div class="field">
+                  <span class="field-label">Tempat:</span>
+                  <span class="field-value">${escapeHtml(place)}</span>
+                </div>
+                
+                <div class="field">
+                  <span class="field-label">Pimpinan Rapat:</span>
+                  <span class="field-value">${escapeHtml(leader)}</span>
+                </div>
+                
+                <div class="field">
+                  <span class="field-label">Surat Undangan:</span>
+                  <span class="field-value">${escapeHtml(invitationNumber)}</span>
+                </div>
+                
+                <div class="field">
+                  <span class="field-label">Peserta Rapat:</span>
+                  <div class="text-content">${escapeHtml(participants)}</div>
+                </div>
+              </div>
+              
+              <div class="section">
+                <div class="section-title">KEGIATAN RAPAT</div>
+                
+                <div class="field">
+                  <div class="field-label">Pembukaan:</div>
+                  <div class="text-content">${escapeHtml(opening)}</div>
+                </div>
+                
+                <div class="field">
+                  <div class="field-label">Materi:</div>
+                  <div class="text-content">${escapeHtml(material)}</div>
+                </div>
+                
+                <div class="field">
+                  <div class="field-label">Diskusi dan Tanggapan:</div>
+                  <div class="text-content">${escapeHtml(discussion)}</div>
+                </div>
+              </div>
+              
+              <div class="section">
+                <div class="section-title">KESIMPULAN</div>
+                <div class="text-content">${escapeHtml(conclusion)}</div>
+              </div>
+              
+              <div class="section">
+                <div class="section-title">PENUTUP</div>
+                <div class="text-content">${escapeHtml(closing)}</div>
+              </div>
+              
+              ${allImages.length > 0 ? `
+              <div class="section">
+                <div class="section-title">DOKUMENTASI</div>
+                <div class="images-grid">
+                  ${allImages.map(img => `
+                    <div class="image-item">
+                      <img src="${img}" alt="Dokumentasi" />
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              ` : ''}
+              
+              <div class="footer">
+                <div class="signature">
+                  <div class="signature-item">Mengetahui,</div>
+                  <div class="signature-item">Pimpinan Rapat</div>
+                  <div class="signature-space"></div>
+                  <div class="signature-item">${escapeHtml(leader !== "-" ? leader : "")}</div>
+                </div>
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        // Extract body content dari HTML
+        const bodyMatch = printContent.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+        let bodyContent = bodyMatch ? bodyMatch[1] : '';
+        
+        if (!bodyContent) {
+          const headMatch = printContent.match(/<\/head>([\s\S]*)/i);
+          bodyContent = headMatch ? headMatch[1].replace(/<\/?html>/gi, '').replace(/<\/?body[^>]*>/gi, '') : '';
+        }
+        
+        // Extract style
+        const styleMatch = printContent.match(/<style[^>]*>([\s\S]*)<\/style>/i);
+        let styleContent = styleMatch ? styleMatch[1] : '';
+        styleContent = styleContent.replace(/@page[^{]*\{[^}]*\}/g, '');
+        
+        // Buat elemen container untuk PDF
+        const tempDiv = document.createElement('div');
+        tempDiv.id = 'pdf-export-container';
+        tempDiv.style.width = '794px'; // 210mm = 794px at 96dpi
+        tempDiv.style.padding = '38px'; // 10mm = 38px at 96dpi
+        tempDiv.style.backgroundColor = '#fff';
+        tempDiv.style.fontFamily = "'Times New Roman', serif";
+        tempDiv.style.fontSize = '12pt';
+        tempDiv.style.lineHeight = '1.6';
+        tempDiv.style.color = '#000';
+        tempDiv.style.boxSizing = 'border-box';
+        
+        // Tambahkan style ke head
+        const styleEl = document.createElement('style');
+        styleEl.id = 'pdf-export-style';
+        styleEl.textContent = styleContent;
+        document.head.appendChild(styleEl);
+        
+        // Set konten
+        tempDiv.innerHTML = bodyContent;
+        
+        // Tambahkan ke body (tidak visible)
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.top = '0';
+        document.body.appendChild(tempDiv);
+        
+        // Tunggu untuk memastikan konten ter-render
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        try {
+          // Gunakan html2canvas untuk convert HTML ke canvas
+          const canvas = await html2canvas(tempDiv, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            width: 794,
+            height: tempDiv.scrollHeight,
+            windowWidth: 794,
+            windowHeight: tempDiv.scrollHeight
+          });
+          
+          // Hitung dimensi PDF (F4: 210mm x 330mm)
+          const pdfWidth = 210; // mm
+          const pdfHeight = 330; // mm
+          const margin = 10; // mm
+          const imgWidth = pdfWidth - (margin * 2); // minus margin left and right
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          // Buat PDF dengan jsPDF
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: [pdfWidth, pdfHeight]
+          });
+          
+          // Hitung tinggi yang bisa ditampung per halaman
+          const pageHeight = pdfHeight - (margin * 2); // minus margin top and bottom
+          
+          // Split konten ke beberapa halaman jika diperlukan
+          let heightLeft = imgHeight;
+          let position = margin;
+          
+          // Halaman pertama
+          if (imgHeight <= pageHeight) {
+            // Konten muat dalam satu halaman
+            pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, position, imgWidth, imgHeight);
+          } else {
+            // Konten perlu beberapa halaman - split canvas
+            let sourceY = 0;
+            let pageNum = 0;
+            
+            while (heightLeft > 0) {
+              const displayHeight = Math.min(pageHeight, heightLeft);
+              const sourceHeight = Math.round((displayHeight / imgHeight) * canvas.height);
+              
+              // Buat canvas untuk potongan ini
+              const pageCanvas = document.createElement('canvas');
+              pageCanvas.width = canvas.width;
+              pageCanvas.height = sourceHeight;
+              const ctx = pageCanvas.getContext('2d');
+              ctx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
+              
+              // Tambahkan halaman baru jika bukan halaman pertama
+              if (pageNum > 0) {
+                pdf.addPage();
+              }
+              
+              // Tambahkan gambar ke PDF
+              pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, imgWidth, displayHeight);
+              
+              // Update untuk iterasi berikutnya
+              sourceY += sourceHeight;
+              heightLeft -= displayHeight;
+              pageNum++;
+            }
+          }
+          
+          // Download PDF
+          const filename = `Notulen_Rapat_${agenda.replace(/[^a-z0-9]/gi, '_')}_${new Date().getTime()}.pdf`;
+          pdf.save(filename);
+          
+          // Cleanup
+          setTimeout(() => {
+            if (document.body.contains(tempDiv)) {
+              document.body.removeChild(tempDiv);
+            }
+            if (styleEl && document.head.contains(styleEl)) {
+              document.head.removeChild(styleEl);
+            }
+          }, 500);
+          
+        } catch (error) {
+          console.error('Error exporting PDF:', error);
+          alert('Gagal export PDF: ' + (error.message || 'Unknown error') + '\n\nCek console untuk detail.');
+          
+          // Cleanup on error
+          if (document.body.contains(tempDiv)) {
+            document.body.removeChild(tempDiv);
+          }
+          if (styleEl && document.head.contains(styleEl)) {
+            document.head.removeChild(styleEl);
+          }
+        }
+      });
+
       // Init
       (async () => {
         await loadPage(true);
@@ -1223,4 +2376,5 @@
     </script>
   </body>
 </html>
+
 
