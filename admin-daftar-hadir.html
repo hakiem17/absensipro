@@ -834,6 +834,7 @@
           font-size: 18pt;
           font-weight: bold;
           margin: 0;
+          line-height: 1.2;
         }
         .print-header-text p {
           font-size: 9pt;
@@ -1190,12 +1191,12 @@
             />
             <div class="print-header-text">
               <h4>PEMERINTAH KABUPATEN HULU SUNGAI TENGAH</h4>
-              <h3>DINAS KOMUNIKASI DAN INFORMATIKA</h3>
+              <h3>DINAS KOMUNIKASI, INFORMATIKA,</h3>
+              <h3>STATISTIK DAN PERSANDIAN</h3>
               <p>
-                Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai,
-                Kalimantan Selatan 71351<br />
+                Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai, Kalimantan Selatan 71351<br />
                 Telepon (0517) 3791750, Faksimile (0517) 3791750<br />
-                Laman: diskominfo.hstkab.go.id, Pos-el diskominfo@hstkab.go.id
+                Laman: diskominfosp.hstkab.go.id, Pos-el diskominfosp@hstkab.go.id
               </p>
             </div>
           </div>
@@ -1245,7 +1246,7 @@
           <div class="print-signature-block">
             <div class="signature-info">
               <div class="signature-title">Mengetahui</div>
-              <div class="signature-position" id="print-signature-position">Kepala Dinas Komunikasi dan Informatika</div>
+              <div class="signature-position" id="print-signature-position">Kepala Dinas Komunikasi, Informatika, Statistik dan Persandian</div>
               <div class="signature-location">Kabupaten Hulu Sungai Tengah</div>
               <div class="signature-spacing"></div>
               <div class="signature-name" id="print-signature-name">Darkuni, S.Hut</div>
@@ -1309,7 +1310,7 @@
               </div>
               <div class="mb-3">
                 <label for="signature-position" class="form-label">Jabatan Dinas</label>
-                <input type="text" class="form-control" id="signature-position" placeholder="Contoh: Kepala Dinas Komunikasi dan Informatika">
+                <input type="text" class="form-control" id="signature-position" placeholder="Contoh: Kepala Dinas Komunikasi, Informatika, Statistik dan Persandian">
               </div>
               <div class="mb-3">
                 <label for="signature-rank" class="form-label">Pangkat Golongan</label>
@@ -1721,7 +1722,7 @@
           
           // Update print elements
           document.getElementById("print-signature-name").textContent = signatureData.name || 'Darkuni, S.Hut';
-          document.getElementById("print-signature-position").textContent = signatureData.position || 'Kepala Dinas Komunikasi dan Informatika';
+          document.getElementById("print-signature-position").textContent = signatureData.position || 'Kepala Dinas Komunikasi, Informatika, Statistik dan Persandian';
           document.getElementById("print-signature-rank").textContent = signatureData.rank || 'Pembina Tk.l';
           document.getElementById("print-signature-nip").textContent = signatureData.nip ? `NIP. ${signatureData.nip}` : 'NIP. 19730131 200501 1 007';
           
@@ -1859,6 +1860,7 @@
             e.preventDefault();
             AdminAuth.logout();
           });
+
         $select.addEventListener("change", (e) => loadForEvent(e.target.value));
         $search.addEventListener("input", () => applySearch(true));
         $pageSize.addEventListener("change", () => {

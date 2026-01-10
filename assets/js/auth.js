@@ -55,6 +55,21 @@ window.AdminAuth = {
     return true;
   },
 
+  async checkIsAdmin() {
+    try {
+      const { data: userData } = await sb.auth.getUser();
+      const uid = userData?.user?.id;
+      if (!uid) {
+        return false;
+      }
+      const { data: ok } = await sb.rpc("is_admin", { uid });
+      return ok === true;
+    } catch (err) {
+      console.error("Error checking admin status:", err);
+      return false;
+    }
+  },
+
   async logout(to = "login.html") {
     await sb.auth.signOut();
     location.href = to;
