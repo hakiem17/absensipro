@@ -111,6 +111,7 @@ absensipro/
 │       └── logo_hst.png            # Logo resmi HST
 ├── 📄 Template Surat.pdf            # Template untuk print (NEW in v2.0)
 ├── 📄 FEATURES.md                   # Feature tracking & roadmap (NEW in v2.0)
+├── 📄 database_schema.sql           # Database schema lengkap (NEW in v2.0)
 ├── 📄 README.md                     # Dokumentasi
 └── 📄 .gitignore                    # Git ignore rules
 ```
@@ -143,31 +144,31 @@ absensipro/
    ```
 
 4. **Konfigurasi Database**
-   ```sql
-   -- Tabel events
-   CREATE TABLE events (
-     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-     title TEXT NOT NULL,
-     datetime TIMESTAMPTZ NOT NULL,
-     location TEXT,
-     status TEXT DEFAULT 'upcoming',
-     created_at TIMESTAMPTZ DEFAULT NOW()
-   );
-
-   -- Tabel attendees
-   CREATE TABLE attendees (
-     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-     event_id UUID REFERENCES events(id),
-     name TEXT NOT NULL,
-     instansi TEXT,
-     jabatan TEXT,
-     email TEXT,
-     phone TEXT,
-     gender TEXT,
-     signature_url TEXT,
-     ts TIMESTAMPTZ DEFAULT NOW()
-   );
+   
+   **Cara 1: Menggunakan file schema lengkap (Recommended)**
+   ```bash
+   # Import file database_schema.sql ke Supabase SQL Editor
+   # File ini sudah termasuk semua tabel, indexes, triggers, dan RLS policies
    ```
+   
+   Atau jalankan file SQL langsung di Supabase Dashboard:
+   - Buka Supabase Dashboard → SQL Editor
+   - Copy paste isi file `database_schema.sql`
+   - Klik "Run" untuk menjalankan
+   
+   **Cara 2: Manual setup (untuk customisasi)**
+   ```sql
+   -- File database_schema.sql sudah tersedia di repository
+   -- Berisi lengkap: tables, indexes, triggers, RLS policies, views
+   -- Lihat file database_schema.sql untuk detail lengkap
+   ```
+   
+   **Tabel yang dibuat:**
+   - `events` - Data acara/event
+   - `attendees` - Data peserta/kehadiran
+   - `master_tanda_tangan` - Master data penandatangan
+   - `notulen_acara` - Notulen rapat/acara
+   - `admin_profiles` - Profil admin
 
 ## 🔧 Konfigurasi
 
