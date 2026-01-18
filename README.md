@@ -2,6 +2,7 @@
 
 **Sistem Manajemen Kehadiran Digital untuk Pemerintah Kabupaten Hulu Sungai Tengah**
 
+[![Version](https://img.shields.io/badge/version-2.0-blue?style=flat-square)](https://github.com/hakiem17/absensipro/releases/tag/v2.0)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=flat-square&logo=github)](https://github.com/hakiem17/absensipro)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -11,6 +12,33 @@
 ## 🎯 Tentang Aplikasi
 
 AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk meningkatkan efisiensi dan akurasi data kehadiran dalam setiap acara di lingkungan Pemerintah Kabupaten Hulu Sungai Tengah. Aplikasi ini menyediakan solusi modern untuk menggantikan sistem absensi manual tradisional.
+
+## 🆕 Versi 2.0 - What's New
+
+**Versi 2.0** membawa perbaikan signifikan dan fitur-fitur baru:
+
+### 🐛 **Perbaikan Bug Kritis**
+- ✅ Fixed: Admin daftar hadir sekarang dapat memuat acara dengan benar
+- ✅ Improved: Alur autentikasi dengan proper async/await handling
+- ✅ Enhanced: Error handling yang lebih baik dengan try-catch blocks
+- ✅ Added: Loading states untuk UX yang lebih baik (spinners, indicators)
+
+### ✨ **Fitur Baru**
+- 📝 **Admin Notulen Acara** - Manajemen notulen rapat/acara
+- 🖨️ **Admin Print Daftar Hadir** - Cetak daftar hadir dengan format resmi
+- ✍️ **Master Tanda Tangan** - Pengelolaan data master penandatangan
+- 📋 **FEATURES.md** - Dokumentasi tracking fitur dan roadmap
+
+### 🏗️ **Peningkatan Struktur Kode**
+- 🔧 Separated `admin-common.js` untuk fungsi-fungsi shared
+- 📊 Added `admin-dashboard.js` untuk logika dashboard spesifik
+- 🎨 Added CSS dan font assets untuk styling yang lebih baik
+- 🧹 Cleaned up unused files dan dokumentasi
+
+### 📈 **Peningkatan Kualitas**
+- ⚡ Improved realtime subscription handling
+- 🛡️ Better error messages dan user feedback
+- 🎯 Enhanced code organization dan maintainability
 
 ## ✨ Fitur Utama
 
@@ -24,11 +52,15 @@ AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk
 ### 🔧 **Untuk Admin**
 - 📊 **Dashboard Analytics** - Statistik lengkap dengan Chart.js
 - 📅 **Manajemen Acara** - CRUD lengkap untuk pengelolaan acara
-- 👥 **Daftar Hadir** - Pencarian, filter, dan pagination
+- 👥 **Daftar Hadir** - Pencarian, filter, dan pagination dengan loading states
 - 📺 **Rekap Live** - Animasi credit roll untuk tampilan real-time
 - 📄 **Export & Print** - Export CSV dan cetak laporan dengan kop surat resmi
+- 🖨️ **Print Daftar Hadir** - Cetak daftar hadir dengan format profesional (NEW in v2.0)
+- 📝 **Notulen Acara** - Manajemen notulen rapat dan acara (NEW in v2.0)
+- ✍️ **Master Tanda Tangan** - Pengelolaan data master penandatangan (NEW in v2.0)
 - 🔗 **QR Code Generator** - Generate QR code untuk akses form
-- ⚡ **Real-time Updates** - Update kehadiran secara live
+- ⚡ **Real-time Updates** - Update kehadiran secara live dengan error handling yang lebih baik
+- 🎨 **Improved UI/UX** - Loading states, better error messages, dan user feedback
 
 ## 🏗️ Arsitektur Teknologi
 
@@ -61,15 +93,24 @@ absensipro/
 ├── 🔐 login.html                    # Login admin
 ├── 📊 admin-dashboard.html           # Dashboard statistik
 ├── 📅 admin-manajemen-acara.html    # CRUD acara
-├── 👥 admin-daftar-hadir.html       # Daftar hadir peserta
+├── 👥 admin-daftar-hadir.html       # Daftar hadir peserta (improved in v2.0)
 ├── 📺 admin-rekap-acara.html        # Rekap live dengan animasi
+├── 📝 admin-notulen-acara.html      # Manajemen notulen (NEW in v2.0)
+├── 🖨️ admin-print-daftar-hadir.html # Print daftar hadir (NEW in v2.0)
 ├── 📁 assets/
 │   ├── 📁 js/
 │   │   ├── config.js               # Konfigurasi Supabase
 │   │   ├── auth.js                 # Sistem autentikasi
-│   │   └── absensipro.js           # API wrapper utama
+│   │   ├── admin-common.js         # Shared admin functions (NEW in v2.0)
+│   │   └── admin-dashboard.js      # Dashboard logic (NEW in v2.0)
+│   ├── 📁 css/
+│   │   └── admin.css               # Admin styling (NEW in v2.0)
+│   ├── 📁 font/
+│   │   └── arial/                  # Font assets (NEW in v2.0)
 │   └── 📁 img/
 │       └── logo_hst.png            # Logo resmi HST
+├── 📄 Template Surat.pdf            # Template untuk print (NEW in v2.0)
+├── 📄 FEATURES.md                   # Feature tracking & roadmap (NEW in v2.0)
 ├── 📄 README.md                     # Dokumentasi
 └── 📄 .gitignore                    # Git ignore rules
 ```
@@ -186,6 +227,35 @@ window.SUPABASE_ANON_KEY = "your-supabase-anon-key";
 - **Caching** - Browser caching untuk static assets
 - **Optimized Queries** - Database query yang efisien
 
+## 🔄 Upgrade dari Versi Sebelumnya
+
+Jika Anda menggunakan versi 1.0 atau sebelumnya, berikut langkah upgrade ke v2.0:
+
+1. **Backup Data**
+   ```bash
+   # Backup database dan file penting
+   ```
+
+2. **Update Files**
+   ```bash
+   git pull origin main
+   # atau
+   git checkout v2.0
+   ```
+
+3. **Update Database Schema** (jika diperlukan)
+   - Tabel baru untuk notulen dan master tanda tangan
+   - Lihat dokumentasi database di folder project
+
+4. **Clear Browser Cache**
+   - Hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
+   - Clear cache untuk memastikan file baru ter-load
+
+5. **Test Fitur Baru**
+   - Test admin daftar hadir loading
+   - Test fitur notulen acara
+   - Test print daftar hadir
+
 ## 🤝 Contributing
 
 1. Fork repository ini
@@ -193,6 +263,26 @@ window.SUPABASE_ANON_KEY = "your-supabase-anon-key";
 3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
 4. Push ke branch (`git push origin feature/AmazingFeature`)
 5. Buat Pull Request
+
+**Note:** Untuk kontribusi ke versi 2.0+, pastikan mengikuti struktur kode yang sudah diperbaiki.
+
+## 📦 Release History
+
+### Version 2.0 (Current) - 2025-01-27
+- 🐛 Fixed critical bug: Admin daftar hadir event loading
+- ✨ Added Admin Notulen Acara feature
+- ✨ Added Admin Print Daftar Hadir feature
+- ✨ Added Master Tanda Tangan management
+- 🏗️ Improved code organization and structure
+- 🎨 Enhanced UI/UX with loading states
+- 🛡️ Better error handling and user feedback
+- 📋 Added FEATURES.md for feature tracking
+
+### Version 1.0
+- 🎉 Initial release
+- Basic attendance management features
+- Admin dashboard and event management
+- Real-time updates
 
 ## 📄 License
 

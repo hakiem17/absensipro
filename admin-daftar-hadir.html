@@ -13,1007 +13,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
-
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
-
-      /* --- MODERN CSS VARIABLES --- */
-      :root {
-        --sidebar-w: 280px;
-        --header-h: 70px;
-        --border-radius: 12px;
-        --border-radius-lg: 16px;
-        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        --gradient-info: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-      }
-
-      :root[data-theme="light"] {
-        --bg-main: #f8fafc;
-        --bg-sidebar: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-        --bg-sidebar-solid: #667eea;
-        --bg-card: #ffffff;
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --text-muted: #94a3b8;
-        --border-color: #e2e8f0;
-        --border-hover: #cbd5e1;
-        --nav-link-hover-bg: rgba(255, 255, 255, 0.1);
-        --nav-link-active-bg: rgba(255, 255, 255, 0.2);
-        --nav-link-active-color: #ffffff;
-        --sidebar-text: #ffffff;
-        --sidebar-text-hover: #ffffff;
-        --header-bg: #ffffff;
-        --footer-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      }
-
-      :root[data-theme="dark"] {
-        --bg-main: #0f172a;
-        --bg-sidebar: linear-gradient(180deg, #1e293b 0%, #334155 100%);
-        --bg-sidebar-solid: #1e293b;
-        --bg-card: #334155;
-        --text-primary: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --border-color: #475569;
-        --border-hover: #64748b;
-        --nav-link-hover-bg: rgba(255, 255, 255, 0.08);
-        --nav-link-active-bg: rgba(59, 130, 246, 0.2);
-        --nav-link-active-color: #60a5fa;
-        --sidebar-text: #f8fafc;
-        --sidebar-text-hover: #ffffff;
-        --header-bg: #1e293b;
-        --footer-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      }
-
-      /* --- MODERN RESET & BASE --- */
-      * {
-        box-sizing: border-box;
-      }
-
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        background-color: var(--bg-main);
-        color: var(--text-primary);
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 14px;
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      /* --- MODERN LAYOUT SYSTEM --- */
-      .main-wrapper {
-        display: grid;
-        grid-template-columns: 0 1fr;
-        grid-template-rows: var(--header-h) 1fr auto;
-        grid-template-areas: 
-          "sidebar header"
-          "sidebar main"
-          "sidebar footer";
-        min-height: 100vh;
-        transition: var(--transition);
-      }
-
-      @media (min-width: 992px) {
-        .main-wrapper {
-          grid-template-columns: var(--sidebar-w) 1fr;
-        }
-      }
-
-      /* --- MODERN SIDEBAR --- */
-      .sidebar {
-        grid-area: sidebar;
-        background: var(--bg-sidebar);
-        border-right: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: var(--sidebar-w);
-        z-index: 1000;
-        transform: translateX(-100%);
-        transition: var(--transition);
-        box-shadow: var(--shadow-lg);
-        overflow: hidden;
-      }
-
-      .sidebar::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: var(--bg-sidebar);
-        z-index: -1;
-      }
-
-      @media (min-width: 992px) {
-        .sidebar {
-          position: static;
-          transform: translateX(0);
-          box-shadow: none;
-        }
-      }
-
-      .sidebar.show {
-        transform: translateX(0);
-      }
-
-      .sidebar-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        position: relative;
-        z-index: 1;
-        flex-shrink: 0;
-      }
-
-      .sidebar-brand {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--sidebar-text);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: var(--transition);
-      }
-
-      .sidebar-brand:hover {
-        color: var(--sidebar-text-hover);
-        transform: translateX(2px);
-      }
-
-      .sidebar-brand i {
-        font-size: 1.5rem;
-        color: #ffffff;
-        background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-      }
-
-      .sidebar-nav {
-        flex: 1;
-        padding: 1rem 0;
-        overflow-y: auto;
-        flex-shrink: 1;
-        min-height: 0;
-      }
-
-      .nav-item {
-        margin: 0.25rem 0;
-      }
-
-      .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem 1.5rem;
-        color: var(--sidebar-text);
-        opacity: 0.85;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 0.875rem;
-        border-radius: 0;
-        transition: var(--transition);
-        position: relative;
-        margin: 0.25rem 0.75rem;
-        border-radius: var(--border-radius);
-      }
-
-      .nav-link:hover {
-        background: var(--nav-link-hover-bg);
-        color: var(--sidebar-text-hover);
-        opacity: 1;
-        transform: translateX(4px);
-      }
-
-      .nav-link.active {
-        background: var(--nav-link-active-bg);
-        color: var(--sidebar-text-hover);
-        opacity: 1;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      }
-
-      .nav-link.active::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background: #ffffff;
-        border-radius: 0 2px 2px 0;
-      }
-
-      [data-theme="dark"] .nav-link.active::before {
-        background: #60a5fa;
-      }
-
-      .nav-link i {
-        font-size: 1.125rem;
-        width: 20px;
-        text-align: center;
-        transition: var(--transition);
-      }
-
-      .nav-link:hover i {
-        transform: scale(1.1);
-      }
-
-      .nav-link.active i {
-        transform: scale(1.15);
-      }
-
-      .sidebar-footer {
-        padding: 1.5rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        position: relative;
-        z-index: 1;
-        margin-top: auto;
-        flex-shrink: 0;
-      }
-
-      .sidebar-footer .btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.75rem 1.5rem;
-        margin: 0;
-        box-sizing: border-box;
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: var(--sidebar-text);
-        backdrop-filter: blur(10px);
-        font-weight: 500;
-        transition: var(--transition);
-      }
-
-      .sidebar-footer .btn:hover {
-        background: rgba(255, 255, 255, 0.25);
-        border-color: rgba(255, 255, 255, 0.4);
-        color: var(--sidebar-text-hover);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
-
-      .sidebar-footer .btn:active {
-        transform: translateY(0);
-      }
-
-      /* Override Bootstrap btn-outline-danger untuk sidebar */
-      .sidebar-footer .btn-outline-danger {
-        background: rgba(255, 255, 255, 0.15) !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
-        color: var(--sidebar-text) !important;
-      }
-
-      .sidebar-footer .btn-outline-danger:hover {
-        background: rgba(255, 255, 255, 0.25) !important;
-        border-color: rgba(255, 255, 255, 0.4) !important;
-        color: var(--sidebar-text-hover) !important;
-      }
-
-      /* --- MODERN HEADER --- */
-      .top-header {
-        grid-area: header;
-        background: var(--header-bg);
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 1.5rem;
-        height: var(--header-h);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-      }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
-      .sidebar-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border: none;
-        background: var(--bg-card);
-        color: var(--text-secondary);
-        border-radius: var(--border-radius);
-        transition: var(--transition);
-        cursor: pointer;
-      }
-
-      .sidebar-toggle:hover {
-        background: var(--nav-link-hover-bg);
-        color: var(--text-primary);
-      }
-
-      @media (min-width: 992px) {
-        .sidebar-toggle {
-          display: none;
-        }
-      }
-
-      .header-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0;
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
-      .theme-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border: none;
-        background: var(--bg-card);
-        color: var(--text-secondary);
-        border-radius: var(--border-radius);
-        transition: var(--transition);
-        cursor: pointer;
-      }
-
-      .theme-toggle:hover {
-        background: var(--nav-link-hover-bg);
-        color: var(--text-primary);
-      }
-
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-      }
-
-      /* --- MODERN MAIN CONTENT --- */
-      .main-content-wrapper {
-        grid-area: main;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-      }
-
-      .main-content {
-        flex: 1;
-        padding: 2rem;
-        overflow-y: auto;
-      }
-
-      @media (max-width: 768px) {
-        .main-content {
-          padding: 1rem;
-        }
-      }
-
-      /* --- MODERN TOOLBAR --- */
-      .toolbar-container {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow-sm);
-      }
-
-      .toolbar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-
-      .toolbar-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0;
-      }
-
-      .toolbar-actions {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-      }
-
-      /* --- MODERN SEARCH & FILTERS --- */
-      .search-filters {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow-sm);
-      }
-
-      .search-input {
-        background: var(--bg-main);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-        transition: var(--transition);
-        width: 100%;
-      }
-
-      .search-input:focus {
-        outline: none;
-        border-color: var(--nav-link-active-color);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      }
-
-      .form-select {
-        background: var(--bg-main);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        padding: 0.75rem;
-        font-size: 0.875rem;
-        transition: var(--transition);
-      }
-
-      .form-select:focus {
-        outline: none;
-        border-color: var(--nav-link-active-color);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      }
-
-      /* --- MODERN TABLE --- */
-      .table-container {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-      }
-
-      .table-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .table-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0;
-      }
-
-      .table {
-        --bs-table-bg: var(--bg-card);
-        --bs-table-color: var(--text-primary);
-        --bs-table-border-color: var(--border-color);
-        margin: 0;
-      }
-
-      .table th {
-        background: var(--nav-link-hover-bg);
-        color: var(--text-primary);
-        font-weight: 600;
-        font-size: 0.875rem;
-        padding: 1rem;
-        border-bottom: 1px solid var(--border-color);
-      }
-
-      .table td {
-        padding: 1rem;
-        border-bottom: 1px solid var(--border-color);
-        vertical-align: middle;
-      }
-
-      .table tbody tr:hover {
-        background: var(--nav-link-hover-bg);
-      }
-
-      .signature-thumbnail {
-        width: 80px;
-        height: 40px;
-        object-fit: contain;
-        background: var(--bg-main);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        cursor: pointer;
-        transition: var(--transition);
-      }
-
-      .signature-thumbnail:hover {
-        transform: scale(1.05);
-        box-shadow: var(--shadow-md);
-      }
-
-      /* --- MODERN PAGINATION --- */
-      .pagination-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 1.5rem;
-        border-top: 1px solid var(--border-color);
-        background: var(--bg-card);
-      }
-
-      .pagination-info {
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-      }
-
-      .pagination-controls {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-
-      /* --- MODERN BUTTONS --- */
-      .btn {
-        border-radius: var(--border-radius);
-        font-weight: 500;
-        transition: var(--transition);
-        border: none;
-        padding: 0.75rem 1.5rem;
-        font-size: 0.875rem;
-      }
-
-      .btn-primary {
-        background: var(--gradient-primary);
-        border: none;
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-      }
-
-      .btn-success {
-        background: var(--gradient-success);
-        border: none;
-      }
-
-      .btn-danger {
-        background: var(--gradient-warning);
-        border: none;
-      }
-
-      .btn-outline-primary {
-        border: 1px solid var(--nav-link-active-color);
-        color: var(--nav-link-active-color);
-        background: transparent;
-      }
-
-      .btn-outline-primary:hover {
-        background: var(--nav-link-active-color);
-        color: white;
-        transform: translateY(-1px);
-      }
-
-      .btn-outline-danger {
-        border: 1px solid #ef4444;
-        color: #ef4444;
-        background: transparent;
-      }
-
-      .btn-outline-danger:hover {
-        background: #ef4444;
-        color: white;
-        transform: translateY(-1px);
-      }
-
-      /* --- MODERN MODAL --- */
-      .modal-content {
-        border: none;
-        border-radius: var(--border-radius-lg);
-        box-shadow: var(--shadow-lg);
-        background: var(--bg-card);
-      }
-
-      .modal-header {
-        border-bottom: 1px solid var(--border-color);
-        padding: 1.5rem;
-      }
-
-      .modal-title {
-        font-weight: 600;
-        color: var(--text-primary);
-      }
-
-      .modal-body {
-        padding: 1.5rem;
-      }
-
-      .modal-footer {
-        border-top: 1px solid var(--border-color);
-        padding: 1.5rem;
-      }
-
-      /* --- MODERN FOOTER --- */
-      .footer-professional {
-        grid-area: footer;
-        background: var(--footer-bg);
-        color: #ffffff;
-        padding: 1.5rem 2rem;
-        text-align: center;
-        font-size: 0.875rem;
-        position: relative;
-        z-index: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .footer-divider {
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
-        margin: 0.75rem auto;
-        width: 100%;
-        max-width: 1200px;
-      }
-
-      .footer-professional .text-center {
-        width: 100%;
-        padding: 0;
-        margin: 0;
-      }
-
-      @media (max-width: 767.98px) {
-        .footer-professional {
-          padding: 1rem 1.5rem;
-          font-size: 0.75rem;
-        }
-      }
-
-      /* --- MODERN OVERLAY --- */
-      .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        visibility: hidden;
-        transition: var(--transition);
-      }
-
-      .sidebar-overlay.show {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      @media (min-width: 992px) {
-        .sidebar-overlay {
-          display: none;
-        }
-      }
-
-      /* --- RESPONSIVE TABLE --- */
-      @media (max-width: 767.98px) {
-        .col-instansi,
-        .col-jabatan,
-        .col-gender,
-        .col-aksi {
-          display: none;
-        }
-      }
-
-      /* --- PRINT STYLES --- */
-      .print-header,
-      .print-separator,
-      .print-title,
-      .print-signature-block {
-        display: none;
-      }
-
-      @media print {
-        @page {
-          size: A4 portrait;
-          margin: 5mm 3mm 5mm 3mm;
-        }
-        body {
-          font-family: "Times New Roman", serif;
-        }
-        #sidebar,
-        .top-header,
-        .footer-professional,
-        #toolbar,
-        #search-row,
-        .col-aksi {
-          display: none !important;
-        }
-        
-        /* Fix grid layout for print - remove sidebar space */
-        .main-wrapper {
-          display: block !important;
-          grid-template-columns: none !important;
-          grid-template-areas: none !important;
-        }
-        
-        .main-content-wrapper {
-          margin-left: 0 !important;
-          padding-left: 0 !important;
-          width: 100% !important;
-        }
-        .card {
-          border: none !important;
-          box-shadow: none !important;
-        }
-        .table {
-          font-size: 10pt;
-          width: 100%;
-        }
-        .table thead {
-          display: table-header-group;
-        }
-        .table th,
-        .table td {
-          border: 1px solid #000 !important;
-          padding: 6px 8px !important;
-          color: #000 !important;
-          background-color: #fff !important;
-        }
-        .table thead th {
-          background: #e9ecef !important;
-          font-weight: bold;
-        }
-        .signature-thumbnail {
-          height: 28px !important;
-          width: auto;
-          background: none;
-          border: none;
-        }
-        
-        /* Hide unwanted columns in print */
-        .col-aksi {
-          display: none !important;
-        }
-        
-        /* Hide Waktu Kehadiran column in print (column 6) */
-        .table th:nth-child(6),
-        .table td:nth-child(6) {
-          display: none !important;
-        }
-        
-        /* Show letterhead in print */
-        .print-header {
-          display: flex !important;
-          align-items: center;
-          text-align: center;
-          margin-bottom: 0.5rem;
-          color: #000 !important;
-        }
-        .print-logo {
-          width: 85px;
-          height: auto;
-          margin-right: 1.5rem;
-        }
-        .print-header-text {
-          flex-grow: 1;
-          line-height: 1.3;
-        }
-        .print-header-text h4 {
-          font-size: 16pt;
-          margin: 0;
-        }
-        .print-header-text h3 {
-          font-size: 18pt;
-          font-weight: bold;
-          margin: 0;
-          line-height: 1.2;
-        }
-        .print-header-text p {
-          font-size: 9pt;
-          margin: 4px 0 0;
-        }
-        .print-separator {
-          display: block !important;
-          border: none;
-          border-top: 3px double #000;
-          margin: 0 0 1rem 0;
-        }
-        .print-title {
-          display: block !important;
-          text-align: center;
-          margin-bottom: 1.5rem !important;
-        }
-        .print-title h4 {
-          font-weight: bold;
-          text-decoration: underline;
-          font-size: 14pt;
-        }
-        .print-title h5,
-        .print-title p {
-          font-size: 12pt;
-        }
-        
-        /* Show signature block in print */
-        .print-signature-block {
-          display: block !important;
-          margin-top: 3rem;
-          text-align: right;
-          page-break-inside: avoid;
-        }
-        .signature-info {
-          display: inline-block;
-          text-align: center;
-          line-height: 1;
-        }
-        .signature-title {
-          font-size: 12pt;
-          font-weight: bold;
-          margin-bottom: 0.5rem;
-        }
-        .signature-position,
-        .signature-location {
-          font-size: 11pt;
-          margin-bottom: 0.25rem;
-        }
-        .signature-spacing {
-          height: 1.5rem;
-        }
-        .signature-name {
-          font-size: 11pt;
-          font-weight: bold;
-          margin-bottom: 0.1rem;
-        }
-        .signature-rank,
-        .signature-nip {
-          font-size: 10pt;
-          margin-bottom: 0.1rem;
-        }
-        
-        /* Hide unnecessary components in print */
-        .toolbar-container,
-        .search-filters,
-        .pagination-container,
-        .table-header {
-          display: none !important;
-        }
-        
-        /* Fix table layout and spacing for print */
-        .table-container {
-          margin: 0 !important;
-          padding: 0 !important;
-          border: none !important;
-          box-shadow: none !important;
-        }
-        
-        .table-responsive {
-          margin: 0 !important;
-          padding: 0 !important;
-        }
-        
-        .table {
-          margin: 0 !important;
-          width: 100% !important;
-        }
-        
-        .table th,
-        .table td {
-          padding: 4px 6px !important;
-          font-size: 9pt !important;
-        }
-        
-        /* Reduce left spacing */
-        body {
-          margin: 0 !important;
-          padding: 0 !important;
-        }
-        
-        .main-content {
-          margin: 0 !important;
-          padding: 0 !important;
-        }
-        
-        .main-wrapper {
-          margin: 0 !important;
-          padding: 0 !important;
-        }
-        
-        /* Remove any container padding/margin */
-        .container,
-        .container-fluid {
-          margin: 0 !important;
-          padding: 0 !important;
-          max-width: none !important;
-        }
-        
-        /* Additional spacing fixes */
-        * {
-          margin-left: 0 !important;
-          padding-left: 0 !important;
-        }
-        
-        .table-container,
-        .table-responsive,
-        .table {
-          margin-left: 0 !important;
-          padding-left: 0 !important;
-        }
-        
-        /* Aggressive left margin elimination */
-        html, body {
-          margin: 0 !important;
-          padding: 0 !important;
-          position: relative !important;
-        }
-        
-        .main-wrapper {
-          position: relative !important;
-          left: 0 !important;
-          margin-left: 0 !important;
-          padding-left: 0 !important;
-        }
-        
-        .main-content {
-          position: relative !important;
-          left: 0 !important;
-          margin-left: 0 !important;
-          padding-left: 0 !important;
-        }
-        
-        /* Force table to start from left edge */
-        .table-container {
-          position: relative !important;
-          left: 0 !important;
-          margin-left: 0 !important;
-          padding-left: 0 !important;
-          transform: translateX(0) !important;
-        }
-
-      }
-
-      /* --- MODERN UTILITIES --- */
-      .text-gradient {
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      /* --- DARK MODE TEXT OVERRIDES --- */
-      [data-theme="dark"] .text-secondary { 
-        color: var(--text-secondary) !important; 
-      }
-      [data-theme="dark"] .text-muted { 
-        color: var(--text-muted) !important; 
-      }
-    </style>
+    <link rel="stylesheet" href="assets/css/admin.css" />
   </head>
   <body>
     <script>
@@ -1031,8 +31,8 @@
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
           <a href="#" class="sidebar-brand">
-            <i class="bi bi-calendar-check"></i>
-            <span>AbsensiPro</span>
+            <i class="bi bi-shield-check"></i>
+            <span>Admin Panel</span>
           </a>
         </div>
         
@@ -1040,7 +40,7 @@
           <ul class="nav flex-column">
             <li class="nav-item">
               <a class="nav-link" href="admin-dashboard.html">
-                <i class="bi bi-speedometer2"></i>
+                <i class="bi bi-house-door"></i>
                 <span>Dashboard</span>
               </a>
             </li>
@@ -1051,7 +51,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="#">
+              <a class="nav-link active" href="admin-daftar-hadir.html">
                 <i class="bi bi-people"></i>
                 <span>Daftar Hadir</span>
               </a>
@@ -1062,14 +62,49 @@
                 <span>Rekap Acara (Live)</span>
               </a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-print-daftar-hadir.html">
+                <i class="bi bi-printer"></i>
+                <span>Print Daftar Hadir</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-notulen-acara.html">
+                <i class="bi bi-file-text"></i>
+                <span>Notulen Acara</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="btn-master-ttd" data-bs-toggle="modal" data-bs-target="#modalMasterTTD">
+                <i class="bi bi-pen"></i>
+                <span>Master Tanda Tangan</span>
+              </a>
+            </li>
           </ul>
         </nav>
-        
-        <div class="sidebar-footer">
-          <button id="btn-logout" class="btn w-100">
-            <i class="bi bi-box-arrow-right me-2"></i>
-            Logout
+
+        <!-- Theme Toggle di Sidebar -->
+        <div style="padding: 0.5rem 0.75rem;">
+          <button id="theme-toggle" class="sidebar-theme-toggle">
+            <i class="bi bi-sun-fill"></i>
+            <span>Mode Gelap/Terang</span>
           </button>
+        </div>
+        
+        <!-- User Info di Footer Sidebar -->
+        <div class="sidebar-footer">
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="sidebar-user-details">
+              <div class="sidebar-user-name">Admin User</div>
+              <div class="sidebar-user-role">Administrator</div>
+            </div>
+            <button id="btn-logout" class="sidebar-logout-btn" title="Logout">
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -1081,16 +116,28 @@
             <button class="sidebar-toggle" id="sidebarToggle">
               <i class="bi bi-list"></i>
             </button>
-            <h1 class="header-title">Daftar Hadir</h1>
+            <div class="header-search">
+              <i class="bi bi-search"></i>
+              <input type="text" placeholder="Search..." class="search-input" />
+            </div>
           </div>
           
           <div class="header-right">
-            <button id="theme-toggle" class="theme-toggle">
+            <button id="theme-toggle-header" class="header-icon-btn" title="Toggle Theme">
               <i class="bi bi-sun-fill"></i>
             </button>
-            <div class="user-info">
-              <i class="bi bi-person-circle"></i>
-              <span>Selamat datang, Hakiem</span>
+            <div class="header-notification">
+              <button class="header-icon-btn notification-btn" title="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="notification-badge">3</span>
+              </button>
+            </div>
+            <div class="header-user-profile">
+              <div class="user-avatar-small">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <span class="user-name-header">Admin</span>
+              <i class="bi bi-chevron-down"></i>
             </div>
           </div>
         </header>
@@ -1098,7 +145,7 @@
         <!-- Main Content -->
         <main class="main-content">
           <!-- Page Header -->
-          <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-4" style="padding-top: 1.5rem;">
             <div>
               <h2 class="h4 mb-1 text-gradient">Daftar Hadir Peserta</h2>
               <p class="text-muted mb-0">Kelola dan pantau kehadiran peserta acara</p>
@@ -1117,10 +164,6 @@
                 <button id="btn-export" class="btn btn-success">
                   <i class="bi bi-file-earmark-spreadsheet me-2"></i>
                   Export CSV
-                </button>
-                <button id="btn-print" class="btn btn-danger">
-                  <i class="bi bi-printer me-2"></i>
-                  Cetak Laporan
                 </button>
                 <button id="btn-signature-settings" class="btn btn-outline-secondary">
                   <i class="bi bi-person-badge me-2"></i>
@@ -1182,35 +225,6 @@
             </div>
           </div>
 
-          <!-- KOP SURAT UNTUK PRINT -->
-          <div class="print-header">
-            <img
-              src="assets/img/logo_hst.png"
-              alt="Logo HST"
-              class="print-logo"
-            />
-            <div class="print-header-text">
-              <h4>PEMERINTAH KABUPATEN HULU SUNGAI TENGAH</h4>
-              <h3>DINAS KOMUNIKASI, INFORMATIKA,</h3>
-              <h3>STATISTIK DAN PERSANDIAN</h3>
-              <p>
-                Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai, Kalimantan Selatan 71351<br />
-                Telepon (0517) 3791750, Faksimile (0517) 3791750<br />
-                Laman: diskominfosp.hstkab.go.id, Pos-el diskominfosp@hstkab.go.id
-              </p>
-            </div>
-          </div>
-          <hr class="print-separator" />
-          <div class="print-title">
-            <h4 class="mb-1">DAFTAR HADIR PESERTA</h4>
-            <h5 id="print-event-title" class="mb-0 fw-normal">
-              (Nama Acara)
-            </h5>
-            <p id="print-event-meta" class="small mt-1">
-              (Waktu dan Lokasi Acara)
-            </p>
-          </div>
-
           <!-- Modern Table -->
           <div class="table-container">
             <div class="table-header">
@@ -1242,19 +256,86 @@
             </div>
           </div>
 
-          <!-- SIGNATURE BLOCK FOR PRINT -->
-          <div class="print-signature-block">
-            <div class="signature-info">
-              <div class="signature-title">Mengetahui</div>
-              <div class="signature-position" id="print-signature-position">Kepala Dinas Komunikasi, Informatika, Statistik dan Persandian</div>
-              <div class="signature-location">Kabupaten Hulu Sungai Tengah</div>
-              <div class="signature-spacing"></div>
-              <div class="signature-name" id="print-signature-name">Darkuni, S.Hut</div>
-              <div class="signature-rank" id="print-signature-rank">Pembina Tk.l</div>
-              <div class="signature-nip" id="print-signature-nip">NIP. 19730131 200501 1 007</div>
+        </main>
+
+        <!-- Modal Master Tanda Tangan -->
+        <div class="modal fade" id="modalMasterTTD" tabindex="-1" aria-labelledby="modalMasterTTDLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalMasterTTDLabel">
+                  <i class="bi bi-pen me-2"></i>
+                  Master Tanda Tangan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Tabel Data Master TTD -->
+                <div class="mb-4">
+                  <h6 class="mb-3">Data Master Tanda Tangan yang Tersimpan</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="table-master-ttd">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Nama</th>
+                          <th>Jabatan</th>
+                          <th>Instansi</th>
+                          <th>Golongan</th>
+                          <th>NIP</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbody-master-ttd">
+                        <tr>
+                          <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Form Input/Edit -->
+                <h6 class="mb-3">Form Master Tanda Tangan</h6>
+                <form id="form-master-ttd">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-nama" class="form-label">Nama <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-nama" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-jabatan" required>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-instansi" class="form-label">Instansi <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-instansi" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-golongan" class="form-label">Golongan</label>
+                      <input type="text" class="form-control" id="ttd-golongan">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-nip" class="form-label">NIP</label>
+                      <input type="text" class="form-control" id="ttd-nip">
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-save-master-ttd">
+                  <i class="bi bi-save me-2"></i>
+                  Simpan
+                </button>
+              </div>
             </div>
           </div>
-        </main>
+        </div>
 
         <!-- Modern Footer -->
         <footer class="footer-professional">
@@ -1401,22 +482,7 @@
     <script>
       document.getElementById("copyright-year").textContent =
         new Date().getFullYear();
-      const htmlEl = document.documentElement,
-        themeBtn = document.getElementById("theme-toggle");
-      function syncIcon() {
-        themeBtn.innerHTML =
-          htmlEl.getAttribute("data-theme") === "dark"
-            ? '<i class="bi bi-sun-fill"></i>'
-            : '<i class="bi bi-moon-fill"></i>';
-      }
-      themeBtn.addEventListener("click", () => {
-        const t =
-          htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        htmlEl.setAttribute("data-theme", t);
-        localStorage.setItem("theme", t);
-        syncIcon();
-      });
-      syncIcon();
+      // Theme toggle handled by admin-common.js
 
       const sb = supabase.createClient(
         window.SUPABASE_URL,
@@ -1432,10 +498,6 @@
       const $btnPrev = document.getElementById("btn-prev");
       const $btnNext = document.getElementById("btn-next");
       const $pageInfo = document.getElementById("page-info");
-      // Elemen untuk print
-      const $printEventTitle = document.getElementById("print-event-title");
-      const $printEventMeta = document.getElementById("print-event-meta");
-
       let EVENTS = [],
         sourceList = [],
         filteredList = [],
@@ -1513,82 +575,202 @@
       }
 
       async function loadEventsOnce() {
-        const { data, error } = await sb
-          .from("events")
-          .select("id,title,datetime,location,status")
-          .order("datetime", { ascending: false });
-        if (error) {
-          alert("Gagal memuat daftar acara.");
-          return;
+        try {
+          // Show loading state
+          $select.innerHTML = '<option value="">Memuat acara...</option>';
+          $select.disabled = true;
+
+          const { data, error } = await sb
+            .from("events")
+            .select("id,title,datetime,location,status")
+            .order("datetime", { ascending: false });
+          
+          if (error) {
+            console.error("Error loading events:", error);
+            $select.innerHTML = '<option value="">Gagal memuat acara</option>';
+            alert("Gagal memuat daftar acara: " + (error.message || "Terjadi kesalahan"));
+            $select.disabled = false;
+            return;
+          }
+          
+          EVENTS = data || [];
+          $select.disabled = false;
+          
+          if (!EVENTS.length) {
+            $select.innerHTML = '<option value="">(belum ada acara)</option>';
+            $meta.innerHTML = '<span class="text-muted">Belum ada acara yang tersedia</span>';
+            return;
+          }
+          
+          $select.innerHTML = EVENTS.map(
+            (e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`
+          ).join("");
+          
+          const urlEventId = new URLSearchParams(location.search).get("event");
+          if (urlEventId && EVENTS.find((e) => e.id === urlEventId)) {
+            $select.value = urlEventId;
+          }
+          
+          await loadForEvent($select.value);
+        } catch (err) {
+          console.error("Unexpected error in loadEventsOnce:", err);
+          $select.innerHTML = '<option value="">Error memuat acara</option>';
+          $select.disabled = false;
+          alert("Terjadi kesalahan saat memuat acara. Silakan refresh halaman.");
         }
-        EVENTS = data || [];
-        if (!EVENTS.length) {
-          $select.innerHTML = '<option value="">(belum ada acara)</option>';
-          return;
-        }
-        $select.innerHTML = EVENTS.map(
-          (e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`
-        ).join("");
-        const urlEventId = new URLSearchParams(location.search).get("event");
-        if (urlEventId && EVENTS.find((e) => e.id === urlEventId))
-          $select.value = urlEventId;
-        loadForEvent($select.value);
       }
 
       async function loadForEvent(eventId) {
-        if (!eventId) return;
-        currentEventId = eventId;
-        const ev = EVENTS.find((e) => e.id === eventId);
-        $meta.innerHTML = `<span class="me-3"><i class="bi bi-calendar-event"></i> ${esc(
-          fmtDT(ev?.datetime)
-        )}</span><span class="me-3"><i class="bi bi-geo-alt"></i> ${esc(
-          ev?.location || ""
-        )}</span><span class="badge ${
-          ev?.status === "done" ? "text-bg-success" : "text-bg-primary"
-        }">${esc(ev?.status || "")}</span>`;
+        try {
+          if (!eventId) {
+            sourceList = [];
+            filteredList = [];
+            page = 1;
+            $meta.innerHTML = '<span class="text-muted">Pilih acara untuk melihat daftar hadir</span>';
+            renderTable();
+            return;
+          }
+          
+          currentEventId = eventId;
+          const ev = EVENTS.find((e) => e.id === eventId);
+          
+          if (!ev) {
+            console.error("Event not found:", eventId);
+            $meta.innerHTML = '<span class="text-danger">Acara tidak ditemukan</span>';
+            sourceList = [];
+            filteredList = [];
+            renderTable();
+            return;
+          }
+          
+          $meta.innerHTML = `<span class="me-3"><i class="bi bi-calendar-event"></i> ${esc(
+            fmtDT(ev?.datetime)
+          )}</span><span class="me-3"><i class="bi bi-geo-alt"></i> ${esc(
+            ev?.location || "-"
+          )}</span><span class="badge ${
+            ev?.status === "done" ? "text-bg-success" : "text-bg-primary"
+          }">${esc(ev?.status || "")}</span>`;
 
-        // Mengisi judul dinamis untuk keperluan print
-        if ($printEventTitle)
-          $printEventTitle.textContent = ev?.title || "(Nama Acara)";
-        if ($printEventMeta)
-          $printEventMeta.textContent = `${fmtDT(ev?.datetime)} • ${
-            ev?.location || "Lokasi tidak ditentukan"
-          }`;
+          if (realtimeChannel) {
+            try {
+              sb.removeChannel(realtimeChannel);
+            } catch (err) {
+              console.warn("Error removing realtime channel:", err);
+            }
+            realtimeChannel = null;
+          }
 
-        if (realtimeChannel) {
-          try {
-            sb.removeChannel(realtimeChannel);
-          } catch {}
-          realtimeChannel = null;
+          // Reset pagination and search when loading new event
+          page = 1;
+          $search.value = "";
+          
+          // Show loading state in table
+          $tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4"><div class="spinner-border spinner-border-sm me-2"></div>Memuat peserta...</td></tr>';
+          
+          const { data, error } = await sb
+            .from("attendees")
+            .select("id,name,instansi,jabatan,gender,email,phone,ts,signature_url")
+            .eq("event_id", eventId)
+            .order("ts", { ascending: true });
+            
+          if (error) {
+            console.error("Error loading attendees:", error);
+            $tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Gagal memuat peserta: ' + esc(error.message) + '</td></tr>';
+            sourceList = [];
+            filteredList = [];
+            renderTable();
+            return;
+          }
+          
+          sourceList = (data || []).map((a) => ({
+            id: a.id,
+            name: a.name,
+            instansi: a.instansi,
+            jabatan: a.jabatan,
+            gender: a.gender || null,
+            email: a.email,
+            phone: a.phone,
+            ts: a.ts,
+            signatureDataUrl: a.signature_url || null,
+          }));
+          
+          // Setup realtime subscription
+          if (realtimeChannel) {
+            try {
+              sb.removeChannel(realtimeChannel);
+            } catch (err) {
+              console.warn("Error removing realtime channel:", err);
+            }
+            realtimeChannel = null;
+          }
+
+          realtimeChannel = sb
+            .channel(`attendees-${eventId}`)
+            .on(
+              "postgres_changes",
+              {
+                event: "INSERT",
+                schema: "public",
+                table: "attendees",
+                filter: `event_id=eq.${eventId}`,
+              },
+              (p) => {
+                const r = p.new;
+                const item = {
+                  id: r.id,
+                  name: r.name,
+                  instansi: r.instansi,
+                  jabatan: r.jabatan,
+                  gender: r.gender || null,
+                  email: r.email,
+                  phone: r.phone,
+                  ts: r.ts,
+                  signatureDataUrl: r.signature_url || null,
+                };
+                // Add to source list (maintain sorted order by timestamp)
+                sourceList.push(item);
+                sourceList.sort((a, b) => {
+                  const tsA = a.ts ? new Date(a.ts).getTime() : 0;
+                  const tsB = b.ts ? new Date(b.ts).getTime() : 0;
+                  return tsA - tsB;
+                });
+                // Re-apply search filter
+                applySearch(false);
+              }
+            )
+            .on(
+              "postgres_changes",
+              {
+                event: "DELETE",
+                schema: "public",
+                table: "attendees",
+                filter: `event_id=eq.${eventId}`,
+              },
+              (p) => {
+                const id = String(p.old?.id ?? "");
+                sourceList = sourceList.filter((x) => String(x.id) !== id);
+                // Re-apply search filter to update filtered list
+                applySearch(false);
+              }
+            )
+            .subscribe();
+          
+          applySearch(true);
+        } catch (err) {
+          console.error("Unexpected error in loadForEvent:", err);
+          $tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Terjadi kesalahan saat memuat data</td></tr>';
+          sourceList = [];
+          filteredList = [];
+          renderTable();
         }
-
-        const { data, error } = await sb
-          .from("attendees")
-          .select("id,name,instansi,jabatan,gender,email,phone,ts,signature_url")
-          .eq("event_id", eventId)
-          .order("ts", { ascending: true });
-        if (error) {
-          alert("Gagal memuat peserta.");
-          return;
-        }
-        sourceList = (data || []).map((a) => ({
-          id: a.id,
-          name: a.name,
-          instansi: a.instansi,
-          jabatan: a.jabatan,
-          gender: a.gender || null,
-          email: a.email,
-          phone: a.phone,
-          ts: a.ts,
-          signatureDataUrl: a.signature_url || null,
-        }));
-        applySearch(true);
+      }
 
         document.getElementById("btn-export").onclick = () => {
           if (!currentEventId) {
             alert("Silakan pilih acara terlebih dahulu.");
             return;
           }
+          const ev = EVENTS.find((e) => e.id === currentEventId);
           const headers = [
             "No",
             "Nama",
@@ -1695,7 +877,6 @@
             );
           }, "image/png");
         };
-        document.getElementById("btn-print").onclick = () => window.print();
         
         // Signature settings functionality
         document.getElementById("btn-signature-settings").onclick = () => {
@@ -1720,69 +901,11 @@
           // Save to localStorage
           localStorage.setItem('signatureData', JSON.stringify(signatureData));
           
-          // Update print elements
-          document.getElementById("print-signature-name").textContent = signatureData.name || 'Darkuni, S.Hut';
-          document.getElementById("print-signature-position").textContent = signatureData.position || 'Kepala Dinas Komunikasi, Informatika, Statistik dan Persandian';
-          document.getElementById("print-signature-rank").textContent = signatureData.rank || 'Pembina Tk.l';
-          document.getElementById("print-signature-nip").textContent = signatureData.nip ? `NIP. ${signatureData.nip}` : 'NIP. 19730131 200501 1 007';
-          
           // Close modal
           bootstrap.Modal.getInstance(document.getElementById("signatureSettingsModal")).hide();
           
           alert('Data penandatangan berhasil disimpan!');
         };
-
-        realtimeChannel = sb
-          .channel(`attendees-${currentEventId}`)
-          .on(
-            "postgres_changes",
-            {
-              event: "INSERT",
-              schema: "public",
-              table: "attendees",
-              filter: `event_id=eq.${currentEventId}`,
-            },
-            (p) => {
-              const r = p.new;
-              const item = {
-                id: r.id,
-                name: r.name,
-                instansi: r.instansi,
-                jabatan: r.jabatan,
-                email: r.email,
-                phone: r.phone,
-                ts: r.ts,
-                signatureDataUrl: r.signature_url || null,
-              };
-              sourceList.push(item);
-              const q = ($search.value || "").toLowerCase().trim();
-              if (
-                !q ||
-                (item.name || "").toLowerCase().includes(q) ||
-                (item.instansi || "").toLowerCase().includes(q) ||
-                (item.jabatan || "").toLowerCase().includes(q)
-              )
-                filteredList.push(item);
-              renderTable();
-            }
-          )
-          .on(
-            "postgres_changes",
-            {
-              event: "DELETE",
-              schema: "public",
-              table: "attendees",
-              filter: `event_id=eq.${currentEventId}`,
-            },
-            (p) => {
-              const id = String(p.old?.id ?? "");
-              sourceList = sourceList.filter((x) => String(x.id) !== id);
-              filteredList = filteredList.filter((x) => String(x.id) !== id);
-              renderTable();
-            }
-          )
-          .subscribe();
-      }
 
       function applySearch(resetPage) {
         const q = ($search.value || "").toLowerCase().trim();
@@ -1816,44 +939,73 @@
       function renderTable() {
         const { rows, startIndex, total, totalPages } = pageData();
         $count.textContent = total;
+        
+        // Clear previous content
+        $tbody.innerHTML = "";
+        
         if (!rows.length) {
           $tbody.innerHTML =
-            '<tr><td colspan="6" class="text-center text-secondary">Belum ada peserta hadir.</td></tr>';
+            '<tr><td colspan="8" class="text-center text-secondary py-4">Belum ada peserta hadir.</td></tr>';
         } else {
-          $tbody.innerHTML = rows
-            .map((a, i) => {
-              const extraMobile =
-                a.instansi || a.jabatan
-                  ? `<div class="d-md-none text-secondary small">${esc(
-                      a.instansi || "-"
-                    )}${a.jabatan ? " • " + esc(a.jabatan) : ""}</div>`
-                  : "";
-              const ttd = a.signatureDataUrl
-                ? `<img class="signature-thumbnail" src="${esc(
-                    a.signatureDataUrl
-                  )}" alt="ttd">`
-                : "-";
-              return `<tr><td>${startIndex + i + 1}</td><td>${esc(
-                a.name
-              )}${extraMobile}</td><td class="col-instansi">${esc(
-                a.instansi
-              )}</td><td class="col-jabatan">${esc(a.jabatan)}</td><td class="col-gender">${esc(
-                genderLabel(a.gender)
-              )}</td><td>${esc(
-                fmtDT(a.ts)
-              )}</td><td>${ttd}</td><td class="col-aksi text-nowrap"><button class="btn btn-sm btn-outline-danger btn-del" data-id="${esc(
-                a.id
-              )}"><i class="bi bi-trash"></i></button></td></tr>`;
-            })
-            .join("");
+          // Create document fragment for better performance
+          const fragment = document.createDocumentFragment();
+          
+          rows.forEach((a, i) => {
+            const row = document.createElement("tr");
+            const extraMobile =
+              a.instansi || a.jabatan
+                ? `<div class="d-md-none text-secondary small">${esc(
+                    a.instansi || "-"
+                  )}${a.jabatan ? " • " + esc(a.jabatan) : ""}</div>`
+                : "";
+            const ttd = a.signatureDataUrl
+              ? `<img class="signature-thumbnail" src="${esc(
+                  a.signatureDataUrl
+                )}" alt="ttd" style="max-width: 100px; height: auto; cursor: pointer;">`
+              : "-";
+            
+            row.innerHTML = `
+              <td>${startIndex + i + 1}</td>
+              <td>${esc(a.name)}${extraMobile}</td>
+              <td class="col-instansi">${esc(a.instansi || "-")}</td>
+              <td class="col-jabatan">${esc(a.jabatan || "-")}</td>
+              <td class="col-gender">${esc(genderLabel(a.gender) || "-")}</td>
+              <td>${esc(fmtDT(a.ts) || "-")}</td>
+              <td>${ttd}</td>
+              <td class="col-aksi text-nowrap">
+                <button class="btn btn-sm btn-outline-danger btn-del" data-id="${esc(a.id)}" title="Hapus">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            `;
+            fragment.appendChild(row);
+          });
+          
+          $tbody.appendChild(fragment);
         }
+        
+        // Update pagination info
         $pageInfo.textContent = `Hal ${page}/${totalPages} · ${total} entri`;
         $btnPrev.disabled = page <= 1;
         $btnNext.disabled = page >= totalPages;
+        
+        // Scroll to top of table on page change
+        if (rows.length > 0) {
+          const tableContainer = $tbody.closest('.table-responsive');
+          if (tableContainer) {
+            tableContainer.scrollTop = 0;
+          }
+        }
       }
 
-      (function init() {
-        AdminAuth.requireAdmin();
+      (async function init() {
+        // Wait for admin authentication check
+        const isAdmin = await AdminAuth.requireAdmin();
+        if (!isAdmin) {
+          // User will be redirected by requireAdmin, so we don't need to continue
+          return;
+        }
+
         document
           .getElementById("btn-logout")
           ?.addEventListener("click", (e) => {
@@ -1864,6 +1016,7 @@
         $select.addEventListener("change", (e) => loadForEvent(e.target.value));
         $search.addEventListener("input", () => applySearch(true));
         $pageSize.addEventListener("change", () => {
+          // Reset to page 1 when changing page size
           page = 1;
           renderTable();
         });
@@ -1901,108 +1054,157 @@
             return;
           }
           sourceList = sourceList.filter((x) => String(x.id) !== String(id));
-          filteredList = filteredList.filter(
-            (x) => String(x.id) !== String(id)
-          );
-          renderTable();
+          // Re-apply search to update filtered list and adjust pagination
+          applySearch(false);
         });
-        loadEventsOnce();
+        
+        // Load events after auth check is complete
+        await loadEventsOnce();
         
         // Load saved signature data on page load
         const savedSignature = JSON.parse(localStorage.getItem('signatureData') || '{}');
-        if (savedSignature.name) {
-          document.getElementById("print-signature-name").textContent = savedSignature.name;
-        }
-        if (savedSignature.position) {
-          document.getElementById("print-signature-position").textContent = savedSignature.position;
-        }
-        if (savedSignature.rank) {
-          document.getElementById("print-signature-rank").textContent = savedSignature.rank;
-        }
-        if (savedSignature.nip) {
-          document.getElementById("print-signature-nip").textContent = `NIP. ${savedSignature.nip}`;
-        }
-        
-        // Modern Sidebar Toggle
-        const sidebar = document.getElementById("sidebar");
-        const sidebarToggle = document.getElementById("sidebarToggle");
-        const sidebarOverlay = document.getElementById("sidebarOverlay");
-
-        function toggleSidebar() {
-          sidebar.classList.toggle("show");
-          sidebarOverlay.classList.toggle("show");
-          document.body.style.overflow = sidebar.classList.contains("show") ? "hidden" : "";
-        }
-
-        function hideSidebar() {
-          sidebar.classList.remove("show");
-          sidebarOverlay.classList.remove("show");
-          document.body.style.overflow = "";
-        }
-
-        // Set active menu item based on current page
-        function setActiveMenuItem() {
-          const currentPage = window.location.pathname.split('/').pop() || 'admin-daftar-hadir.html';
-          const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
-          
-          navLinks.forEach(link => {
-            link.classList.remove('active');
-            const href = link.getAttribute('href');
-            if (href && (href === currentPage || href.includes(currentPage.split('.')[0]))) {
-              link.classList.add('active');
-            }
-          });
-          
-          // If no active link found, set based on current page
-          const hasActive = document.querySelector('.sidebar-nav .nav-link.active');
-          if (!hasActive) {
-            if (currentPage.includes('manajemen')) {
-              const link = document.querySelector('.sidebar-nav .nav-link[href*="manajemen"]');
-              if (link) link.classList.add('active');
-            } else if (currentPage.includes('daftar')) {
-              const link = document.querySelector('.sidebar-nav .nav-link[href*="daftar"]');
-              if (link) link.classList.add('active');
-            } else if (currentPage.includes('rekap')) {
-              const link = document.querySelector('.sidebar-nav .nav-link[href*="rekap"]');
-              if (link) link.classList.add('active');
-            } else if (currentPage.includes('dashboard')) {
-              const link = document.querySelector('.sidebar-nav .nav-link[href*="dashboard"]');
-              if (link) link.classList.add('active');
-            }
-          }
-        }
-
-        // Set active menu on load
-        setActiveMenuItem();
-
-        // Event listeners for modern sidebar
-        sidebarToggle?.addEventListener("click", toggleSidebar);
-        sidebarOverlay?.addEventListener("click", hideSidebar);
-        
-        // Close sidebar when clicking nav links (mobile)
-        sidebar.querySelectorAll(".nav-link").forEach(link => {
-          link.addEventListener("click", () => {
-            if (window.innerWidth < 992) {
-              hideSidebar();
-            }
-          });
-        });
-
-        // Close sidebar on escape key
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape" && sidebar.classList.contains("show")) {
-            hideSidebar();
-          }
-        });
-
-        // Handle window resize
-        window.addEventListener("resize", () => {
-          if (window.innerWidth >= 992) {
-            hideSidebar();
-          }
-        });
+        // Sidebar and theme toggle handled by admin-common.js
       })();
+    </script>
+    <script src="assets/js/admin-common.js"></script>
+    <script>
+      // ===== MASTER TANDA TANGAN =====
+      let masterTTD = null;
+
+      function updateMasterTTDTable(data) {
+        const tbody = document.getElementById("tbody-master-ttd");
+        if (!tbody) return;
+        
+        if (data) {
+          tbody.innerHTML = `
+            <tr>
+              <td>${escapeHtml(data.nama || "-")}</td>
+              <td>${escapeHtml(data.jabatan || "-")}</td>
+              <td>${escapeHtml(data.instansi || "-")}</td>
+              <td>${escapeHtml(data.golongan || "-")}</td>
+              <td>${escapeHtml(data.nip || "-")}</td>
+            </tr>
+          `;
+        } else {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+            </tr>
+          `;
+        }
+      }
+
+      function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      async function loadMasterTTD() {
+        try {
+          const { data, error } = await sb
+            .from("master_tanda_tangan")
+            .select("*")
+            .limit(1)
+            .single();
+
+          if (error && error.code !== 'PGRST116') {
+            console.error("Error loading master TTD:", error);
+            updateMasterTTDTable(null);
+            return;
+          }
+
+          if (data) {
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            document.getElementById("ttd-nama").value = data.nama || "";
+            document.getElementById("ttd-jabatan").value = data.jabatan || "";
+            document.getElementById("ttd-instansi").value = data.instansi || "";
+            document.getElementById("ttd-golongan").value = data.golongan || "";
+            document.getElementById("ttd-nip").value = data.nip || "";
+          } else {
+            updateMasterTTDTable(null);
+            document.getElementById("ttd-nama").value = "";
+            document.getElementById("ttd-jabatan").value = "";
+            document.getElementById("ttd-instansi").value = "";
+            document.getElementById("ttd-golongan").value = "";
+            document.getElementById("ttd-nip").value = "";
+          }
+        } catch (error) {
+          console.error("Error loading master TTD:", error);
+          updateMasterTTDTable(null);
+        }
+      }
+
+      async function saveMasterTTD() {
+        const nama = document.getElementById("ttd-nama").value.trim();
+        const jabatan = document.getElementById("ttd-jabatan").value.trim();
+        const instansi = document.getElementById("ttd-instansi").value.trim();
+        const golongan = document.getElementById("ttd-golongan").value.trim();
+        const nip = document.getElementById("ttd-nip").value.trim();
+
+        if (!nama || !jabatan || !instansi) {
+          alert("Nama, Jabatan, dan Instansi wajib diisi!");
+          return;
+        }
+
+        try {
+          const dataToSave = {
+            nama,
+            jabatan,
+            instansi,
+            golongan: golongan || null,
+            nip: nip || null,
+            updated_at: new Date().toISOString()
+          };
+
+          if (masterTTD && masterTTD.id) {
+            const { data, error } = await sb
+              .from("master_tanda_tangan")
+              .update(dataToSave)
+              .eq("id", masterTTD.id)
+              .select()
+              .single();
+
+            if (error) throw error;
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            alert("Master tanda tangan berhasil diperbarui!");
+          } else {
+            const { data, error } = await sb
+              .from("master_tanda_tangan")
+              .insert(dataToSave)
+              .select()
+              .single();
+
+            if (error) throw error;
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            alert("Master tanda tangan berhasil disimpan!");
+          }
+
+          await loadMasterTTD();
+          const modal = bootstrap.Modal.getInstance(document.getElementById("modalMasterTTD"));
+          if (modal) modal.hide();
+        } catch (error) {
+          console.error("Error saving master TTD:", error);
+          alert("Gagal menyimpan master tanda tangan: " + error.message);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const btnSave = document.getElementById("btn-save-master-ttd");
+        const modal = document.getElementById("modalMasterTTD");
+        
+        if (btnSave) {
+          btnSave.addEventListener("click", saveMasterTTD);
+        }
+        
+        if (modal) {
+          modal.addEventListener("show.bs.modal", loadMasterTTD);
+        }
+      });
     </script>
   </body>
 </html>
-

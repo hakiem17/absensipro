@@ -12,995 +12,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
-
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
-
-      /* --- MODERN CSS VARIABLES --- */
-      :root {
-        --sidebar-w: 280px;
-        --header-h: 70px;
-        --border-radius: 12px;
-        --border-radius-lg: 16px;
-        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        --gradient-info: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-      }
-
-      :root[data-theme="light"] {
-        --bg-main: #f8fafc;
-        --bg-sidebar: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-        --bg-sidebar-solid: #667eea;
-        --bg-card: #ffffff;
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --text-muted: #94a3b8;
-        --border-color: #e2e8f0;
-        --border-hover: #cbd5e1;
-        --nav-link-hover-bg: rgba(255, 255, 255, 0.1);
-        --nav-link-active-bg: rgba(255, 255, 255, 0.2);
-        --nav-link-active-color: #ffffff;
-        --sidebar-text: #ffffff;
-        --sidebar-text-hover: #ffffff;
-        --header-bg: #ffffff;
-        --footer-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      }
-
-      :root[data-theme="dark"] {
-        --bg-main: #0f172a;
-        --bg-sidebar: linear-gradient(180deg, #1e293b 0%, #334155 100%);
-        --bg-sidebar-solid: #1e293b;
-        --bg-card: #334155;
-        --text-primary: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --border-color: #475569;
-        --border-hover: #64748b;
-        --nav-link-hover-bg: rgba(255, 255, 255, 0.08);
-        --nav-link-active-bg: rgba(59, 130, 246, 0.2);
-        --nav-link-active-color: #60a5fa;
-        --sidebar-text: #f8fafc;
-        --sidebar-text-hover: #ffffff;
-        --header-bg: #1e293b;
-        --footer-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      }
-
-      /* --- MODERN RESET & BASE --- */
-      * {
-        box-sizing: border-box;
-      }
-
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        background-color: var(--bg-main);
-        color: var(--text-primary);
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 14px;
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      /* --- MODERN LAYOUT SYSTEM --- */
-      .main-wrapper {
-        display: grid;
-        grid-template-columns: 0 1fr;
-        grid-template-rows: var(--header-h) minmax(0, 1fr) auto;
-        grid-template-areas: 
-          "sidebar header"
-          "sidebar main"
-          "sidebar footer";
-        height: 100vh;
-        max-height: 100vh;
-        overflow: hidden;
-        transition: var(--transition);
-      }
-
-      @media (min-width: 992px) {
-        .main-wrapper {
-          grid-template-columns: var(--sidebar-w) 1fr;
-        }
-      }
-
-      /* --- MODERN SIDEBAR --- */
-      .sidebar {
-        grid-area: sidebar;
-        background: var(--bg-sidebar);
-        border-right: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: var(--sidebar-w);
-        z-index: 1000;
-        transform: translateX(-100%);
-        transition: var(--transition);
-        box-shadow: var(--shadow-lg);
-        overflow: hidden;
-      }
-
-      .sidebar::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: var(--bg-sidebar);
-        z-index: -1;
-      }
-
-      @media (min-width: 992px) {
-        .sidebar {
-          position: static;
-          transform: translateX(0);
-          box-shadow: none;
-        }
-      }
-
-      .sidebar.show {
-        transform: translateX(0);
-      }
-
-      .sidebar-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        position: relative;
-        z-index: 1;
-        flex-shrink: 0;
-      }
-
-      .sidebar-brand {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--sidebar-text);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: var(--transition);
-      }
-
-      .sidebar-brand:hover {
-        color: var(--sidebar-text-hover);
-        transform: translateX(2px);
-      }
-
-      .sidebar-brand i {
-        font-size: 1.5rem;
-        color: #ffffff;
-        background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-      }
-
-      .sidebar-nav {
-        flex: 1;
-        padding: 1rem 0;
-        overflow-y: auto;
-        flex-shrink: 1;
-        min-height: 0;
-      }
-
-      .nav-item {
-        margin: 0.25rem 0;
-      }
-
-      .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem 1.5rem;
-        color: var(--sidebar-text);
-        opacity: 0.85;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 0.875rem;
-        border-radius: 0;
-        transition: var(--transition);
-        position: relative;
-        margin: 0.25rem 0.75rem;
-        border-radius: var(--border-radius);
-      }
-
-      .nav-link:hover {
-        background: var(--nav-link-hover-bg);
-        color: var(--sidebar-text-hover);
-        opacity: 1;
-        transform: translateX(4px);
-      }
-
-      .nav-link.active {
-        background: var(--nav-link-active-bg);
-        color: var(--sidebar-text-hover);
-        opacity: 1;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      }
-
-      .nav-link.active::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background: #ffffff;
-        border-radius: 0 2px 2px 0;
-      }
-
-      [data-theme="dark"] .nav-link.active::before {
-        background: #60a5fa;
-      }
-
-      .nav-link i {
-        font-size: 1.125rem;
-        width: 20px;
-        text-align: center;
-        transition: var(--transition);
-      }
-
-      .nav-link:hover i {
-        transform: scale(1.1);
-      }
-
-      .nav-link.active i {
-        transform: scale(1.15);
-      }
-
-      .sidebar-footer {
-        padding: 1.5rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        position: relative;
-        z-index: 1;
-        margin-top: auto;
-        flex-shrink: 0;
-      }
-
-      .sidebar-footer .btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.75rem 1.5rem;
-        margin: 0;
-        box-sizing: border-box;
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: var(--sidebar-text);
-        backdrop-filter: blur(10px);
-        font-weight: 500;
-        transition: var(--transition);
-      }
-
-      .sidebar-footer .btn:hover {
-        background: rgba(255, 255, 255, 0.25);
-        border-color: rgba(255, 255, 255, 0.4);
-        color: var(--sidebar-text-hover);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
-
-      .sidebar-footer .btn:active {
-        transform: translateY(0);
-      }
-
-      /* Override Bootstrap btn-outline-danger untuk sidebar */
-      .sidebar-footer .btn-outline-danger {
-        background: rgba(255, 255, 255, 0.15) !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
-        color: var(--sidebar-text) !important;
-      }
-
-      .sidebar-footer .btn-outline-danger:hover {
-        background: rgba(255, 255, 255, 0.25) !important;
-        border-color: rgba(255, 255, 255, 0.4) !important;
-        color: var(--sidebar-text-hover) !important;
-      }
-
-      /* --- MODERN HEADER --- */
-      .top-header {
-        grid-area: header;
-        background: var(--header-bg);
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 1.25rem;
-        height: var(--header-h);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-      }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 0.875rem;
-      }
-
-      .sidebar-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border: none;
-        background: var(--bg-card);
-        color: var(--text-secondary);
-        border-radius: var(--border-radius);
-        transition: var(--transition);
-        cursor: pointer;
-      }
-
-      .sidebar-toggle:hover {
-        background: var(--nav-link-hover-bg);
-        color: var(--text-primary);
-      }
-
-      @media (min-width: 992px) {
-        .sidebar-toggle {
-          display: none;
-        }
-      }
-
-      .header-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0;
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 0.875rem;
-      }
-
-      .theme-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border: none;
-        background: var(--bg-card);
-        color: var(--text-secondary);
-        border-radius: var(--border-radius);
-        transition: var(--transition);
-        cursor: pointer;
-      }
-
-      .theme-toggle:hover {
-        background: var(--nav-link-hover-bg);
-        color: var(--text-primary);
-      }
-
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-      }
-
-      /* --- MODERN MAIN CONTENT --- */
-      .main-content-wrapper {
-        grid-area: main;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-        overflow: hidden;
-        max-height: 100%;
-      }
-
-      .main-content {
-        flex: 1;
-        padding: 1.5rem;
-        overflow-y: auto;
-        overflow-x: hidden;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-        max-height: 100%;
-      }
-
-      @media (max-width: 1400px) {
-        .main-content {
-          padding: 1.25rem;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .main-content {
-          padding: 1rem;
-        }
-      }
-
-      /* --- MODERN SEARCH BAR --- */
-      .search-container {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.5rem;
-        box-shadow: var(--shadow-sm);
-      }
-
-      .search-input {
-        background: var(--bg-main);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-        transition: var(--transition);
-        width: 100%;
-      }
-
-      .search-input:focus {
-        outline: none;
-        border-color: var(--nav-link-active-color);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      }
-
-      .search-icon {
-        color: var(--text-secondary);
-        font-size: 1.125rem;
-      }
-
-      /* --- MODERN EVENT CARDS --- */
-      .events-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        flex: 1;
-        min-height: 0;
-        max-height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-      }
-
-      @media (min-width: 768px) {
-        .events-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-
-      @media (min-width: 1200px) {
-        .events-grid {
-          grid-template-columns: repeat(3, 1fr);
-        }
-      }
-
-      .event-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
-        padding: 1.25rem;
-        transition: var(--transition);
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        min-height: auto;
-      }
-
-      .event-card:hover {
-        transform: translateX(4px);
-        box-shadow: var(--shadow-lg);
-        border-color: var(--border-hover);
-      }
-
-      .event-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 4px;
-        background: var(--gradient-primary);
-      }
-
-      .event-card.upcoming::before {
-        background: var(--gradient-info);
-      }
-
-      .event-card.active::before {
-        background: var(--gradient-success);
-      }
-
-      .event-card.done::before {
-        background: var(--gradient-warning);
-      }
-
-      .event-header {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-        width: 100%;
-      }
-
-      .event-title {
-        font-size: 0.9375rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        line-height: 1.4;
-        margin: 0;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        max-height: 2.8em;
-        width: 100%;
-      }
-
-      .event-status {
-        padding: 0.3125rem 0.75rem;
-        border-radius: calc(var(--border-radius) * 0.75);
-        font-size: 0.6875rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        line-height: 1.3;
-        white-space: nowrap;
-        width: fit-content;
-        display: inline-block;
-      }
-
-      .event-status.upcoming {
-        background: rgba(59, 130, 246, 0.2);
-        color: #2563eb;
-        border: 1.5px solid rgba(59, 130, 246, 0.4);
-      }
-
-      .event-status.active {
-        background: rgba(34, 197, 94, 0.2);
-        color: #16a34a;
-        border: 1.5px solid rgba(34, 197, 94, 0.4);
-      }
-
-      .event-status.done {
-        background: rgba(156, 163, 175, 0.2);
-        color: #6b7280;
-        border: 1.5px solid rgba(156, 163, 175, 0.4);
-      }
-
-      .event-meta {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: center;
-        width: 100%;
-      }
-
-      .event-meta-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--text-secondary);
-        font-size: 0.8125rem;
-        flex-shrink: 0;
-        white-space: nowrap;
-      }
-
-      .event-meta-item i {
-        width: 16px;
-        text-align: center;
-        color: var(--text-muted);
-        flex-shrink: 0;
-        font-size: 0.875rem;
-      }
-
-      .event-meta-item span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 200px;
-        display: block;
-        flex-shrink: 0;
-      }
-
-      @media (max-width: 768px) {
-        .event-card {
-          padding: 1.25rem;
-        }
-
-        .event-actions .btn {
-          flex: 1 1 auto;
-          min-width: calc(50% - 0.25rem);
-        }
-
-        .event-meta {
-          gap: 1rem;
-        }
-
-        .event-meta-item span {
-          max-width: 150px;
-        }
-      }
-
-      .event-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.375rem;
-        align-items: center;
-        width: 100%;
-        padding-top: 0.625rem;
-        border-top: 1px solid var(--border-color);
-      }
-
-      .event-actions .btn {
-        font-size: 0.75rem;
-        padding: 0.4375rem 0.75rem;
-        border-radius: calc(var(--border-radius) * 0.75);
-        font-weight: 500;
-        transition: var(--transition);
-        white-space: nowrap;
-        flex-shrink: 0;
-        line-height: 1.3;
-      }
-
-      .event-actions .btn i {
-        font-size: 0.8125rem;
-        line-height: 1;
-        vertical-align: middle;
-      }
-
-      .event-actions .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-md);
-      }
-
-      /* --- PAGINATION --- */
-      .pagination-container {
-        margin-top: 0.75rem;
-        padding: 0.5rem 0;
-        flex-shrink: 0;
-      }
-
-      .pagination {
-        gap: 0.375rem;
-        margin: 0;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        list-style: none;
-        padding: 0;
-      }
-
-      .pagination .page-item {
-        list-style: none;
-      }
-
-      .pagination .page-link {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.875rem;
-        color: var(--text-primary);
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        transition: var(--transition);
-        text-decoration: none;
-        display: block;
-        min-width: 38px;
-        text-align: center;
-      }
-
-      .pagination .page-link:hover {
-        background: var(--nav-link-hover-bg);
-        border-color: var(--border-hover);
-        color: var(--text-primary);
-        transform: translateY(-1px);
-      }
-
-      .pagination .page-item.active .page-link {
-        background: var(--nav-link-active-bg);
-        border-color: var(--nav-link-active-color);
-        color: var(--nav-link-active-color);
-        font-weight: 600;
-      }
-
-      .pagination .page-item.disabled .page-link {
-        opacity: 0.5;
-        cursor: not-allowed;
-        pointer-events: none;
-      }
-
-      /* Responsive List View */
-      @media (max-width: 1200px) {
-        .event-header {
-          margin-right: 1.25rem;
-        }
-
-        .event-meta {
-          gap: 0.875rem;
-        }
-
-        .event-meta-item span {
-          max-width: 150px;
-        }
-
-        .event-actions {
-          margin-left: 1rem;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .event-card {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 1rem;
-          padding: 1rem;
-        }
-
-        .event-header {
-          width: 100%;
-          max-width: 100%;
-          margin-right: 0;
-        }
-
-        .event-title {
-          -webkit-line-clamp: 3;
-          line-clamp: 3;
-          max-height: 4.5em;
-        }
-
-        .event-meta {
-          width: 100%;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0.5rem;
-        }
-
-        .event-meta-item {
-          width: 100%;
-        }
-
-        .event-meta-item span {
-          max-width: 100%;
-          white-space: normal;
-          word-wrap: break-word;
-        }
-
-        .event-actions {
-          width: 100%;
-          margin-left: 0;
-          justify-content: flex-start;
-        }
-
-        .event-actions .btn {
-          flex: 1 1 auto;
-          min-width: 120px;
-        }
-      }
-
-      /* --- MODERN MODAL --- */
-      .modal-content {
-        border: none;
-        border-radius: var(--border-radius-lg);
-        box-shadow: var(--shadow-lg);
-        background: var(--bg-card);
-      }
-
-      .modal-header {
-        border-bottom: 1px solid var(--border-color);
-        padding: 1.5rem;
-      }
-
-      .modal-title {
-        font-weight: 600;
-        color: var(--text-primary);
-      }
-
-      .modal-body {
-        padding: 1.5rem;
-      }
-
-      .modal-footer {
-        border-top: 1px solid var(--border-color);
-        padding: 1.5rem;
-      }
-
-      /* --- MODAL SCROLL FIX --- */
-      #modalMinutes .modal-dialog {
-        max-height: 90vh;
-        margin: 1.75rem auto;
-      }
-
-      #modalMinutes .modal-content {
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-      }
-
-      #modalMinutes .modal-body {
-        overflow-y: auto;
-        overflow-x: hidden;
-        flex: 1 1 auto;
-        padding: 1.5rem;
-        -webkit-overflow-scrolling: touch;
-        max-height: calc(90vh - 180px);
-      }
-
-      #modalMinutes .modal-header {
-        flex-shrink: 0;
-      }
-
-      #modalMinutes .modal-footer {
-        flex-shrink: 0;
-        position: sticky;
-        bottom: 0;
-        background: var(--bg-card);
-        z-index: 10;
-      }
-
-      .form-label {
-        font-weight: 500;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-      }
-
-      .form-control, .form-select {
-        background: var(--bg-main);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        padding: 0.75rem;
-        font-size: 0.875rem;
-        transition: var(--transition);
-      }
-
-      .form-control:focus, .form-select:focus {
-        outline: none;
-        border-color: var(--nav-link-active-color);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      }
-
-      /* --- MODERN BUTTONS --- */
-      .btn {
-        border-radius: var(--border-radius);
-        font-weight: 500;
-        transition: var(--transition);
-        border: none;
-        padding: 0.75rem 1.5rem;
-        font-size: 0.875rem;
-      }
-
-      .btn-primary {
-        background: var(--gradient-primary);
-        border: none;
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-      }
-
-      .btn-outline-primary {
-        border: 1px solid #3b82f6;
-        color: #3b82f6;
-        background: transparent;
-        font-weight: 500;
-      }
-
-      .btn-outline-primary:hover {
-        background: #3b82f6;
-        color: #ffffff;
-        border-color: #3b82f6;
-        transform: translateY(-1px);
-      }
-
-      [data-theme="dark"] .btn-outline-primary {
-        border: 1px solid #60a5fa;
-        color: #60a5fa;
-        background: transparent;
-      }
-
-      [data-theme="dark"] .btn-outline-primary:hover {
-        background: #60a5fa;
-        color: #ffffff;
-        border-color: #60a5fa;
-      }
-
-      /* --- MODERN FOOTER --- */
-      .footer-professional {
-        grid-area: footer;
-        background: var(--footer-bg);
-        color: #ffffff;
-        padding: 1.5rem 2rem;
-        text-align: center;
-        font-size: 0.875rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        z-index: 10;
-        min-height: fit-content;
-        max-height: fit-content;
-      }
-
-      .footer-divider {
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
-        margin: 0.75rem auto 0.5rem;
-        width: 100%;
-        max-width: 1200px;
-      }
-
-      .footer-professional .text-center {
-        width: 100%;
-        padding: 0;
-        margin: 0;
-        line-height: 1.5;
-      }
-
-      /* --- MODERN OVERLAY --- */
-      .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        visibility: hidden;
-        transition: var(--transition);
-      }
-
-      .sidebar-overlay.show {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      @media (min-width: 992px) {
-        .sidebar-overlay {
-          display: none;
-        }
-      }
-
-      /* --- MODERN UTILITIES --- */
-      .text-gradient {
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      /* --- DARK MODE TEXT OVERRIDES --- */
-      [data-theme="dark"] .text-secondary { 
-        color: var(--text-secondary) !important; 
-      }
-      [data-theme="dark"] .text-muted { 
-        color: var(--text-muted) !important; 
-      }
-    </style>
+    <link rel="stylesheet" href="assets/css/admin.css" />
   </head>
   <body>
     <script>
@@ -1018,8 +30,8 @@
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
           <a href="#" class="sidebar-brand">
-            <i class="bi bi-calendar-check"></i>
-            <span>AbsensiPro</span>
+            <i class="bi bi-shield-check"></i>
+            <span>Admin Panel</span>
           </a>
         </div>
         
@@ -1027,12 +39,12 @@
           <ul class="nav flex-column">
             <li class="nav-item">
               <a class="nav-link" href="admin-dashboard.html">
-                <i class="bi bi-speedometer2"></i>
+                <i class="bi bi-house-door"></i>
                 <span>Dashboard</span>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="#">
+              <a class="nav-link active" href="admin-manajemen-acara.html">
                 <i class="bi bi-calendar-event"></i>
                 <span>Manajemen Acara</span>
               </a>
@@ -1049,14 +61,49 @@
                 <span>Rekap Acara (Live)</span>
               </a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-print-daftar-hadir.html">
+                <i class="bi bi-printer"></i>
+                <span>Print Daftar Hadir</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-notulen-acara.html">
+                <i class="bi bi-file-text"></i>
+                <span>Notulen Acara</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="btn-master-ttd" data-bs-toggle="modal" data-bs-target="#modalMasterTTD">
+                <i class="bi bi-pen"></i>
+                <span>Master Tanda Tangan</span>
+              </a>
+            </li>
           </ul>
         </nav>
-        
-        <div class="sidebar-footer">
-          <button id="btn-logout" class="btn w-100">
-            <i class="bi bi-box-arrow-right me-2"></i>
-            Logout
+
+        <!-- Theme Toggle di Sidebar -->
+        <div style="padding: 0.5rem 0.75rem;">
+          <button id="theme-toggle" class="sidebar-theme-toggle">
+            <i class="bi bi-sun-fill"></i>
+            <span>Mode Gelap/Terang</span>
           </button>
+        </div>
+        
+        <!-- User Info di Footer Sidebar -->
+        <div class="sidebar-footer">
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="sidebar-user-details">
+              <div class="sidebar-user-name">Admin User</div>
+              <div class="sidebar-user-role">Administrator</div>
+            </div>
+            <button id="btn-logout" class="sidebar-logout-btn" title="Logout">
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -1068,16 +115,28 @@
             <button class="sidebar-toggle" id="sidebarToggle">
               <i class="bi bi-list"></i>
             </button>
-            <h1 class="header-title">Manajemen Acara</h1>
+            <div class="header-search">
+              <i class="bi bi-search"></i>
+              <input type="text" placeholder="Search..." class="search-input" />
+            </div>
           </div>
           
           <div class="header-right">
-            <button id="theme-toggle" class="theme-toggle">
+            <button id="theme-toggle-header" class="header-icon-btn" title="Toggle Theme">
               <i class="bi bi-sun-fill"></i>
             </button>
-            <div class="user-info">
-              <i class="bi bi-person-circle"></i>
-              <span>Selamat datang, Hakiem</span>
+            <div class="header-notification">
+              <button class="header-icon-btn notification-btn" title="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="notification-badge">3</span>
+              </button>
+            </div>
+            <div class="header-user-profile">
+              <div class="user-avatar-small">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <span class="user-name-header">Admin</span>
+              <i class="bi bi-chevron-down"></i>
             </div>
           </div>
         </header>
@@ -1085,7 +144,7 @@
         <!-- Main Content -->
         <main class="main-content">
           <!-- Page Header -->
-          <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-4" style="padding-top: 1.5rem;">
             <div>
               <h2 class="h5 mb-1 text-gradient">Manajemen Acara</h2>
               <p class="text-muted mb-0 small">Kelola acara dan kehadiran peserta</p>
@@ -1103,8 +162,9 @@
               <input
                 id="search"
                 type="search"
-                class="search-input"
+                class="form-control"
                 placeholder="Cari judul atau lokasi acara..."
+                style="border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-primary);"
               />
             </div>
           </div>
@@ -1123,15 +183,94 @@
             </nav>
           </div>
         </main>
-      </div>
 
-      <!-- Modern Footer -->
-      <footer class="footer-professional">
-        <div class="footer-divider"></div>
-        <div class="text-center">
-          &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai Tengah.
+        <!-- Modal Master Tanda Tangan -->
+        <div class="modal fade" id="modalMasterTTD" tabindex="-1" aria-labelledby="modalMasterTTDLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalMasterTTDLabel">
+                  <i class="bi bi-pen me-2"></i>
+                  Master Tanda Tangan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Tabel Data Master TTD -->
+                <div class="mb-4">
+                  <h6 class="mb-3">Data Master Tanda Tangan yang Tersimpan</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="table-master-ttd">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Nama</th>
+                          <th>Jabatan</th>
+                          <th>Instansi</th>
+                          <th>Golongan</th>
+                          <th>NIP</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbody-master-ttd">
+                        <tr>
+                          <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Form Input/Edit -->
+                <h6 class="mb-3">Form Master Tanda Tangan</h6>
+                <form id="form-master-ttd">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-nama" class="form-label">Nama <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-nama" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-jabatan" required>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-instansi" class="form-label">Instansi <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-instansi" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-golongan" class="form-label">Golongan</label>
+                      <input type="text" class="form-control" id="ttd-golongan">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-nip" class="form-label">NIP</label>
+                      <input type="text" class="form-control" id="ttd-nip">
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-save-master-ttd">
+                  <i class="bi bi-save me-2"></i>
+                  Simpan
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </footer>
+
+        <!-- Modern Footer -->
+        <footer class="footer-professional">
+          <div class="footer-divider"></div>
+          <div class="text-center">
+            &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai Tengah.
+          </div>
+        </footer>
+      </div>
     </div>
 
     <!-- Modal Tambah/Edit -->
@@ -1208,259 +347,18 @@
       </div>
     </div>
 
-    <!-- Modal Notulen Acara -->
-    <div class="modal fade" id="modalMinutes" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-scrollable modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              <i class="bi bi-file-text me-2"></i>
-              <span id="modal-minutes-title">Notulen Rapat</span>
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Tutup"
-            ></button>
-          </div>
-          <form id="form-minutes">
-            <div class="modal-body">
-              <input type="hidden" id="minutes-event-id" />
-              
-              <!-- Row 1: Agenda Rapat & Hari/Tanggal -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Agenda Rapat</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="minutes-agenda"
-                    readonly
-                    style="background-color: #f8f9fa;"
-                  />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Hari/Tanggal</label>
-                  <input
-                    type="date"
-                    class="form-control"
-                    id="minutes-date"
-                    required
-                  />
-                </div>
-              </div>
-
-              <!-- Row 2: Waktu Rapat & Tempat -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Waktu Rapat</label>
-                  <input
-                    type="time"
-                    class="form-control"
-                    id="minutes-time"
-                    required
-                  />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Tempat</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="minutes-place"
-                    placeholder="Contoh: Ruang Rapat Diskominfo HST"
-                  />
-                </div>
-              </div>
-
-              <!-- Row 3: Pimpinan Rapat -->
-              <div class="row mb-3">
-                <div class="col-12">
-                  <label class="form-label fw-bold">Pimpinan Rapat</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="minutes-leader"
-                    placeholder="Nama pimpinan rapat"
-                  />
-                </div>
-              </div>
-
-              <!-- Row 4: Surat Undangan -->
-              <div class="row mb-3">
-                <div class="col-12">
-                  <label class="form-label fw-bold">Surat Undangan</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="minutes-invitation"
-                    placeholder="Contoh: 001/Diskominfo/2025"
-                  />
-                  <div class="form-text">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Masukkan nomor surat undangan
-                  </div>
-                </div>
-              </div>
-
-              <!-- Row 5: Peserta Rapat -->
-              <div class="row mb-3">
-                <div class="col-12">
-                  <label class="form-label fw-bold">Peserta Rapat</label>
-                  <textarea
-                    class="form-control"
-                    id="minutes-participants"
-                    rows="4"
-                    placeholder="Masukkan daftar peserta rapat (satu per baris atau dipisah koma)"
-                  ></textarea>
-                  <div class="form-text">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Dapat diisi manual atau akan terisi otomatis dari daftar hadir
-                  </div>
-                </div>
-              </div>
-
-              <!-- Row 6: Kegiatan Rapat -->
-              <div class="row mb-3">
-                <div class="col-12">
-                  <label class="form-label fw-bold">Kegiatan Rapat</label>
-                  
-                  <div class="mb-2">
-                    <label class="form-label small">Pembukaan</label>
-                    <textarea
-                      class="form-control"
-                      id="minutes-opening"
-                      rows="3"
-                      placeholder="Isi pembukaan rapat..."
-                    ></textarea>
-                  </div>
-
-                  <div class="mb-2">
-                    <label class="form-label small">Materi</label>
-                    <textarea
-                      class="form-control"
-                      id="minutes-material"
-                      rows="4"
-                      placeholder="Isi materi yang dibahas..."
-                    ></textarea>
-                  </div>
-
-                  <div class="mb-2">
-                    <label class="form-label small">Diskusi dan Tanggapan</label>
-                    <textarea
-                      class="form-control"
-                      id="minutes-discussion"
-                      rows="4"
-                      placeholder="Isi diskusi dan tanggapan peserta..."
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Row 7: Kesimpulan -->
-              <div class="row mb-3">
-                <div class="col-12">
-                  <label class="form-label fw-bold">Kesimpulan</label>
-                  <textarea
-                    class="form-control"
-                    id="minutes-conclusion"
-                    rows="3"
-                    placeholder="Isi kesimpulan rapat..."
-                  ></textarea>
-                </div>
-              </div>
-
-              <!-- Row 8: Penutup -->
-              <div class="row mb-3">
-                <div class="col-12">
-                  <label class="form-label fw-bold">Penutup</label>
-                  <textarea
-                    class="form-control"
-                    id="minutes-closing"
-                    rows="2"
-                    placeholder="Isi penutup rapat..."
-                  ></textarea>
-                </div>
-              </div>
-
-              <!-- Row 9: Upload Gambar -->
-              <div class="row mb-3">
-                <div class="col-12">
-                  <label class="form-label fw-bold">Upload Gambar</label>
-                  <input
-                    type="file"
-                    class="form-control"
-                    id="minutes-images"
-                    accept=".jpg,.jpeg,.png,.gif"
-                    multiple
-                  />
-                  <div class="form-text">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Format: JPG, PNG, GIF (Maks. 5MB per gambar, maksimal 4 gambar)
-                  </div>
-                  <div id="images-count" class="small text-muted mb-2" style="display: none;">
-                    <i class="bi bi-images me-1"></i>
-                    <span id="images-count-text">0/4 gambar dipilih</span>
-                  </div>
-                  <div id="images-preview" class="mt-3 row g-2"></div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-outline-danger"
-                id="btn-print-pdf"
-              >
-                <i class="bi bi-file-pdf me-2"></i>Print PDF
-              </button>
-              <div class="ms-auto">
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Batal
-                </button>
-                <button type="submit" class="btn btn-primary" id="btn-save-minutes">
-                  <i class="bi bi-check2 me-2"></i>Simpan Notulen
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
 
     <!-- Libs -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="assets/js/config.js"></script>
     <script src="assets/js/auth.js"></script>
 
     <script>
-      // Tahun & tema
+      // Tahun
       document.getElementById("copyright-year").textContent =
         new Date().getFullYear();
-      const themeToggle = document.getElementById("theme-toggle");
-      function updateIcon() {
-        themeToggle.querySelector("i").className =
-          document.documentElement.getAttribute("data-theme") === "dark"
-            ? "bi bi-sun-fill"
-            : "bi bi-moon-fill";
-      }
-      themeToggle.addEventListener("click", () => {
-        const t =
-          document.documentElement.getAttribute("data-theme") === "dark"
-            ? "light"
-            : "dark";
-        document.documentElement.setAttribute("data-theme", t);
-        localStorage.setItem("theme", t);
-        updateIcon();
-      });
-      updateIcon();
+      // Theme toggle handled by admin-common.js
 
       // Supabase & Auth
       const sb = supabase.createClient(
@@ -1550,9 +448,6 @@
               <a class="btn btn-sm btn-outline-primary" href="${viewUrl}">
                 <i class="bi bi-people me-1"></i>Daftar Hadir
               </a>
-              <button class="btn btn-sm btn-outline-info" data-action="minutes" data-event-id="${ev.id}">
-                <i class="bi bi-file-text me-1"></i>Notulen Acara
-              </button>
               <button class="btn btn-sm btn-outline-secondary" data-action="copy-link" data-url="${formUrl}">
                 <i class="bi bi-link-45deg me-1"></i>Salin Link
               </button>
@@ -1791,145 +686,6 @@
               newStatus === "done" ? "Tandai Aktif" : "Tandai Selesai"
             }`;
           }
-        } else if (btn.dataset.action === "minutes") {
-          const eventId = btn.dataset.eventId || id;
-          
-          try {
-            // Load event data (tanpa minutes dulu untuk kompatibilitas)
-            let eventRes = await sb
-              .from("events")
-              .select("id, title, datetime, location")
-              .eq("id", eventId)
-              .single();
-            
-            // Coba load dengan minutes jika kolom ada
-            if (!eventRes.error) {
-              try {
-                const eventResWithMinutes = await sb
-                  .from("events")
-                  .select("id, title, datetime, location, minutes")
-                  .eq("id", eventId)
-                  .single();
-                if (!eventResWithMinutes.error) {
-                  eventRes = eventResWithMinutes;
-                }
-              } catch (e) {
-                // Kolom minutes mungkin belum ada, gunakan data tanpa minutes
-                console.warn("Kolom minutes belum ada di database:", e);
-              }
-            }
-            
-            if (eventRes.error) {
-              console.error("Error loading event:", eventRes.error);
-              alert("Gagal memuat data acara: " + (eventRes.error.message || "Unknown error"));
-              return;
-            }
-            
-            if (!eventRes.data) {
-              alert("Data acara tidak ditemukan.");
-              return;
-            }
-            
-            // Load attendees (optional, tidak block jika error)
-            let attendeesData = [];
-            try {
-              const attendeesRes = await sb
-                .from("attendees")
-                .select("name, instansi, jabatan")
-                .eq("event_id", eventId)
-                .order("name", { ascending: true });
-              
-              if (!attendeesRes.error && attendeesRes.data) {
-                attendeesData = attendeesRes.data;
-              }
-            } catch (err) {
-              console.warn("Error loading attendees (non-blocking):", err);
-            }
-          
-            const event = eventRes.data;
-            const eventTitle = event.title || "Acara";
-            
-            // Set event ID
-            document.getElementById("minutes-event-id").value = event.id;
-            
-            // Auto-fill dari data acara
-            document.getElementById("minutes-agenda").value = eventTitle;
-            if (event.datetime) {
-              const eventDate = new Date(event.datetime);
-              document.getElementById("minutes-date").value = eventDate.toISOString().split('T')[0];
-              document.getElementById("minutes-time").value = eventDate.toTimeString().slice(0, 5);
-            }
-            if (event.location) {
-              document.getElementById("minutes-place").value = event.location;
-            }
-            
-            // Load notulen yang sudah ada (JSON)
-            let minutesData = {};
-            if (event.minutes) {
-              try {
-                minutesData = JSON.parse(event.minutes);
-              } catch (e) {
-                // Jika bukan JSON, anggap sebagai text lama
-                minutesData = { oldText: event.minutes };
-              }
-            }
-            
-            // Populate form fields
-            document.getElementById("minutes-leader").value = minutesData.leader || "";
-            document.getElementById("minutes-participants").value = minutesData.participants || "";
-            document.getElementById("minutes-opening").value = minutesData.opening || "";
-            document.getElementById("minutes-material").value = minutesData.material || "";
-            document.getElementById("minutes-discussion").value = minutesData.discussion || "";
-            document.getElementById("minutes-conclusion").value = minutesData.conclusion || "";
-            document.getElementById("minutes-closing").value = minutesData.closing || "";
-            
-            // Auto-fill peserta dari daftar hadir jika belum ada
-            if (!minutesData.participants && attendeesData.length > 0) {
-              const participantsList = attendeesData.map(a => 
-                `${a.name}${a.jabatan ? ` - ${a.jabatan}` : ''}${a.instansi ? ` (${a.instansi})` : ''}`
-              ).join('\n');
-              document.getElementById("minutes-participants").value = participantsList;
-            }
-            
-            // Load nomor surat undangan jika ada
-            // Kompatibilitas backward: jika ada invitationUrl (data lama), kosongkan
-            // Jika ada invitationNumber, gunakan itu
-            document.getElementById("minutes-invitation").value = minutesData.invitationNumber || "";
-            
-            // Preview gambar jika ada
-            const imagesPreview = document.getElementById("images-preview");
-            imagesPreview.innerHTML = "";
-            // Simpan array images yang sudah ada untuk referensi
-            window.existingImages = minutesData.images || [];
-            if (window.existingImages.length > 0) {
-              window.existingImages.forEach((imgUrl, idx) => {
-                const col = document.createElement("div");
-                col.className = "col-md-3 mb-2";
-                col.setAttribute("data-image-url", imgUrl);
-                col.innerHTML = `
-                  <div class="position-relative">
-                    <img src="${imgUrl}" class="img-thumbnail" style="width: 100%; height: 150px; object-fit: cover;" />
-                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="removeExistingImage(this)">
-                      <i class="bi bi-x"></i>
-                    </button>
-                  </div>
-                `;
-                imagesPreview.appendChild(col);
-              });
-            }
-            
-            // Update counter setelah load gambar existing
-            setTimeout(() => updateImagesCount(), 100);
-            
-            document.getElementById("modal-minutes-title").textContent = `Notulen: ${eventTitle}`;
-            const modalMinutes = new bootstrap.Modal(document.getElementById("modalMinutes"));
-            modalMinutes.show();
-            
-          } catch (error) {
-            console.error("Error in minutes handler:", error);
-            alert("Terjadi kesalahan saat memuat data: " + (error.message || "Unknown error"));
-            return;
-          }
         } else if (btn.dataset.action === "edit") {
           const { data, error } = await sb
             .from("events")
@@ -2001,758 +757,6 @@
         $modalTitle.textContent = "Tambah Acara";
       });
 
-      // Fungsi upload file ke Supabase Storage
-      async function uploadFile(file, bucket, folder = "minutes") {
-        try {
-          // Validasi ukuran file
-          const maxSize = 5 * 1024 * 1024; // 5MB
-          if (file.size > maxSize) {
-            throw new Error(`File ${file.name} melebihi 5MB (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
-          }
-          
-          const fileName = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-          
-          const { data, error } = await sb.storage
-            .from(bucket)
-            .upload(fileName, file, {
-              cacheControl: '3600',
-              upsert: false
-            });
-          
-          if (error) {
-            console.error(`Upload error for ${file.name}:`, error);
-            // Cek apakah error karena bucket tidak ada atau permission
-            if (error.message && error.message.includes('Bucket not found')) {
-              throw new Error(`Bucket '${bucket}' tidak ditemukan. Pastikan bucket sudah dibuat di Supabase Storage.`);
-            } else if (error.message && error.message.includes('new row violates row-level security')) {
-              throw new Error(`Tidak memiliki permission untuk upload ke bucket '${bucket}'. Periksa RLS policies.`);
-            }
-            throw new Error(error.message || `Gagal upload ${file.name}`);
-          }
-          
-          if (!data || !data.path) {
-            throw new Error(`Upload gagal untuk ${file.name}: tidak ada data path`);
-          }
-          
-          const { data: publicData, error: urlError } = sb.storage
-            .from(bucket)
-            .getPublicUrl(data.path);
-          
-          if (urlError || !publicData || !publicData.publicUrl) {
-            throw new Error(`Gagal mendapatkan public URL untuk ${file.name}`);
-          }
-          
-          return publicData.publicUrl;
-        } catch (error) {
-          console.error(`Error in uploadFile for ${file.name}:`, error);
-          throw error;
-        }
-      }
-
-      // Fungsi untuk menghitung total gambar (existing + new)
-      function getTotalImagesCount() {
-        const existingCount = (window.existingImages || []).length;
-        const newFiles = document.getElementById("minutes-images")?.files || [];
-        const newCount = Array.from(newFiles).filter(f => f.type.startsWith('image/')).length;
-        return existingCount + newCount;
-      }
-
-      // Update counter gambar
-      function updateImagesCount() {
-        const total = getTotalImagesCount();
-        const countEl = document.getElementById("images-count");
-        const countText = document.getElementById("images-count-text");
-        
-        if (total > 0) {
-          countEl.style.display = "block";
-          countText.textContent = `${total}/4 gambar dipilih`;
-          
-          if (total >= 4) {
-            countText.className = "text-warning";
-            countText.textContent = `${total}/4 gambar dipilih (Maksimal tercapai)`;
-          } else {
-            countText.className = "text-muted";
-          }
-        } else {
-          countEl.style.display = "none";
-        }
-      }
-
-      // Preview gambar saat dipilih (tambahkan ke preview yang sudah ada)
-      document.getElementById("minutes-images")?.addEventListener("change", function(e) {
-        const preview = document.getElementById("images-preview");
-        const fileInput = e.target;
-        const existingCount = (window.existingImages || []).length;
-        let selectedFiles = Array.from(fileInput.files).filter(f => f.type.startsWith('image/'));
-        
-        // Validasi ukuran file (5MB per file)
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        const oversizedFiles = selectedFiles.filter(f => f.size > maxSize);
-        if (oversizedFiles.length > 0) {
-          alert(`Beberapa file melebihi 5MB:\n${oversizedFiles.map(f => `- ${f.name} (${(f.size / 1024 / 1024).toFixed(2)}MB)`).join('\n')}\n\nFile-file tersebut tidak akan ditambahkan.`);
-          // Filter out oversized files
-          selectedFiles = selectedFiles.filter(f => f.size <= maxSize);
-          // Update file input
-          const dt = new DataTransfer();
-          selectedFiles.forEach(file => dt.items.add(file));
-          fileInput.files = dt.files;
-        }
-        
-        // Validasi maksimal 4 gambar
-        if (existingCount + selectedFiles.length > 4) {
-          alert(`Maksimal 4 gambar. Anda sudah memiliki ${existingCount} gambar. Silakan pilih maksimal ${4 - existingCount} gambar lagi.`);
-          
-          // Reset file input
-          const dt = new DataTransfer();
-          const maxNew = Math.max(0, 4 - existingCount);
-          selectedFiles.slice(0, maxNew).forEach(file => {
-            dt.items.add(file);
-          });
-          fileInput.files = dt.files;
-          
-          // Update preview hanya untuk file yang valid
-          selectedFiles.slice(0, maxNew).forEach((file, idx) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              const col = document.createElement("div");
-              col.className = "col-md-3 mb-2";
-              col.setAttribute("data-file-name", file.name);
-              col.innerHTML = `
-                <div class="position-relative">
-                  <img src="${e.target.result}" class="img-thumbnail" style="width: 100%; height: 150px; object-fit: cover;" />
-                  <span class="badge bg-info position-absolute top-0 start-0 m-1">${file.name}</span>
-                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="removeNewImage(this)">
-                    <i class="bi bi-x"></i>
-                  </button>
-                </div>
-              `;
-              preview.appendChild(col);
-              updateImagesCount();
-            };
-            reader.readAsDataURL(file);
-          });
-        } else {
-          // Normal flow jika tidak melebihi batas
-          selectedFiles.forEach((file, idx) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              const col = document.createElement("div");
-              col.className = "col-md-3 mb-2";
-              col.setAttribute("data-file-name", file.name);
-              col.innerHTML = `
-                <div class="position-relative">
-                  <img src="${e.target.result}" class="img-thumbnail" style="width: 100%; height: 150px; object-fit: cover;" />
-                  <span class="badge bg-info position-absolute top-0 start-0 m-1">${file.name}</span>
-                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="removeNewImage(this)">
-                    <i class="bi bi-x"></i>
-                  </button>
-                </div>
-              `;
-              preview.appendChild(col);
-              updateImagesCount();
-            };
-            reader.readAsDataURL(file);
-          });
-        }
-        
-        updateImagesCount();
-      });
-
-      // Fungsi untuk remove new image dari preview
-      window.removeNewImage = function(btn) {
-        const col = btn.closest('.col-md-3');
-        const fileName = col.getAttribute('data-file-name');
-        // Remove dari file input
-        const fileInput = document.getElementById("minutes-images");
-        const dt = new DataTransfer();
-        Array.from(fileInput.files).forEach(file => {
-          if (file.name !== fileName) {
-            dt.items.add(file);
-          }
-        });
-        fileInput.files = dt.files;
-        col.remove();
-        updateImagesCount();
-      };
-
-      // Simpan Notulen
-      document
-        .getElementById("form-minutes")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const eventId = document.getElementById("minutes-event-id").value;
-          
-          if (!eventId) {
-            alert("Event ID tidak valid.");
-            return;
-          }
-
-          // Disable button untuk prevent double submit
-          const submitBtn = document.getElementById("btn-save-minutes");
-          const originalText = submitBtn.innerHTML;
-          submitBtn.disabled = true;
-          submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Menyimpan...';
-
-          try {
-            // Collect data dari form
-            const minutesData = {
-              agenda: document.getElementById("minutes-agenda").value,
-              date: document.getElementById("minutes-date").value,
-              time: document.getElementById("minutes-time").value,
-              place: document.getElementById("minutes-place").value,
-              leader: document.getElementById("minutes-leader").value,
-              participants: document.getElementById("minutes-participants").value,
-              opening: document.getElementById("minutes-opening").value,
-              material: document.getElementById("minutes-material").value,
-              discussion: document.getElementById("minutes-discussion").value,
-              conclusion: document.getElementById("minutes-conclusion").value,
-              closing: document.getElementById("minutes-closing").value,
-              invitationNumber: document.getElementById("minutes-invitation").value.trim() || null,
-              images: []
-            };
-
-            // Upload gambar jika ada (maksimal 4 total)
-            const imageFiles = Array.from(document.getElementById("minutes-images").files);
-            const existingImages = window.existingImages || [];
-            const totalImages = existingImages.length + imageFiles.filter(f => f.type.startsWith('image/')).length;
-            
-            if (totalImages > 4) {
-              alert("Maksimal 4 gambar. Silakan hapus beberapa gambar terlebih dahulu.");
-              submitBtn.disabled = false;
-              submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Simpan Notulen';
-              return;
-            }
-            
-            // Validasi ukuran file sebelum upload
-            const maxSize = 5 * 1024 * 1024; // 5MB
-            const oversizedFiles = imageFiles.filter(f => f.size > maxSize);
-            if (oversizedFiles.length > 0) {
-              alert(`Beberapa file melebihi 5MB:\n${oversizedFiles.map(f => `- ${f.name} (${(f.size / 1024 / 1024).toFixed(2)}MB)`).join('\n')}\n\nSilakan kompres atau pilih file lain.`);
-              submitBtn.disabled = false;
-              submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Simpan Notulen';
-              return;
-            }
-            
-            if (imageFiles.length > 0) {
-              const uploadResults = [];
-              const uploadErrors = [];
-              
-              for (const file of imageFiles) {
-                if (file.type.startsWith('image/')) {
-                  try {
-                    const imageUrl = await uploadFile(file, "signatures", "minutes-images");
-                    minutesData.images.push(imageUrl);
-                    uploadResults.push({ file: file.name, success: true });
-                  } catch (err) {
-                    console.error(`Error uploading ${file.name}:`, err);
-                    uploadErrors.push({ 
-                      file: file.name, 
-                      error: err.message || err.error?.message || "Unknown error" 
-                    });
-                  }
-                }
-              }
-              
-              // Tampilkan hasil upload
-              if (uploadErrors.length > 0) {
-                const errorMsg = `Gagal upload ${uploadErrors.length} dari ${imageFiles.length} gambar:\n\n` +
-                  uploadErrors.map(e => `- ${e.file}: ${e.error}`).join('\n') +
-                  `\n\nGambar yang berhasil diupload: ${uploadResults.length}`;
-                alert(errorMsg);
-              }
-              
-              // Jika semua gagal dan tidak ada existing images, beri warning
-              if (uploadResults.length === 0 && existingImages.length === 0) {
-                alert("Tidak ada gambar yang berhasil diupload. Notulen akan disimpan tanpa gambar.");
-              }
-            } else {
-              // Pertahankan gambar yang sudah ada (dari existingImages array)
-              if (window.existingImages && window.existingImages.length > 0) {
-                minutesData.images = [...window.existingImages];
-              }
-            }
-
-            // Simpan sebagai JSON
-            // Coba update dengan kolom minutes dulu
-            let result = await sb
-              .from("events")
-              .update({ minutes: JSON.stringify(minutesData) })
-              .eq("id", eventId);
-
-            // Jika error karena kolom tidak ada, coba tambahkan kolom dulu
-            if (result.error) {
-              console.error("Error saving minutes:", result.error);
-              
-              // Cek apakah error karena kolom tidak ada
-              const submitBtn = document.getElementById("btn-save-minutes");
-              if (result.error.message && (result.error.message.includes('column') || result.error.message.includes('does not exist') || result.error.code === '42703')) {
-                alert("Kolom 'minutes' belum ada di database.\n\nSilakan jalankan SQL berikut di Supabase SQL Editor:\n\nALTER TABLE events ADD COLUMN IF NOT EXISTS minutes TEXT;");
-                if (submitBtn) {
-                  submitBtn.disabled = false;
-                  submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Simpan Notulen';
-                }
-                return;
-              }
-              
-              // Error lainnya
-              alert("Gagal menyimpan notulen: " + (result.error.message || result.error.code || "Unknown error") + "\n\nCek console untuk detail.");
-              console.error("Full error:", result.error);
-              if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-check2 me-2"></i>Simpan Notulen';
-              }
-              return;
-            }
-
-            const modalMinutes = bootstrap.Modal.getInstance(document.getElementById("modalMinutes"));
-            modalMinutes.hide();
-            alert("Notulen berhasil disimpan!");
-          } catch (error) {
-            console.error("Error saving minutes:", error);
-            alert("Terjadi kesalahan saat menyimpan notulen: " + (error.message || "Unknown error") + "\n\nCek console untuk detail.");
-          } finally {
-            // Re-enable button
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-          }
-        });
-
-      // Fungsi untuk remove existing image dari preview
-      window.removeExistingImage = function(btn) {
-        const col = btn.closest('.col-md-3');
-        const imgUrl = col.getAttribute('data-image-url');
-        if (imgUrl && window.existingImages) {
-          window.existingImages = window.existingImages.filter(url => url !== imgUrl);
-        }
-        col.remove();
-        updateImagesCount();
-      };
-
-      // Fungsi escape HTML untuk PDF
-      function escapeHtml(text) {
-        if (!text) return "";
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML.replace(/\n/g, '<br>');
-      }
-
-      // Save PDF Notulen
-      document.getElementById("btn-print-pdf")?.addEventListener("click", async function() {
-        // Ambil semua data dari form
-        const agenda = document.getElementById("minutes-agenda").value || "-";
-        const date = document.getElementById("minutes-date").value || "-";
-        const time = document.getElementById("minutes-time").value || "-";
-        const place = document.getElementById("minutes-place").value || "-";
-        const leader = document.getElementById("minutes-leader").value || "-";
-        const invitationNumber = document.getElementById("minutes-invitation").value || "-";
-        const participants = document.getElementById("minutes-participants").value || "-";
-        const opening = document.getElementById("minutes-opening").value || "-";
-        const material = document.getElementById("minutes-material").value || "-";
-        const discussion = document.getElementById("minutes-discussion").value || "-";
-        const conclusion = document.getElementById("minutes-conclusion").value || "-";
-        const closing = document.getElementById("minutes-closing").value || "-";
-        
-        // Format tanggal
-        const dateObj = date !== "-" ? new Date(date + "T" + time) : null;
-        const formattedDate = dateObj ? dateObj.toLocaleDateString("id-ID", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric"
-        }) : "-";
-        const formattedTime = time !== "-" ? time : "-";
-
-        // Ambil gambar yang sudah ada
-        const existingImages = window.existingImages || [];
-        const imageElements = document.querySelectorAll("#images-preview img");
-        const allImages = [];
-        imageElements.forEach(img => {
-          if (img.src && !img.src.startsWith('data:')) {
-            allImages.push(img.src);
-          }
-        });
-        existingImages.forEach(url => {
-          if (!allImages.includes(url)) {
-            allImages.push(url);
-          }
-        });
-
-        // Buat HTML untuk print
-        const printContent = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="UTF-8">
-            <title>Notulen Rapat - ${agenda}</title>
-            <style>
-              @page {
-                size: 210mm 330mm; /* F4 size */
-                margin: 1cm;
-              }
-              body {
-                font-family: 'Times New Roman', serif;
-                font-size: 12pt;
-                line-height: 1.6;
-                color: #000;
-              }
-              .print-header {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-bottom: 15px;
-                color: #000;
-              }
-              .print-logo {
-                width: 85px;
-                height: auto;
-                margin-right: 1.5rem;
-              }
-              .print-header-text {
-                line-height: 1.3;
-                text-align: center;
-              }
-              .print-header-text h4 {
-                font-size: 16pt;
-                margin: 0;
-                font-weight: normal;
-              }
-              .print-header-text h3 {
-                font-size: 18pt;
-                font-weight: bold;
-                margin: 0;
-                line-height: 1.2;
-              }
-              .print-header-text p {
-                font-size: 9pt;
-                margin: 4px 0 0;
-              }
-              .print-separator {
-                border: none;
-                border-top: 3px double #000;
-                margin: 0 0 20px 0;
-              }
-              .content {
-                margin-top: 20px;
-              }
-              .section {
-                margin-bottom: 20px;
-              }
-              .section-title {
-                font-weight: bold;
-                font-size: 13pt;
-                margin-bottom: 8px;
-                border-bottom: 1px solid #000;
-                padding-bottom: 3px;
-              }
-              .field {
-                margin-bottom: 12px;
-              }
-              .field-label {
-                font-weight: bold;
-                display: inline-block;
-                min-width: 150px;
-              }
-              .field-value {
-                display: inline-block;
-              }
-              .text-content {
-                text-align: justify;
-                margin-top: 8px;
-                white-space: pre-wrap;
-              }
-              .images-grid {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-                margin-top: 15px;
-              }
-              .image-item {
-                text-align: center;
-              }
-              .image-item img {
-                max-width: 100%;
-                height: auto;
-                border: 1px solid #ccc;
-                margin-bottom: 5px;
-              }
-              .footer {
-                margin-top: 60px;
-                text-align: right;
-              }
-              .signature {
-                display: inline-block;
-                text-align: left;
-              }
-              .signature-item {
-                margin-bottom: 0;
-                font-weight: normal;
-              }
-              .signature-space {
-                height: 60px;
-                margin: 0;
-              }
-              @media print {
-                body { margin: 0; }
-                .no-print { display: none; }
-              }
-            </style>
-          </head>
-          <body>
-            <!-- KOP SURAT -->
-            <div class="print-header">
-              <img
-                src="assets/img/logo_hst.png"
-                alt="Logo HST"
-                class="print-logo"
-              />
-              <div class="print-header-text">
-                <h4>PEMERINTAH KABUPATEN HULU SUNGAI TENGAH</h4>
-                <h3>DINAS KOMUNIKASI, INFORMATIKA,</h3>
-                <h3>STATISTIK DAN PERSANDIAN</h3>
-                <p>
-                  Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai, Kalimantan Selatan 71351<br />
-                  Telepon (0517) 3791750, Faksimile (0517) 3791750<br />
-                  Laman: diskominfosp.hstkab.go.id, Pos-el diskominfosp@hstkab.go.id
-                </p>
-              </div>
-            </div>
-            <hr class="print-separator" />
-            
-            <div class="content">
-              <div class="section">
-                <div class="section-title">NOTULEN RAPAT</div>
-                
-                <div class="field">
-                  <span class="field-label">Agenda Rapat:</span>
-                  <span class="field-value">${escapeHtml(agenda)}</span>
-                </div>
-                
-                <div class="field">
-                  <span class="field-label">Hari/Tanggal:</span>
-                  <span class="field-value">${escapeHtml(formattedDate)}</span>
-                </div>
-                
-                <div class="field">
-                  <span class="field-label">Waktu:</span>
-                  <span class="field-value">${escapeHtml(formattedTime)} WITA</span>
-                </div>
-                
-                <div class="field">
-                  <span class="field-label">Tempat:</span>
-                  <span class="field-value">${escapeHtml(place)}</span>
-                </div>
-                
-                <div class="field">
-                  <span class="field-label">Pimpinan Rapat:</span>
-                  <span class="field-value">${escapeHtml(leader)}</span>
-                </div>
-                
-                <div class="field">
-                  <span class="field-label">Surat Undangan:</span>
-                  <span class="field-value">${escapeHtml(invitationNumber)}</span>
-                </div>
-                
-                <div class="field">
-                  <span class="field-label">Peserta Rapat:</span>
-                  <div class="text-content">${escapeHtml(participants)}</div>
-                </div>
-              </div>
-              
-              <div class="section">
-                <div class="section-title">KEGIATAN RAPAT</div>
-                
-                <div class="field">
-                  <div class="field-label">Pembukaan:</div>
-                  <div class="text-content">${escapeHtml(opening)}</div>
-                </div>
-                
-                <div class="field">
-                  <div class="field-label">Materi:</div>
-                  <div class="text-content">${escapeHtml(material)}</div>
-                </div>
-                
-                <div class="field">
-                  <div class="field-label">Diskusi dan Tanggapan:</div>
-                  <div class="text-content">${escapeHtml(discussion)}</div>
-                </div>
-              </div>
-              
-              <div class="section">
-                <div class="section-title">KESIMPULAN</div>
-                <div class="text-content">${escapeHtml(conclusion)}</div>
-              </div>
-              
-              <div class="section">
-                <div class="section-title">PENUTUP</div>
-                <div class="text-content">${escapeHtml(closing)}</div>
-              </div>
-              
-              ${allImages.length > 0 ? `
-              <div class="section">
-                <div class="section-title">DOKUMENTASI</div>
-                <div class="images-grid">
-                  ${allImages.map(img => `
-                    <div class="image-item">
-                      <img src="${img}" alt="Dokumentasi" />
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-              ` : ''}
-              
-              <div class="footer">
-                <div class="signature">
-                  <div class="signature-item">Mengetahui,</div>
-                  <div class="signature-item">Pimpinan Rapat</div>
-                  <div class="signature-space"></div>
-                  <div class="signature-item">${escapeHtml(leader !== "-" ? leader : "")}</div>
-                </div>
-              </div>
-            </div>
-          </body>
-          </html>
-        `;
-
-        // Extract body content dari HTML
-        const bodyMatch = printContent.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-        let bodyContent = bodyMatch ? bodyMatch[1] : '';
-        
-        if (!bodyContent) {
-          const headMatch = printContent.match(/<\/head>([\s\S]*)/i);
-          bodyContent = headMatch ? headMatch[1].replace(/<\/?html>/gi, '').replace(/<\/?body[^>]*>/gi, '') : '';
-        }
-        
-        // Extract style
-        const styleMatch = printContent.match(/<style[^>]*>([\s\S]*)<\/style>/i);
-        let styleContent = styleMatch ? styleMatch[1] : '';
-        styleContent = styleContent.replace(/@page[^{]*\{[^}]*\}/g, '');
-        
-        // Buat elemen container untuk PDF
-        const tempDiv = document.createElement('div');
-        tempDiv.id = 'pdf-export-container';
-        tempDiv.style.width = '794px'; // 210mm = 794px at 96dpi
-        tempDiv.style.padding = '38px'; // 10mm = 38px at 96dpi
-        tempDiv.style.backgroundColor = '#fff';
-        tempDiv.style.fontFamily = "'Times New Roman', serif";
-        tempDiv.style.fontSize = '12pt';
-        tempDiv.style.lineHeight = '1.6';
-        tempDiv.style.color = '#000';
-        tempDiv.style.boxSizing = 'border-box';
-        
-        // Tambahkan style ke head
-        const styleEl = document.createElement('style');
-        styleEl.id = 'pdf-export-style';
-        styleEl.textContent = styleContent;
-        document.head.appendChild(styleEl);
-        
-        // Set konten
-        tempDiv.innerHTML = bodyContent;
-        
-        // Tambahkan ke body (tidak visible)
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '-9999px';
-        tempDiv.style.top = '0';
-        document.body.appendChild(tempDiv);
-        
-        // Tunggu untuk memastikan konten ter-render
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        try {
-          // Gunakan html2canvas untuk convert HTML ke canvas
-          const canvas = await html2canvas(tempDiv, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            width: 794,
-            height: tempDiv.scrollHeight,
-            windowWidth: 794,
-            windowHeight: tempDiv.scrollHeight
-          });
-          
-          // Hitung dimensi PDF (F4: 210mm x 330mm)
-          const pdfWidth = 210; // mm
-          const pdfHeight = 330; // mm
-          const margin = 10; // mm
-          const imgWidth = pdfWidth - (margin * 2); // minus margin left and right
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          
-          // Buat PDF dengan jsPDF
-          const { jsPDF } = window.jspdf;
-          const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: [pdfWidth, pdfHeight]
-          });
-          
-          // Hitung tinggi yang bisa ditampung per halaman
-          const pageHeight = pdfHeight - (margin * 2); // minus margin top and bottom
-          
-          // Split konten ke beberapa halaman jika diperlukan
-          let heightLeft = imgHeight;
-          let position = margin;
-          
-          // Halaman pertama
-          if (imgHeight <= pageHeight) {
-            // Konten muat dalam satu halaman
-            pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, position, imgWidth, imgHeight);
-          } else {
-            // Konten perlu beberapa halaman - split canvas
-            let sourceY = 0;
-            let pageNum = 0;
-            
-            while (heightLeft > 0) {
-              const displayHeight = Math.min(pageHeight, heightLeft);
-              const sourceHeight = Math.round((displayHeight / imgHeight) * canvas.height);
-              
-              // Buat canvas untuk potongan ini
-              const pageCanvas = document.createElement('canvas');
-              pageCanvas.width = canvas.width;
-              pageCanvas.height = sourceHeight;
-              const ctx = pageCanvas.getContext('2d');
-              ctx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
-              
-              // Tambahkan halaman baru jika bukan halaman pertama
-              if (pageNum > 0) {
-                pdf.addPage();
-              }
-              
-              // Tambahkan gambar ke PDF
-              pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, imgWidth, displayHeight);
-              
-              // Update untuk iterasi berikutnya
-              sourceY += sourceHeight;
-              heightLeft -= displayHeight;
-              pageNum++;
-            }
-          }
-          
-          // Download PDF
-          const filename = `Notulen_Rapat_${agenda.replace(/[^a-z0-9]/gi, '_')}_${new Date().getTime()}.pdf`;
-          pdf.save(filename);
-          
-          // Cleanup
-          setTimeout(() => {
-            if (document.body.contains(tempDiv)) {
-              document.body.removeChild(tempDiv);
-            }
-            if (styleEl && document.head.contains(styleEl)) {
-              document.head.removeChild(styleEl);
-            }
-          }, 500);
-          
-        } catch (error) {
-          console.error('Error exporting PDF:', error);
-          alert('Gagal export PDF: ' + (error.message || 'Unknown error') + '\n\nCek console untuk detail.');
-          
-          // Cleanup on error
-          if (document.body.contains(tempDiv)) {
-            document.body.removeChild(tempDiv);
-          }
-          if (styleEl && document.head.contains(styleEl)) {
-            document.head.removeChild(styleEl);
-          }
-        }
-      });
 
       // Init
       (async () => {
@@ -2760,79 +764,145 @@
         await loadPage();
       })();
 
-      // Modern Sidebar Toggle
-      const sidebar = document.getElementById("sidebar");
-      const sidebarToggle = document.getElementById("sidebarToggle");
-      const sidebarOverlay = document.getElementById("sidebarOverlay");
+      // Sidebar and theme toggle handled by admin-common.js
+    </script>
+    <script src="assets/js/admin-common.js"></script>
+    <script>
+      // ===== MASTER TANDA TANGAN =====
+      let masterTTD = null;
 
-      function toggleSidebar() {
-        sidebar.classList.toggle("show");
-        sidebarOverlay.classList.toggle("show");
-        document.body.style.overflow = sidebar.classList.contains("show") ? "hidden" : "";
-      }
-
-      function hideSidebar() {
-        sidebar.classList.remove("show");
-        sidebarOverlay.classList.remove("show");
-        document.body.style.overflow = "";
-      }
-
-      // Event listeners for modern sidebar
-      sidebarToggle?.addEventListener("click", toggleSidebar);
-      sidebarOverlay?.addEventListener("click", hideSidebar);
-      
-      // Set active menu item based on current page
-      function setActiveMenuItem() {
-        const currentPage = window.location.pathname.split('/').pop() || 'admin-manajemen-acara.html';
-        const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+      function updateMasterTTDTable(data) {
+        const tbody = document.getElementById("tbody-master-ttd");
+        if (!tbody) return;
         
-        navLinks.forEach(link => {
-          link.classList.remove('active');
-          const href = link.getAttribute('href');
-          if (href && (href === currentPage || href.includes(currentPage.split('.')[0]))) {
-            link.classList.add('active');
-          }
-        });
-        
-        // If no active link found, set based on current page
-        const hasActive = document.querySelector('.sidebar-nav .nav-link.active');
-        if (!hasActive) {
-          if (currentPage.includes('manajemen')) {
-            const link = document.querySelector('.sidebar-nav .nav-link[href*="manajemen"]');
-            if (link) link.classList.add('active');
-          } else if (currentPage.includes('daftar')) {
-            const link = document.querySelector('.sidebar-nav .nav-link[href*="daftar"]');
-            if (link) link.classList.add('active');
-          } else if (currentPage.includes('rekap')) {
-            const link = document.querySelector('.sidebar-nav .nav-link[href*="rekap"]');
-            if (link) link.classList.add('active');
-          }
+        if (data) {
+          tbody.innerHTML = `
+            <tr>
+              <td>${escapeHtml(data.nama || "-")}</td>
+              <td>${escapeHtml(data.jabatan || "-")}</td>
+              <td>${escapeHtml(data.instansi || "-")}</td>
+              <td>${escapeHtml(data.golongan || "-")}</td>
+              <td>${escapeHtml(data.nip || "-")}</td>
+            </tr>
+          `;
+        } else {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+            </tr>
+          `;
         }
       }
 
-      // Set active menu on load
-      setActiveMenuItem();
+      function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
 
-      // Close sidebar when clicking nav links (mobile)
-      sidebar.querySelectorAll(".nav-link").forEach(link => {
-        link.addEventListener("click", () => {
-          if (window.innerWidth < 992) {
-            hideSidebar();
+      async function loadMasterTTD() {
+        try {
+          const { data, error } = await sb
+            .from("master_tanda_tangan")
+            .select("*")
+            .limit(1)
+            .single();
+
+          if (error && error.code !== 'PGRST116') {
+            console.error("Error loading master TTD:", error);
+            updateMasterTTDTable(null);
+            return;
           }
-        });
-      });
 
-      // Close sidebar on escape key
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && sidebar.classList.contains("show")) {
-          hideSidebar();
+          if (data) {
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            document.getElementById("ttd-nama").value = data.nama || "";
+            document.getElementById("ttd-jabatan").value = data.jabatan || "";
+            document.getElementById("ttd-instansi").value = data.instansi || "";
+            document.getElementById("ttd-golongan").value = data.golongan || "";
+            document.getElementById("ttd-nip").value = data.nip || "";
+          } else {
+            updateMasterTTDTable(null);
+            document.getElementById("ttd-nama").value = "";
+            document.getElementById("ttd-jabatan").value = "";
+            document.getElementById("ttd-instansi").value = "";
+            document.getElementById("ttd-golongan").value = "";
+            document.getElementById("ttd-nip").value = "";
+          }
+        } catch (error) {
+          console.error("Error loading master TTD:", error);
+          updateMasterTTDTable(null);
         }
-      });
+      }
 
-      // Handle window resize
-      window.addEventListener("resize", () => {
-        if (window.innerWidth >= 992) {
-          hideSidebar();
+      async function saveMasterTTD() {
+        const nama = document.getElementById("ttd-nama").value.trim();
+        const jabatan = document.getElementById("ttd-jabatan").value.trim();
+        const instansi = document.getElementById("ttd-instansi").value.trim();
+        const golongan = document.getElementById("ttd-golongan").value.trim();
+        const nip = document.getElementById("ttd-nip").value.trim();
+
+        if (!nama || !jabatan || !instansi) {
+          alert("Nama, Jabatan, dan Instansi wajib diisi!");
+          return;
+        }
+
+        try {
+          const dataToSave = {
+            nama,
+            jabatan,
+            instansi,
+            golongan: golongan || null,
+            nip: nip || null,
+            updated_at: new Date().toISOString()
+          };
+
+          if (masterTTD && masterTTD.id) {
+            const { data, error } = await sb
+              .from("master_tanda_tangan")
+              .update(dataToSave)
+              .eq("id", masterTTD.id)
+              .select()
+              .single();
+
+            if (error) throw error;
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            alert("Master tanda tangan berhasil diperbarui!");
+          } else {
+            const { data, error } = await sb
+              .from("master_tanda_tangan")
+              .insert(dataToSave)
+              .select()
+              .single();
+
+            if (error) throw error;
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            alert("Master tanda tangan berhasil disimpan!");
+          }
+
+          await loadMasterTTD();
+          const modal = bootstrap.Modal.getInstance(document.getElementById("modalMasterTTD"));
+          if (modal) modal.hide();
+        } catch (error) {
+          console.error("Error saving master TTD:", error);
+          alert("Gagal menyimpan master tanda tangan: " + error.message);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const btnSave = document.getElementById("btn-save-master-ttd");
+        const modal = document.getElementById("modalMasterTTD");
+        
+        if (btnSave) {
+          btnSave.addEventListener("click", saveMasterTTD);
+        }
+        
+        if (modal) {
+          modal.addEventListener("show.bs.modal", loadMasterTTD);
         }
       });
     </script>
