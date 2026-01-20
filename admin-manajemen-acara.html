@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,13 +17,18 @@
   <body>
     <script>
       (function () {
-        const t = localStorage.getItem("theme") || "dark";
+        const t = localStorage.getItem("theme") || "light";
         document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
 
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Mobile Hamburger Menu Button - Always Visible -->
+    <button class="sidebar-toggle mobile-hamburger" id="sidebarToggle" aria-label="Toggle Sidebar">
+      <i class="bi bi-list"></i>
+    </button>
 
     <div class="main-wrapper">
       <!-- Modern Sidebar -->
@@ -112,9 +117,6 @@
         <!-- Modern Header -->
         <header class="top-header">
           <div class="header-left">
-            <button class="sidebar-toggle" id="sidebarToggle">
-              <i class="bi bi-list"></i>
-            </button>
             <div class="header-search">
               <i class="bi bi-search"></i>
               <input type="text" placeholder="Search..." class="search-input" />
@@ -144,15 +146,23 @@
         <!-- Main Content -->
         <main class="main-content">
           <!-- Page Header -->
-          <div class="d-flex justify-content-between align-items-center mb-4" style="padding-top: 1.5rem;">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3" style="padding-top: 1.5rem;">
             <div>
               <h2 class="h5 mb-1 text-gradient">Manajemen Acara</h2>
               <p class="text-muted mb-0 small">Kelola acara dan kehadiran peserta</p>
             </div>
-            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEvent">
-              <i class="bi bi-plus-circle me-2"></i>
-              Tambah Acara Baru
-            </button>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+              <div class="d-flex align-items-center gap-2">
+                <label for="year-filter" class="form-label mb-0 small text-muted fw-medium">Tahun:</label>
+                <select id="year-filter" class="form-select form-select-sm" style="width: auto; min-width: 120px;">
+                  <option value="">Memuat...</option>
+                </select>
+              </div>
+              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEvent">
+                <i class="bi bi-plus-circle me-2"></i>
+                Tambah Acara Baru
+              </button>
+            </div>
           </div>
 
           <!-- Modern Search Bar -->
@@ -385,11 +395,12 @@
       const $modalTitle = document.getElementById("modal-title-text");
 
       let currentPage = 1,
-        pageSize = 3, // Jumlah item per halaman untuk satu layar (3 agenda)
+        pageSize = 3,
         lastQuery = "",
         loading = false,
         totalEvents = 0,
-        totalPages = 0;
+        totalPages = 0,
+        selectedYear = 2026; // Default filter tahun 2026
 
       function fmtDate(d) {
         return new Date(d).toLocaleString("id-ID", {
@@ -479,6 +490,34 @@
         return map;
       }
 
+      // Isi dropdown filter tahun (2020 s/d tahun berjalan+2, default 2026)
+      function populateYearFilter() {
+        const sel = document.getElementById("year-filter");
+        if (!sel) return;
+        const end = new Date().getFullYear() + 2;
+        const start = 2020;
+        sel.innerHTML = '<option value="">Semua Tahun</option>';
+        for (let y = end; y >= start; y--) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          if (y === selectedYear) opt.selected = true;
+          sel.appendChild(opt);
+        }
+        // Jika 2026 tidak ada di daftar, pakai Semua Tahun
+        if (!sel.value && selectedYear) selectedYear = null;
+      }
+
+      // Helper: terapkan filter tahun ke query
+      function applyYearFilter(query) {
+        if (selectedYear == null || selectedYear === "") return query;
+        const y = parseInt(selectedYear);
+        if (isNaN(y)) return query;
+        return query
+          .gte("datetime", `${y}-01-01T00:00:00.000Z`)
+          .lte("datetime", `${y}-12-31T23:59:59.999Z`);
+      }
+
       // Fungsi untuk menghitung total events
       async function getTotalEvents() {
         const q = lastQuery.trim();
@@ -487,6 +526,7 @@
         if (q) {
           query = query.or(`title.ilike.%${q}%,location.ilike.%${q}%`);
         }
+        query = applyYearFilter(query);
 
         const { count, error } = await query;
         if (error) {
@@ -593,6 +633,7 @@
         if (q) {
           query = query.or(`title.ilike.%${q}%,location.ilike.%${q}%`);
         }
+        query = applyYearFilter(query);
 
         const { data, error } = await query;
         if (error) {
@@ -633,6 +674,17 @@
           loadPage();
         }, 300);
       });
+
+      // Filter tahun
+      const $yearFilter = document.getElementById("year-filter");
+      if ($yearFilter) {
+        $yearFilter.addEventListener("change", (e) => {
+          const v = e.target.value;
+          selectedYear = v ? parseInt(v, 10) : null;
+          currentPage = 1;
+          loadPage();
+        });
+      }
 
       // Pagination click handler
       $pagination.addEventListener("click", (e) => {
@@ -760,6 +812,7 @@
 
       // Init
       (async () => {
+        populateYearFilter();
         currentPage = 1;
         await loadPage();
       })();

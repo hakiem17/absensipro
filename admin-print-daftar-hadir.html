@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -18,13 +18,18 @@
   <body>
     <script>
       (function () {
-        const t = localStorage.getItem("theme") || "dark";
+        const t = localStorage.getItem("theme") || "light";
         document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
 
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Mobile Hamburger Menu Button - Always Visible -->
+    <button class="sidebar-toggle mobile-hamburger" id="sidebarToggle" aria-label="Toggle Sidebar">
+      <i class="bi bi-list"></i>
+    </button>
 
     <div class="main-wrapper">
       <!-- Modern Sidebar -->
@@ -113,9 +118,6 @@
         <!-- Modern Header -->
         <header class="top-header">
           <div class="header-left">
-            <button class="sidebar-toggle" id="sidebarToggle">
-              <i class="bi bi-list"></i>
-            </button>
             <h1 class="page-title">
               <i class="bi bi-printer"></i>
               Print Daftar Hadir
@@ -132,10 +134,16 @@
         <main class="main-content">
           <div class="container-fluid">
             <!-- Page Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4" style="padding-top: 1.5rem;">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3" style="padding-top: 1.5rem;">
               <div>
                 <h2 class="h4 mb-1 text-gradient">Print Daftar Hadir</h2>
                 <p class="text-muted mb-0">Pilih acara untuk generate PDF daftar hadir</p>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <label for="year-filter" class="form-label mb-0 small text-muted fw-medium">Filter Tahun:</label>
+                <select id="year-filter" class="form-select form-select-sm" style="width: auto; min-width: 120px;">
+                  <option value="">Memuat...</option>
+                </select>
               </div>
             </div>
 
@@ -173,30 +181,6 @@
               </div>
             </div>
 
-            <!-- Preview Area -->
-            <div class="card" id="preview-card" style="display: none;">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                  <i class="bi bi-eye me-2"></i>
-                  Preview - <span id="preview-event-title" class="text-muted">Pilih acara</span>
-                </h5>
-                <div class="btn-group">
-                  <button id="btn-print-preview" class="btn btn-sm btn-outline-primary" disabled>
-                    <i class="bi bi-printer me-2"></i>
-                    Print Preview
-                  </button>
-                  <button id="btn-generate-pdf" class="btn btn-sm btn-primary" disabled>
-                    <i class="bi bi-file-pdf me-2"></i>
-                    Generate PDF
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div id="preview-content" class="text-center text-muted py-5">
-                  Pilih acara untuk melihat preview daftar hadir
-                </div>
-              </div>
-            </div>
           </div>
         </main>
 
@@ -461,17 +445,14 @@
       });
 
       const $eventsTbody = document.getElementById("events-tbody");
-      const $btnGenerate = document.getElementById("btn-generate-pdf");
-      const $btnPrintPreview = document.getElementById("btn-print-preview");
-      const $preview = document.getElementById("preview-content");
-      const $previewCard = document.getElementById("preview-card");
-      const $previewEventTitle = document.getElementById("preview-event-title");
 
       let EVENTS = [];
+      let ALL_EVENTS = []; // Semua events tanpa filter
       let ATTENDEE_COUNTS = {}; // Map event_id -> count
       let currentEventId = null;
       let currentEvent = null;
       let attendees = [];
+      let selectedYear = 2026; // Default tahun 2026
 
       const esc = (s) =>
         String(s ?? "")
@@ -492,9 +473,71 @@
             })
           : "-";
 
+      // Fungsi untuk mendapatkan daftar tahun dari events
+      function getAvailableYears(events) {
+        const years = new Set();
+        events.forEach(event => {
+          if (event.datetime) {
+            const year = new Date(event.datetime).getFullYear();
+            years.add(year);
+          }
+        });
+        return Array.from(years).sort((a, b) => b - a); // Sort descending
+      }
+
+      // Fungsi untuk populate dropdown tahun
+      function populateYearFilter(events) {
+        const yearFilter = document.getElementById("year-filter");
+        if (!yearFilter) return;
+
+        const years = getAvailableYears(events);
+        
+        // Clear existing options
+        yearFilter.innerHTML = "";
+        
+        // Add default option
+        yearFilter.innerHTML = '<option value="">Semua Tahun</option>';
+        
+        // Add year options
+        years.forEach(year => {
+          const option = document.createElement("option");
+          option.value = year;
+          option.textContent = year;
+          if (year === selectedYear) {
+            option.selected = true;
+          }
+          yearFilter.appendChild(option);
+        });
+
+        // Set default to 2026 if available, otherwise use latest year
+        if (years.length > 0) {
+          if (years.includes(2026)) {
+            selectedYear = 2026;
+            yearFilter.value = "2026";
+          } else {
+            selectedYear = years[0]; // Use latest year
+            yearFilter.value = selectedYear.toString();
+          }
+        } else {
+          selectedYear = null;
+        }
+      }
+
+      // Filter events berdasarkan tahun
+      function filterEventsByYear(events, year) {
+        if (!year || year === "" || year === null) {
+          return events;
+        }
+        return events.filter(event => {
+          if (!event.datetime) return false;
+          const eventYear = new Date(event.datetime).getFullYear();
+          return eventYear === parseInt(year);
+        });
+      }
+
       async function loadEvents() {
         try {
-          // Load events
+          // Load all events
           const { data: events, error: eventsError } = await sb
             .from("events")
             .select("id,title,datetime,location,status")
@@ -504,9 +547,15 @@
             throw eventsError;
           }
 
-          EVENTS = events || [];
+          ALL_EVENTS = events || [];
+          
+          // Populate year filter dropdown
+          populateYearFilter(ALL_EVENTS);
+          
+          // Filter events berdasarkan tahun yang dipilih
+          EVENTS = filterEventsByYear(ALL_EVENTS, selectedYear);
 
-          // Load attendee counts for all events
+          // Load attendee counts for filtered events
           if (EVENTS.length > 0) {
             const eventIds = EVENTS.map(e => e.id);
             const { data: countsData, error: countsError } = await sb
@@ -524,10 +573,10 @@
 
           renderEventsList();
 
-          // Check URL parameter
+          // Check URL parameter (langsung export)
           const urlEventId = new URLSearchParams(location.search).get("event");
-          if (urlEventId && EVENTS.find(e => e.id === urlEventId)) {
-            selectEventForPrint(urlEventId);
+          if (urlEventId && EVENTS.find((e) => e.id === urlEventId)) {
+            exportEventPdf(urlEventId);
           }
         } catch (error) {
           console.error("Error loading events:", error);
@@ -577,11 +626,8 @@
               </td>
               <td>
                 <div class="btn-group btn-group-sm" role="group">
-                  <button class="btn btn-outline-primary btn-preview-event" data-event-id="${esc(event.id)}" title="Preview">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button class="btn btn-outline-success btn-generate-pdf-event" data-event-id="${esc(event.id)}" title="Generate PDF" ${attendeeCount === 0 ? "disabled" : ""}>
-                    <i class="bi bi-file-pdf"></i>
+                  <button class="btn btn-outline-success btn-generate-pdf-event" data-event-id="${esc(event.id)}" title="Export PDF" ${attendeeCount === 0 ? "disabled" : ""}>
+                    <i class="bi bi-file-pdf me-1"></i>Export PDF
                   </button>
                 </div>
               </td>
@@ -595,44 +641,31 @@
 
       // Attach event listeners to action buttons
       function attachEventListeners() {
-        // Preview event
-        document.querySelectorAll(".btn-preview-event").forEach(btn => {
-          btn.onclick = () => {
-            const eventId = btn.getAttribute("data-event-id");
-            selectEventForPrint(eventId);
-          };
-        });
-
-        // Generate PDF for event
-        document.querySelectorAll(".btn-generate-pdf-event").forEach(btn => {
+        // Generate PDF for event (langsung export)
+        document.querySelectorAll(".btn-generate-pdf-event").forEach((btn) => {
           btn.onclick = async () => {
             const eventId = btn.getAttribute("data-event-id");
             if (!eventId) return;
-            
-            // Select event first
-            selectEventForPrint(eventId);
-            
-            // Wait a bit for data to load, then generate PDF
-            setTimeout(async () => {
-              await generateSimplePDF();
-            }, 500);
+            await exportEventPdf(eventId, btn);
           };
         });
       }
 
-      // Select event for print/preview
-      async function selectEventForPrint(eventId) {
-        currentEventId = eventId;
-        await loadForEvent(eventId);
-        
-        // Show preview card and update title
-        if ($previewCard) {
-          $previewCard.style.display = "block";
-          if ($previewEventTitle && currentEvent) {
-            $previewEventTitle.textContent = esc(currentEvent.title);
+      async function exportEventPdf(eventId, btn) {
+        const originalHtml = btn ? btn.innerHTML : "";
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-1"></span>Exporting...';
+        }
+        try {
+          await loadForEvent(eventId);
+          await generateSimplePDF(btn);
+        } finally {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
           }
-          // Scroll to preview area
-          $previewCard.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }
 
@@ -641,13 +674,6 @@
           currentEventId = null;
           currentEvent = null;
           attendees = [];
-          $btnGenerate.disabled = true;
-          $btnPrintPreview.disabled = true;
-          $preview.innerHTML =
-            '<div class="text-center text-muted py-5">Pilih acara untuk melihat preview daftar hadir</div>';
-          if ($previewCard) {
-            $previewCard.style.display = "none";
-          }
           return;
         }
         currentEventId = eventId;
@@ -658,11 +684,6 @@
           return;
         }
         
-        // Update preview card title
-        if ($previewEventTitle) {
-          $previewEventTitle.textContent = esc(currentEvent.title);
-        }
-
         const { data, error } = await sb
           .from("attendees")
           .select("id,name,instansi,jabatan,gender,email,phone,ts,signature_url")
@@ -671,7 +692,6 @@
         if (error) {
           alert("Gagal memuat peserta.");
           attendees = [];
-          renderPreview();
           return;
         }
         attendees = (data || []).map((a, idx) => ({
@@ -683,83 +703,18 @@
           gender: a.gender || "-",
           signatureUrl: a.signature_url || null,
         }));
-        
-        // Enable buttons
-        $btnGenerate.disabled = attendees.length === 0;
-        $btnPrintPreview.disabled = attendees.length === 0;
-        
-        renderPreview();
       }
 
-      function renderPreview() {
-        if (!currentEvent || !attendees.length) {
-          $preview.innerHTML =
-            '<div class="text-center text-muted py-5">Tidak ada data untuk ditampilkan</div>';
-          return;
-        }
-
-        let html = `
-          <div style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: 'Times New Roman', serif;">
-            <div style="text-align: center; margin-bottom: 30px;">
-              <h3 style="margin-bottom: 10px; font-weight: bold;">DAFTAR HADIR PESERTA</h3>
-              <div style="text-align: left; margin-top: 20px;">
-                <p style="margin: 5px 0;"><strong>Judul Rapat:</strong> ${esc(currentEvent.title)}</p>
-                <p style="margin: 5px 0;"><strong>Tanggal:</strong> ${esc(fmtDT(currentEvent.datetime).split(",")[0])}</p>
-                <p style="margin: 5px 0;"><strong>Waktu:</strong> ${esc(fmtDT(currentEvent.datetime).split(",")[1]?.trim() || "")}</p>
-                <p style="margin: 5px 0;"><strong>Lokasi:</strong> ${esc(currentEvent.location || "-")}</p>
-              </div>
-            </div>
-            <table style="width: 100%; border-collapse: collapse; margin-top: 20px; border: 2px solid #000;">
-              <thead>
-                <tr style="background-color: #f0f0f0;">
-                  <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 40px;">No</th>
-                  <th style="border: 1px solid #000; padding: 8px; text-align: left;">Nama</th>
-                  <th style="border: 1px solid #000; padding: 8px; text-align: left;">Instansi</th>
-                  <th style="border: 1px solid #000; padding: 8px; text-align: left;">Jabatan</th>
-                  <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 100px;">Jenis Kelamin</th>
-                  <th style="border: 1px solid #000; padding: 8px; text-align: center; width: 80px;">TTD</th>
-                </tr>
-              </thead>
-              <tbody>
-        `;
-
-        attendees.forEach((att) => {
-          html += `
-            <tr>
-              <td style="border: 1px solid #000; padding: 8px; text-align: center;">${att.no}</td>
-              <td style="border: 1px solid #000; padding: 8px;">${esc(att.name)}</td>
-              <td style="border: 1px solid #000; padding: 8px;">${esc(att.instansi)}</td>
-              <td style="border: 1px solid #000; padding: 8px;">${esc(att.jabatan)}</td>
-              <td style="border: 1px solid #000; padding: 8px; text-align: center;">${esc(att.gender)}</td>
-              <td style="border: 1px solid #000; padding: 8px; text-align: center;">
-                ${att.signatureUrl ? '<span style="color: green;">✓</span>' : "-"}
-              </td>
-            </tr>
-          `;
-        });
-
-        html += `
-              </tbody>
-            </table>
-            <div style="margin-top: 30px; text-align: right;">
-              <p style="margin: 40px 0 10px 0;">Mengetahui,</p>
-              <p style="margin: 60px 0 5px 0;">_________________________</p>
-            </div>
-          </div>
-        `;
-
-        $preview.innerHTML = html;
-      }
-
-      async function generateSimplePDF() {
+      async function generateSimplePDF(btnEl) {
         if (!currentEvent || !attendees.length) {
           alert("Pilih acara dan pastikan ada data peserta.");
           return;
         }
 
         try {
-          $btnGenerate.disabled = true;
-          $btnGenerate.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+          if (btnEl) {
+            btnEl.disabled = true;
+          }
 
           // Load master tanda tangan
           let masterTTDData = null;
@@ -1645,13 +1600,48 @@
           console.error("Error generating PDF:", error);
           alert("Gagal membuat PDF: " + error.message);
         } finally {
-          $btnGenerate.disabled = false;
-          $btnGenerate.innerHTML = '<i class="bi bi-file-pdf me-2"></i>Generate PDF';
+          if (btnEl) {
+            btnEl.disabled = false;
+          }
         }
       }
 
-      function printPreview() {
-        window.print();
+      // Event listener untuk filter tahun
+      function setupYearFilter() {
+        const yearFilter = document.getElementById("year-filter");
+        if (yearFilter) {
+          yearFilter.addEventListener("change", async (e) => {
+            selectedYear = e.target.value ? parseInt(e.target.value) : null;
+            
+            // Filter events berdasarkan tahun yang dipilih
+            EVENTS = filterEventsByYear(ALL_EVENTS, selectedYear);
+            
+            // Reload attendee counts untuk events yang terfilter
+            if (EVENTS.length > 0) {
+              const eventIds = EVENTS.map(e => e.id);
+              const { data: countsData, error: countsError } = await sb
+                .from("attendees")
+                .select("event_id")
+                .in("event_id", eventIds);
+
+              if (!countsError && countsData) {
+                ATTENDEE_COUNTS = {};
+                countsData.forEach(a => {
+                  ATTENDEE_COUNTS[a.event_id] = (ATTENDEE_COUNTS[a.event_id] || 0) + 1;
+                });
+              }
+            } else {
+              ATTENDEE_COUNTS = {};
+            }
+            
+            renderEventsList();
+            
+            // Reset current event jika sudah tidak ada di filter
+            if (currentEventId && !EVENTS.find((e) => e.id === currentEventId)) {
+              loadForEvent(null);
+            }
+          });
+        }
       }
 
       (function init() {
@@ -1663,9 +1653,7 @@
             AdminAuth.logout();
           });
 
-        $btnGenerate.addEventListener("click", generateSimplePDF);
-        $btnPrintPreview.addEventListener("click", printPreview);
-
+        setupYearFilter();
         loadEvents();
       })();
     </script>

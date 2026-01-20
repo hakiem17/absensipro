@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -18,13 +18,18 @@
   <body>
     <script>
       (function () {
-        const t = localStorage.getItem("theme") || "dark";
+        const t = localStorage.getItem("theme") || "light";
         document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
 
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Mobile Hamburger Menu Button - Always Visible -->
+    <button class="sidebar-toggle mobile-hamburger" id="sidebarToggle" aria-label="Toggle Sidebar">
+      <i class="bi bi-list"></i>
+    </button>
 
     <div class="main-wrapper">
       <!-- Modern Sidebar -->
@@ -113,9 +118,6 @@
         <!-- Modern Header -->
         <header class="top-header">
           <div class="header-left">
-            <button class="sidebar-toggle" id="sidebarToggle">
-              <i class="bi bi-list"></i>
-            </button>
             <div class="header-search">
               <i class="bi bi-search"></i>
               <input type="text" placeholder="Search..." class="search-input" />
@@ -411,6 +413,55 @@
       </div>
     </div>
 
+    <!-- Edit Attendee Modal -->
+    <div class="modal fade" id="editAttendeeModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--bg-card)">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Data Peserta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="edit-attendee-form">
+              <input type="hidden" id="edit-id" />
+              <div class="mb-3">
+                <label class="form-label" for="edit-name">Nama</label>
+                <input type="text" class="form-control" id="edit-name" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="edit-instansi">Instansi</label>
+                <input type="text" class="form-control" id="edit-instansi" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="edit-jabatan">Jabatan</label>
+                <input type="text" class="form-control" id="edit-jabatan" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Jenis Kelamin</label>
+                <select id="edit-gender" class="form-select">
+                  <option value="">-</option>
+                  <option value="male">Laki-Laki</option>
+                  <option value="female">Perempuan</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="edit-email">Email</label>
+                <input type="email" class="form-control" id="edit-email" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="edit-phone">No. Handphone</label>
+                <input type="text" class="form-control" id="edit-phone" />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-primary" id="btn-save-edit">Simpan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background: var(--card-bg)">
@@ -498,6 +549,18 @@
       const $btnPrev = document.getElementById("btn-prev");
       const $btnNext = document.getElementById("btn-next");
       const $pageInfo = document.getElementById("page-info");
+      const $editId = document.getElementById("edit-id");
+      const $editName = document.getElementById("edit-name");
+      const $editInstansi = document.getElementById("edit-instansi");
+      const $editJabatan = document.getElementById("edit-jabatan");
+      const $editGender = document.getElementById("edit-gender");
+      const $editEmail = document.getElementById("edit-email");
+      const $editPhone = document.getElementById("edit-phone");
+      const $btnSaveEdit = document.getElementById("btn-save-edit");
+      const editModalEl = document.getElementById("editAttendeeModal");
+      const editModal = editModalEl
+        ? bootstrap.Modal.getOrCreateInstance(editModalEl)
+        : null;
       let EVENTS = [],
         sourceList = [],
         filteredList = [],
@@ -512,6 +575,7 @@
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#39;");
+      const trim = (v) => (v ?? "").toString().trim();
       const fmtDT = (iso) =>
         iso
           ? new Date(iso).toLocaleString("id-ID", {
@@ -549,6 +613,57 @@
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 500);
+      }
+
+      function getAttendeeById(id) {
+        return sourceList.find((x) => String(x.id) === String(id));
+      }
+
+      function openEditModal(att) {
+        if (!att || !editModal) return;
+        $editId.value = att.id ?? "";
+        $editName.value = att.name ?? "";
+        $editInstansi.value = att.instansi ?? "";
+        $editJabatan.value = att.jabatan ?? "";
+        $editGender.value = att.gender ?? "";
+        $editEmail.value = att.email ?? "";
+        $editPhone.value = att.phone ?? "";
+        editModal.show();
+      }
+
+      async function saveEdit() {
+        const id = $editId.value;
+        if (!id) return;
+        const name = trim($editName.value);
+        if (!name) {
+          alert("Nama wajib diisi.");
+          $editName.focus();
+          return;
+        }
+
+        const payload = {
+          name,
+          instansi: trim($editInstansi.value) || null,
+          jabatan: trim($editJabatan.value) || null,
+          gender: trim($editGender.value) || null,
+          email: trim($editEmail.value) || null,
+          phone: trim($editPhone.value) || null,
+        };
+
+        $btnSaveEdit.disabled = true;
+        const { error } = await sb.from("attendees").update(payload).eq("id", id);
+        $btnSaveEdit.disabled = false;
+        if (error) {
+          alert("Gagal mengubah data: " + error.message);
+          return;
+        }
+
+        const idx = sourceList.findIndex((x) => String(x.id) === String(id));
+        if (idx >= 0) {
+          sourceList[idx] = { ...sourceList[idx], ...payload };
+        }
+        applySearch(false);
+        editModal.hide();
       }
 
       function confirmModal(message) {
@@ -973,7 +1088,21 @@
               <td>${esc(fmtDT(a.ts) || "-")}</td>
               <td>${ttd}</td>
               <td class="col-aksi text-nowrap">
-                <button class="btn btn-sm btn-outline-danger btn-del" data-id="${esc(a.id)}" title="Hapus">
+                <button
+                  class="btn btn-sm btn-outline-primary btn-edit me-1"
+                  data-id="${esc(a.id)}"
+                  title="Edit"
+                  aria-label="Edit peserta"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-danger btn-del"
+                  data-id="${esc(a.id)}"
+                  data-name="${esc(a.name || "Peserta")}"
+                  title="Hapus"
+                  aria-label="Hapus peserta"
+                >
                   <i class="bi bi-trash"></i>
                 </button>
               </td>
@@ -1039,12 +1168,21 @@
           document.getElementById("modalSignatureImage").src = img.src;
           new bootstrap.Modal(document.getElementById("signatureModal")).show();
         });
+        $tbody.addEventListener("click", (e) => {
+          const btn = e.target.closest(".btn-edit");
+          if (!btn) return;
+          const id = btn.dataset.id;
+          if (!id) return;
+          const att = getAttendeeById(id);
+          openEditModal(att);
+        });
         $tbody.addEventListener("click", async (e) => {
           const btn = e.target.closest(".btn-del");
           if (!btn) return;
           const id = btn.dataset.id;
           if (!id) return;
-          const ok = await confirmModal("Hapus peserta ini dari daftar hadir?");
+          const name = btn.dataset.name || "peserta ini";
+          const ok = await confirmModal(`Hapus ${name} dari daftar hadir?`);
           if (!ok) return;
           btn.disabled = true;
           const { error } = await sb.from("attendees").delete().eq("id", id);
@@ -1057,6 +1195,7 @@
           // Re-apply search to update filtered list and adjust pagination
           applySearch(false);
         });
+        $btnSaveEdit?.addEventListener("click", saveEdit);
         
         // Load events after auth check is complete
         await loadEventsOnce();

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -18,13 +18,18 @@
   <body>
     <script>
       (function () {
-        const t = localStorage.getItem("theme") || "dark";
+        const t = localStorage.getItem("theme") || "light";
         document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
 
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Mobile Hamburger Menu Button - Always Visible -->
+    <button class="sidebar-toggle mobile-hamburger" id="sidebarToggle" aria-label="Toggle Sidebar">
+      <i class="bi bi-list"></i>
+    </button>
 
     <div class="main-wrapper">
       <!-- Modern Sidebar -->
@@ -113,9 +118,6 @@
         <!-- Modern Header -->
         <header class="top-header">
           <div class="header-left">
-            <button class="sidebar-toggle" id="sidebarToggle">
-              <i class="bi bi-list"></i>
-            </button>
             <h1 class="page-title">
               <i class="bi bi-file-text"></i>
               Notulen Acara
@@ -132,10 +134,16 @@
         <main class="main-content">
           <div class="container-fluid">
             <!-- Page Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4" style="padding-top: 1.5rem;">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3" style="padding-top: 1.5rem;">
               <div>
                 <h2 class="h4 mb-1 text-gradient">Notulen Acara</h2>
                 <p class="text-muted mb-0">Kelola notulen untuk setiap acara</p>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <label for="year-filter" class="form-label mb-0 small text-muted fw-medium">Tahun:</label>
+                <select id="year-filter" class="form-select form-select-sm" style="width: auto; min-width: 120px;">
+                  <option value="">Memuat...</option>
+                </select>
               </div>
             </div>
 
@@ -494,6 +502,7 @@
       let uploadedPhotos = []; // Array of photo URLs
       let photosToUpload = []; // Array of File objects to upload
       let mode = "create"; // Track modal mode (create/edit/view)
+      let selectedYear = 2026; // Default filter tahun 2026
 
       const esc = (s) =>
         String(s ?? "")
@@ -525,14 +534,49 @@
             })
           : "-";
 
+      const formatWita = (value) => {
+        const raw = (value ?? "").toString().trim();
+        if (!raw) return raw;
+        return /wita/i.test(raw) ? raw : `${raw} WITA`;
+      };
+
+      // Isi dropdown filter tahun (2020 s/d tahun berjalan+2, default 2026)
+      function populateYearFilter() {
+        const sel = document.getElementById("year-filter");
+        if (!sel) return;
+        const end = new Date().getFullYear() + 2;
+        const start = 2020;
+        sel.innerHTML = '<option value="">Semua Tahun</option>';
+        for (let y = end; y >= start; y--) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          if (y === selectedYear) opt.selected = true;
+          sel.appendChild(opt);
+        }
+        if (!sel.value && selectedYear) selectedYear = null;
+      }
+
+      // Helper: terapkan filter tahun ke query
+      function applyYearFilter(query) {
+        if (selectedYear == null || selectedYear === "") return query;
+        const y = parseInt(selectedYear, 10);
+        if (isNaN(y)) return query;
+        return query
+          .gte("datetime", `${y}-01-01T00:00:00.000Z`)
+          .lte("datetime", `${y}-12-31T23:59:59.999Z`);
+      }
+
       // Load events and notulen
       async function loadEvents() {
         try {
-          // Load events
-          const { data: events, error: eventsError } = await sb
+          let query = sb
             .from("events")
             .select("id,title,datetime,location,status")
             .order("datetime", { ascending: false });
+          query = applyYearFilter(query);
+
+          const { data: events, error: eventsError } = await query;
 
           if (eventsError) {
             throw eventsError;
@@ -1865,7 +1909,8 @@
               font: helveticaBoldFont,
               color: rgb(0, 0, 0),
             });
-            currentPage.drawText(notulenData.waktu_sidang_rapat, {
+            const waktuSidang = formatWita(notulenData.waktu_sidang_rapat);
+            currentPage.drawText(waktuSidang, {
               x: colonX + 5,
               y: infoY,
               size: fontSize,
@@ -2268,9 +2313,20 @@
         $inputFoto.value = ""; // Clear file input
       });
 
+      // Filter tahun
+      const $yearFilter = document.getElementById("year-filter");
+      if ($yearFilter) {
+        $yearFilter.addEventListener("change", function(e) {
+          const v = e.target.value;
+          selectedYear = v ? parseInt(v, 10) : null;
+          loadEvents();
+        });
+      }
+
       // Initialize
       (async function init() {
         AdminAuth.requireAdmin();
+        populateYearFilter();
         await loadEvents();
         
         // Check URL parameter

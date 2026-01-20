@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,6 +17,11 @@
   <body>
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Mobile Hamburger Menu Button - Always Visible -->
+    <button class="sidebar-toggle mobile-hamburger" id="sidebarToggle" aria-label="Toggle Sidebar">
+      <i class="bi bi-list"></i>
+    </button>
 
     <div class="main-wrapper">
       <!-- Modern Sidebar -->
@@ -105,9 +110,6 @@
         <!-- Modern Header -->
         <header class="top-header">
           <div class="header-left">
-            <button class="sidebar-toggle" id="sidebarToggle">
-              <i class="bi bi-list"></i>
-            </button>
             <div class="header-search">
               <i class="bi bi-search"></i>
               <input type="text" placeholder="Search..." class="search-input" />

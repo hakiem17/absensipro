@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -455,8 +455,22 @@
 
       /* Responsive Design */
       @media (max-width: 768px) {
+        :root {
+          --content-gutter-x: 16px;
+        }
+
         .hero-section {
-          padding: 2rem var(--content-gutter-x) 1rem;
+          padding: 3rem var(--content-gutter-x) 1rem;
+        }
+
+        .hero-title {
+          font-size: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1rem;
+          margin-bottom: 2rem;
         }
 
         .events-container {
@@ -467,8 +481,76 @@
           padding: 1.25rem;
         }
 
+        .event-title {
+          font-size: 1.125rem;
+        }
+
+        .event-meta-item {
+          font-size: 0.8125rem;
+        }
+
+        .event-actions {
+          flex-direction: column;
+        }
+
+        .btn-primary-modern {
+          width: 100%;
+          padding: 0.875rem 1.25rem;
+        }
+
         .header-content {
           padding: 0.75rem var(--content-gutter-x);
+        }
+
+        .logo {
+          font-size: 1.25rem;
+        }
+
+        .logo-icon {
+          width: 36px;
+          height: 36px;
+          font-size: 1.125rem;
+        }
+
+        .btn-modern {
+          width: 40px;
+          height: 40px;
+        }
+
+        .modern-footer {
+          padding: 1.5rem var(--content-gutter-x);
+          font-size: 0.8125rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero-title {
+          font-size: 1.75rem;
+        }
+
+        .hero-subtitle {
+          font-size: 0.9375rem;
+        }
+
+        .event-card {
+          padding: 1rem;
+        }
+
+        .event-title {
+          font-size: 1rem;
+        }
+
+        .event-badge {
+          font-size: 0.6875rem;
+          padding: 0.25rem 0.5rem;
+        }
+
+        .logo span {
+          display: none;
+        }
+
+        .header-actions {
+          gap: 0.5rem;
         }
       }
 
@@ -508,7 +590,7 @@
     <script>
       // persist tema
       (function () {
-        const t = localStorage.getItem("theme") || "dark";
+        const t = localStorage.getItem("theme") || "light";
         document.documentElement.setAttribute("data-theme", t);
       })();
     </script>

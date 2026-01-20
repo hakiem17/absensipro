@@ -7,7 +7,7 @@
 
   // Initialize theme from localStorage
   (function initTheme() {
-    const theme = localStorage.getItem("theme") || "dark";
+    const theme = localStorage.getItem("theme") || "light";
     document.documentElement.setAttribute("data-theme", theme);
   })();
 
@@ -70,10 +70,23 @@
     }
 
     // Sidebar Management
-    function toggleSidebar() {
-      sidebar?.classList.toggle("show");
-      sidebarOverlay?.classList.toggle("show");
-      document.body.style.overflow = sidebar?.classList.contains("show") ? "hidden" : "";
+    function toggleSidebar(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      const isOpen = sidebar?.classList.contains("show");
+      if (isOpen) {
+        hideSidebar();
+      } else {
+        showSidebar();
+      }
+    }
+
+    function showSidebar() {
+      sidebar?.classList.add("show");
+      sidebarOverlay?.classList.add("show");
+      document.body.style.overflow = "hidden";
     }
 
     function hideSidebar() {
@@ -85,6 +98,12 @@
     // Event Listeners
     if (sidebarToggle) {
       sidebarToggle.addEventListener("click", toggleSidebar);
+      // Ensure button is visible on mobile
+      if (window.innerWidth < 992) {
+        sidebarToggle.style.display = "flex";
+        sidebarToggle.style.visibility = "visible";
+        sidebarToggle.style.opacity = "1";
+      }
     }
 
     if (sidebarOverlay) {
@@ -127,6 +146,13 @@
     window.addEventListener("resize", () => {
       if (window.innerWidth >= 992) {
         hideSidebar();
+      } else {
+        // Ensure toggle button is visible on mobile
+        if (sidebarToggle) {
+          sidebarToggle.style.display = "flex";
+          sidebarToggle.style.visibility = "visible";
+          sidebarToggle.style.opacity = "1";
+        }
       }
     });
 
@@ -153,6 +179,24 @@
     if (copyrightYear) {
       copyrightYear.textContent = new Date().getFullYear();
     }
+
+    // Ensure sidebar toggle is visible on mobile
+    function ensureToggleVisible() {
+      if (sidebarToggle && window.innerWidth < 992) {
+        sidebarToggle.style.display = "flex";
+        sidebarToggle.style.visibility = "visible";
+        sidebarToggle.style.opacity = "1";
+        sidebarToggle.style.position = "fixed";
+        sidebarToggle.style.zIndex = "1001";
+        sidebarToggle.style.top = "1rem";
+        sidebarToggle.style.left = "1rem";
+      }
+    }
+
+    // Run on load and after a short delay to ensure it's applied
+    ensureToggleVisible();
+    setTimeout(ensureToggleVisible, 100);
+    setTimeout(ensureToggleVisible, 500);
   }
 
 })();
