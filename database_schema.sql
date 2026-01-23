@@ -81,6 +81,10 @@ CREATE TABLE IF NOT EXISTS notulen_acara (
     sidang_rapat TEXT,
     hari_tanggal DATE,
     surat_undangan TEXT,
+    document_url TEXT,
+    document_name TEXT,
+    document_type TEXT,
+    document_path TEXT,
     waktu_sidang_rapat TIME,
     acara JSONB,
     ketua TEXT,
@@ -284,6 +288,42 @@ COMMENT ON COLUMN attendees.gender IS 'Jenis kelamin: male, female, atau NULL';
 COMMENT ON COLUMN notulen_acara.acara IS 'JSON array berisi daftar acara';
 COMMENT ON COLUMN notulen_acara.peserta IS 'JSON array berisi daftar peserta';
 COMMENT ON COLUMN notulen_acara.foto IS 'JSON array berisi URL foto-foto';
+COMMENT ON COLUMN notulen_acara.document_url IS 'URL publik dokumen notulen (Word/PDF)';
+COMMENT ON COLUMN notulen_acara.document_name IS 'Nama file dokumen notulen';
+COMMENT ON COLUMN notulen_acara.document_type IS 'Tipe MIME dokumen (application/pdf, application/msword, dll)';
+COMMENT ON COLUMN notulen_acara.document_path IS 'Path file di Supabase Storage bucket notulen';
+
+-- =====================================================
+-- STORAGE BUCKETS
+-- =====================================================
+-- Buat bucket untuk dokumen notulen (Word/PDF)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('notulen', 'notulen', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Hapus policy lama jika ada
+DROP POLICY IF EXISTS "Notulen Public Read" ON storage.objects;
+DROP POLICY IF EXISTS "Notulen Upload Auth" ON storage.objects;
+DROP POLICY IF EXISTS "Notulen Update Auth" ON storage.objects;
+DROP POLICY IF EXISTS "Notulen Delete Auth" ON storage.objects;
+
+-- Akses baca publik untuk melihat dokumen
+CREATE POLICY "Notulen Public Read"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'notulen');
+
+-- Upload/Update/Delete hanya untuk user authenticated
+CREATE POLICY "Notulen Upload Auth"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'notulen' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Notulen Update Auth"
+  ON storage.objects FOR UPDATE
+  USING (bucket_id = 'notulen' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Notulen Delete Auth"
+  ON storage.objects FOR DELETE
+  USING (bucket_id = 'notulen' AND auth.role() = 'authenticated');
 
 -- =====================================================
 -- END OF SCHEMA

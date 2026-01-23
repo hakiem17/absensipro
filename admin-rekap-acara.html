@@ -469,6 +469,7 @@
         let attendeesList = [];
         let activeChannel = null;
         let isAnimating = true;
+        const ANIMATION_DELAY = 2000; // Delay sebelum animasi dimulai (2 detik)
 
         // Utility functions
         const esc = (s) =>
@@ -498,23 +499,47 @@
         }
 
         function toggleAnimation() {
+          if (!$scrollContent || !$scrollContent.classList.contains("credit-roll")) {
+            return; // No animation to toggle
+          }
+          
           if (isAnimating) {
             $scrollContent.style.animationPlayState = "paused";
-            $playPauseBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i>Play';
+            $scrollContent.classList.add("paused");
+            if ($playPauseBtn) {
+              $playPauseBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i>Play';
+            }
             isAnimating = false;
           } else {
             $scrollContent.style.animationPlayState = "running";
-            $playPauseBtn.innerHTML = '<i class="bi bi-pause-fill me-1"></i>Pause';
+            $scrollContent.classList.remove("paused");
+            if ($playPauseBtn) {
+              $playPauseBtn.innerHTML = '<i class="bi bi-pause-fill me-1"></i>Pause';
+            }
             isAnimating = true;
           }
         }
 
         function restartAnimation() {
+          if (!$scrollContent || !$scrollContent.classList.contains("credit-roll")) {
+            return; // No animation to restart
+          }
+          
+          // Get current animation duration
+          const currentAnimation = $scrollContent.style.animation;
+          const durationMatch = currentAnimation.match(/(\d+(?:\.\d+)?)s/);
+          const duration = durationMatch ? durationMatch[1] : "30";
+          
+          // Reset animation
           $scrollContent.style.animation = "none";
           $scrollContent.offsetHeight; // Force reflow
-          $scrollContent.style.animation = "creditRoll 30s linear infinite";
+          $scrollContent.style.animation = `creditRoll ${duration}s linear infinite`;
           $scrollContent.style.animationPlayState = "running";
-          $playPauseBtn.innerHTML = '<i class="bi bi-pause-fill me-1"></i>Pause';
+          $scrollContent.classList.remove("paused");
+          
+          if ($playPauseBtn) {
+            $playPauseBtn.innerHTML = '<i class="bi bi-pause-fill me-1"></i>Pause';
+          }
           isAnimating = true;
         }
 
@@ -522,12 +547,19 @@
         function renderScrollingList() {
           console.log("renderScrollingList called with", attendeesList.length, "attendees");
           
-          // Clear previous content
+          // Clear previous content and remove animation
           $scrollContent.innerHTML = "";
+          $scrollContent.classList.remove("credit-roll", "paused");
+          $scrollContent.style.animation = "none";
+          $scrollContent.style.transform = "translateY(0)"; // Reset transform to show content
           
           if (!attendeesList || attendeesList.length === 0) {
             console.log("No attendees, showing waiting message");
             $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-secondary py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Menunggu peserta...</td></tr></tbody></table>`;
+            isAnimating = false;
+            if ($playPauseBtn) {
+              $playPauseBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i>Play';
+            }
             return;
           }
 
@@ -539,55 +571,103 @@
             return tsB - tsA;
           });
 
-          // Create table structure
-          const table = document.createElement("table");
-          table.className = "table table-striped align-middle";
-          table.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-          
-          // Create colgroup
-          const colgroup = document.createElement("colgroup");
-          colgroup.innerHTML = `
-            <col style="width:72px" />
-            <col style="width:280px" />
-            <col style="width:220px" />
-            <col style="width:200px" />
-            <col style="width:160px" />
-            <col style="width:240px" />
-          `;
-          table.appendChild(colgroup);
-          
-          // Create tbody
-          const tbody = document.createElement("tbody");
-          
-          // Create rows using document fragment for better performance
-          const fragment = document.createDocumentFragment();
-          
-          sortedList.forEach((att, index) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-              <td style="width: 72px; font-size: 0.8125rem;">${index + 1}</td>
-              <td style="font-size: 0.8125rem; font-weight: 500;">${esc(att.name || "-")}</td>
-              <td style="font-size: 0.8125rem;">${esc(att.instansi || "-")}</td>
-              <td style="font-size: 0.8125rem;">${esc(att.jabatan || "-")}</td>
-              <td style="font-size: 0.8125rem;">${esc(genderLabel(att.gender) || "-")}</td>
-              <td style="font-size: 0.8125rem;">${esc(fmtDT(att.ts))}</td>
+          // Create wrapper for credit roll effect
+          const wrapper = document.createElement("div");
+          wrapper.style.position = "relative";
+          wrapper.style.width = "100%";
+          wrapper.style.display = "block";
+          wrapper.style.minHeight = "200%"; // Ensure enough height for smooth animation
+
+          // Function to create table
+          function createTable(list, startIndex = 0) {
+            const table = document.createElement("table");
+            table.className = "table table-striped align-middle";
+            table.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            table.style.marginBottom = "2rem";
+            table.style.width = "100%";
+            
+            // Create colgroup
+            const colgroup = document.createElement("colgroup");
+            colgroup.innerHTML = `
+              <col style="width:72px" />
+              <col style="width:280px" />
+              <col style="width:220px" />
+              <col style="width:200px" />
+              <col style="width:160px" />
+              <col style="width:240px" />
             `;
-            fragment.appendChild(row);
-          });
-          
-          tbody.appendChild(fragment);
-          table.appendChild(tbody);
-          
-          // Clear and append
+            table.appendChild(colgroup);
+            
+            // Create tbody
+            const tbody = document.createElement("tbody");
+            
+            // Create rows
+            list.forEach((att, idx) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td style="width: 72px; font-size: 0.8125rem;">${startIndex + idx + 1}</td>
+                <td style="font-size: 0.8125rem; font-weight: 500;">${esc(att.name || "-")}</td>
+                <td style="font-size: 0.8125rem;">${esc(att.instansi || "-")}</td>
+                <td style="font-size: 0.8125rem;">${esc(att.jabatan || "-")}</td>
+                <td style="font-size: 0.8125rem;">${esc(genderLabel(att.gender) || "-")}</td>
+                <td style="font-size: 0.8125rem;">${esc(fmtDT(att.ts))}</td>
+              `;
+              tbody.appendChild(row);
+            });
+            
+            table.appendChild(tbody);
+            return table;
+          }
+
+          // Create first table
+          const table1 = createTable(sortedList, 0);
+          wrapper.appendChild(table1);
+
+          // Duplicate table for seamless loop effect
+          const table2 = createTable(sortedList, sortedList.length);
+          wrapper.appendChild(table2);
+
+          // Clear and append wrapper
           $scrollContent.innerHTML = "";
-          $scrollContent.appendChild(table);
+          $scrollContent.appendChild(wrapper);
           
-          // Ensure content is visible
+          // Ensure content is visible first (no animation initially)
+          $scrollContent.style.transform = "translateY(0)";
           $scrollContent.style.opacity = "1";
           $scrollContent.style.visibility = "visible";
-          $scrollContent.style.display = "";
+          $scrollContent.style.display = "block";
           
-          console.log("Attendees list rendered successfully");
+          // Calculate animation duration based on content height
+          // Adjust duration based on number of rows for consistent speed
+          const baseDuration = 30; // Base 30 seconds
+          const rowCount = sortedList.length;
+          const duration = Math.max(20, Math.min(60, baseDuration + (rowCount * 0.5))); // Between 20-60s
+          
+          // Force layout calculation
+          $scrollContent.offsetHeight;
+          
+          // Wait for layout to complete, then start animation after delay
+          // Show content first, then start animation after delay
+          setTimeout(() => {
+            // Add credit roll animation class
+            $scrollContent.classList.add("credit-roll");
+            
+            // Reset transform to start animation from current position
+            $scrollContent.style.transform = "translateY(0)";
+            
+            // Start animation
+            $scrollContent.style.animation = `creditRoll ${duration}s linear infinite`;
+            $scrollContent.style.animationPlayState = "running";
+            isAnimating = true;
+            
+            if ($playPauseBtn) {
+              $playPauseBtn.innerHTML = '<i class="bi bi-pause-fill me-1"></i>Pause';
+            }
+            
+            console.log(`Credit roll animation started after ${ANIMATION_DELAY}ms delay`);
+          }, ANIMATION_DELAY);
+          
+          console.log(`Attendees list rendered successfully, animation will start in ${ANIMATION_DELAY/1000} seconds`);
         }
 
         function handleNewAttendee(newAttendee) {
@@ -635,6 +715,29 @@
             console.log("Event result:", eventRes);
             console.log("Attendees result:", attendeesRes);
 
+            // Check for errors
+            if (eventRes.error) {
+              console.error("Error loading event:", eventRes.error);
+              $eventTitle.textContent = "Error memuat acara";
+              $eventTitle.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+              if ($scrollContent) {
+                $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error memuat acara: ${esc(eventRes.error.message)}</td></tr></tbody></table>`;
+              }
+              return;
+            }
+
+            if (attendeesRes.error) {
+              console.error("Error loading attendees:", attendeesRes.error);
+              $eventTitle.textContent = eventRes.data
+                ? `Rekap Kehadiran: ${eventRes.data.title}`
+                : "Acara tidak ditemukan";
+              $eventTitle.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+              if ($scrollContent) {
+                $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error memuat peserta: ${esc(attendeesRes.error.message)}</td></tr></tbody></table>`;
+              }
+              return;
+            }
+
             $eventTitle.textContent = eventRes.data
               ? `Rekap Kehadiran: ${eventRes.data.title}`
               : "Acara tidak ditemukan";
@@ -662,6 +765,8 @@
               .subscribe();
           } catch (error) {
             console.error("Error loading recap data:", error);
+            $eventTitle.textContent = "Error memuat data";
+            $eventTitle.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
             if ($scrollContent) {
               $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error loading data: ${esc(error.message)}</td></tr></tbody></table>`;
             }
@@ -671,17 +776,27 @@
         async function main() {
           console.log("Main function started");
           
-          // HANYA AMBIL ACARA DENGAN STATUS 'active' ATAU 'upcoming'
-          const { data: events } = await sb
-            .from("events")
-            .select("id, title")
-            .in("status", ["active", "upcoming"])
-            .order("datetime", { ascending: false });
+          try {
+            // HANYA AMBIL ACARA DENGAN STATUS 'active' ATAU 'upcoming'
+            const { data: events, error } = await sb
+              .from("events")
+              .select("id, title")
+              .in("status", ["active", "upcoming"])
+              .order("datetime", { ascending: false });
 
-          console.log("Events loaded:", events);
+            console.log("Events loaded:", events);
+            console.log("Error (if any):", error);
 
-          if (events) {
-            if (events.length === 0) {
+            if (error) {
+              console.error("Error loading events:", error);
+              $eventSelect.innerHTML = `<option value="">-- Error memuat acara: ${esc(error.message)} --</option>`;
+              if ($scrollContent) {
+                $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error memuat acara: ${esc(error.message)}</td></tr></tbody></table>`;
+              }
+              return;
+            }
+
+            if (!events || events.length === 0) {
               $eventSelect.innerHTML = `<option value="">-- Tidak ada acara aktif --</option>`;
             } else {
               $eventSelect.innerHTML =
@@ -694,7 +809,7 @@
             const urlEventId = new URLSearchParams(window.location.search).get(
               "event"
             );
-            if (urlEventId && events.some((e) => e.id === urlEventId)) {
+            if (urlEventId && events && events.some((e) => e.id === urlEventId)) {
               $eventSelect.value = urlEventId;
             }
             
@@ -704,7 +819,14 @@
             }
             
             loadRecapForEvent($eventSelect.value);
+          } catch (err) {
+            console.error("Unexpected error in main():", err);
+            $eventSelect.innerHTML = `<option value="">-- Error: ${esc(err.message)} --</option>`;
+            if ($scrollContent) {
+              $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error tidak terduga: ${esc(err.message)}</td></tr></tbody></table>`;
+            }
           }
+
           $eventSelect.addEventListener("change", (e) =>
             loadRecapForEvent(e.target.value)
           );

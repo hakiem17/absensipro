@@ -53,10 +53,10 @@ AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk
 - 📊 **Dashboard Analytics** - Statistik lengkap dengan Chart.js
 - 📅 **Manajemen Acara** - CRUD lengkap untuk pengelolaan acara
 - 👥 **Daftar Hadir** - Pencarian, filter, dan pagination dengan loading states
-- 📺 **Rekap Live** - Animasi credit roll untuk tampilan real-time
+- 📺 **Rekap Live** - Animasi credit roll (post-credit style) untuk tampilan real-time dengan kontrol Play/Pause dan Restart
 - 📄 **Export & Print** - Export CSV dan cetak laporan dengan kop surat resmi
 - 🖨️ **Print Daftar Hadir** - Cetak daftar hadir dengan format profesional (NEW in v2.0)
-- 📝 **Notulen Acara** - Manajemen notulen rapat dan acara (NEW in v2.0)
+- 📝 **Notulen Acara** - Upload dan kelola dokumen notulen (Word/PDF) untuk setiap acara (NEW in v2.0)
 - ✍️ **Master Tanda Tangan** - Pengelolaan data master penandatangan (NEW in v2.0)
 - 🔗 **QR Code Generator** - Generate QR code untuk akses form
 - ⚡ **Real-time Updates** - Update kehadiran secara live dengan error handling yang lebih baik
@@ -75,7 +75,9 @@ AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk
 - **Supabase** - Backend-as-a-Service
 - **PostgreSQL** - Database relasional
 - **Real-time Subscriptions** - Update data secara live
-- **Supabase Storage** - Penyimpanan file tanda tangan
+- **Supabase Storage** - Penyimpanan file:
+  - **Bucket `signatures`** - Tanda tangan digital peserta
+  - **Bucket `notulen`** - Dokumen notulen (Word/PDF)
 
 ### **Libraries & Tools**
 - **Chart.js** - Visualisasi data dashboard
@@ -95,7 +97,7 @@ absensipro/
 ├── 📅 admin-manajemen-acara.html    # CRUD acara
 ├── 👥 admin-daftar-hadir.html       # Daftar hadir peserta (improved in v2.0)
 ├── 📺 admin-rekap-acara.html        # Rekap live dengan animasi
-├── 📝 admin-notulen-acara.html      # Manajemen notulen (NEW in v2.0)
+├── 📝 admin-notulen-acara.html      # Upload & kelola dokumen notulen Word/PDF (NEW in v2.0)
 ├── 🖨️ admin-print-daftar-hadir.html # Print daftar hadir (NEW in v2.0)
 ├── 📁 assets/
 │   ├── 📁 js/
@@ -167,8 +169,12 @@ absensipro/
    - `events` - Data acara/event
    - `attendees` - Data peserta/kehadiran
    - `master_tanda_tangan` - Master data penandatangan
-   - `notulen_acara` - Notulen rapat/acara
+   - `notulen_acara` - Notulen rapat/acara (dengan kolom `document_url`, `document_name`, `document_type`, `document_path` untuk upload dokumen Word/PDF)
    - `admin_profiles` - Profil admin
+   
+   **Storage Bucket yang dibuat:**
+   - `signatures` - Untuk menyimpan tanda tangan digital peserta
+   - `notulen` - Untuk menyimpan dokumen notulen (Word/PDF)
 
 ## 🔧 Konfigurasi
 
@@ -176,7 +182,10 @@ absensipro/
 1. Buat project baru di Supabase Dashboard
 2. Update `SUPABASE_URL` dan `SUPABASE_ANON_KEY` di `assets/js/config.js`
 3. Setup authentication untuk admin
-4. Konfigurasi storage bucket untuk tanda tangan
+4. Konfigurasi storage bucket:
+   - **Bucket `signatures`** - Untuk menyimpan tanda tangan digital peserta
+   - **Bucket `notulen`** - Untuk menyimpan dokumen notulen (Word/PDF)
+   - Kedua bucket akan dibuat otomatis saat menjalankan `database_schema.sql`
 
 ### **Environment Variables**
 ```javascript
@@ -198,8 +207,9 @@ window.SUPABASE_ANON_KEY = "your-supabase-anon-key";
 1. Login dengan kredensial admin
 2. Kelola acara di halaman Manajemen Acara
 3. Monitor kehadiran di Dashboard
-4. Export data atau cetak laporan
-5. Generate QR code untuk akses form
+4. Upload dokumen notulen (Word/PDF) di halaman Notulen Acara
+5. Export data atau cetak laporan
+6. Generate QR code untuk akses form
 
 ## 🎨 Customization
 
@@ -271,13 +281,16 @@ Jika Anda menggunakan versi 1.0 atau sebelumnya, berikut langkah upgrade ke v2.0
 
 ### Version 2.0 (Current) - 2025-01-27
 - 🐛 Fixed critical bug: Admin daftar hadir event loading
-- ✨ Added Admin Notulen Acara feature
+- ✨ Added Admin Notulen Acara - Upload & kelola dokumen notulen (Word/PDF) untuk setiap acara
 - ✨ Added Admin Print Daftar Hadir feature
 - ✨ Added Master Tanda Tangan management
+- ✨ Added Edit & Delete fitur untuk daftar hadir peserta
+- ✨ Added Credit Roll Animation untuk Rekap Acara Live - Animasi teks berjalan seperti post-credit bioskop dengan kontrol Play/Pause dan Restart
 - 🏗️ Improved code organization and structure
 - 🎨 Enhanced UI/UX with loading states
 - 🛡️ Better error handling and user feedback
 - 📋 Added FEATURES.md for feature tracking
+- 📦 Added storage bucket setup untuk dokumen notulen di database_schema.sql
 
 ### Version 1.0
 - 🎉 Initial release

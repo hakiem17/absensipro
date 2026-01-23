@@ -403,13 +403,25 @@
         selectedYear = 2026; // Default filter tahun 2026
 
       function fmtDate(d) {
-        return new Date(d).toLocaleString("id-ID", {
+        if (!d) return "-";
+        const date = new Date(d);
+        // Format tanggal dengan timezone WITA (Asia/Makassar, UTC+8)
+        const tanggal = date.toLocaleDateString("id-ID", {
+          timeZone: "Asia/Makassar",
           day: "2-digit",
           month: "short",
           year: "numeric",
+        });
+        // Format waktu dengan timezone WITA (24 jam format)
+        const waktu = date.toLocaleTimeString("id-ID", {
+          timeZone: "Asia/Makassar",
           hour: "2-digit",
           minute: "2-digit",
+          hour12: false,
         });
+        // Ubah format waktu dari "09:00" menjadi "09.00"
+        const waktuFormatted = waktu.replace(":", ".");
+        return `${tanggal}, ${waktuFormatted}`;
       }
       function esc(s) {
         return (s ?? "").toString().replace(

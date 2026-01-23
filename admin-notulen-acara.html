@@ -137,7 +137,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3" style="padding-top: 1.5rem;">
               <div>
                 <h2 class="h4 mb-1 text-gradient">Notulen Acara</h2>
-                <p class="text-muted mb-0">Kelola notulen untuk setiap acara</p>
+                <p class="text-muted mb-0">Upload dokumen notulen (Word/PDF) untuk setiap acara</p>
               </div>
               <div class="d-flex align-items-center gap-2">
                 <label for="year-filter" class="form-label mb-0 small text-muted fw-medium">Tahun:</label>
@@ -165,7 +165,7 @@
                         <th>Tanggal & Waktu</th>
                         <th>Lokasi</th>
                         <th>Status</th>
-                        <th>Notulen</th>
+                        <th>Dokumen Notulen</th>
                         <th style="width: 200px;">Aksi</th>
                       </tr>
                     </thead>
@@ -194,6 +194,23 @@
                   </div>
                   <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                     <form id="form-notulen">
+                      <div class="mb-4">
+                        <h6 class="mb-3">Dokumen Notulen (Word/PDF)</h6>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                          <input type="file" id="input-notulen-doc" accept=".pdf,.doc,.docx" style="display: none;">
+                          <button type="button" class="btn btn-sm btn-outline-primary" id="btn-select-doc">
+                            <i class="bi bi-file-earmark-arrow-up me-2"></i>
+                            Pilih Dokumen
+                          </button>
+                          <a id="doc-link" class="btn btn-sm btn-outline-secondary d-none" target="_blank" rel="noopener">
+                            <i class="bi bi-box-arrow-up-right me-2"></i>
+                            Lihat Dokumen
+                          </a>
+                        </div>
+                        <div class="small text-muted mt-2" id="doc-current">Belum ada dokumen.</div>
+                      </div>
+                      <hr>
+                      <div id="legacy-notulen-form" style="display: none;">
               <div class="card-header">
                 <h5 class="card-title mb-0">
                   <i class="bi bi-file-text me-2"></i>
@@ -350,8 +367,9 @@
                       </div>
                     </div>
                   </div>
+                      </div>
 
-                      <!-- Action Buttons -->
+                      <!-- Legacy action buttons (hidden) -->
                       <div class="d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                           <i class="bi bi-x-circle me-2"></i>
@@ -361,12 +379,22 @@
                           <i class="bi bi-arrow-counterclockwise me-2"></i>
                           Reset
                         </button>
-                        <button type="submit" class="btn btn-primary" id="btn-save">
+                        <button type="submit" class="btn btn-primary" id="btn-save-legacy">
                           <i class="bi bi-save me-2"></i>
-                          Simpan Notulen
+                          Simpan Dokumen
                         </button>
                       </div>
                     </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                      <i class="bi bi-x-circle me-2"></i>
+                      Batal
+                    </button>
+                    <button type="submit" form="form-notulen" class="btn btn-primary" id="btn-save-doc">
+                      <i class="bi bi-save me-2"></i>
+                      Simpan Dokumen
+                    </button>
                   </div>
                 </div>
               </div>
@@ -482,7 +510,7 @@
       // ===== NOTULEN ACARA =====
       const $eventsTbody = document.getElementById("events-tbody");
       const $form = document.getElementById("form-notulen");
-      const $btnSave = document.getElementById("btn-save");
+      const $btnSave = document.getElementById("btn-save-doc");
       const $btnReset = document.getElementById("btn-reset");
       const $acaraList = document.getElementById("acara-list");
       const $pesertaList = document.getElementById("peserta-list");
@@ -494,6 +522,10 @@
       const $btnSelectFoto = document.getElementById("btn-select-foto");
       const $uploadArea = document.getElementById("upload-area");
       const $photoPreviewGrid = document.getElementById("photo-preview-grid");
+      const $inputDoc = document.getElementById("input-notulen-doc");
+      const $btnSelectDoc = document.getElementById("btn-select-doc");
+      const $docCurrent = document.getElementById("doc-current");
+      const $docLink = document.getElementById("doc-link");
 
       let EVENTS = [];
       let NOTULEN_MAP = {}; // Map event_id -> notulen data
@@ -503,6 +535,7 @@
       let photosToUpload = []; // Array of File objects to upload
       let mode = "create"; // Track modal mode (create/edit/view)
       let selectedYear = 2026; // Default filter tahun 2026
+      const NOTULEN_BUCKET = "notulen";
 
       const esc = (s) =>
         String(s ?? "")
@@ -511,6 +544,16 @@
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#39;");
+
+      const getDocumentUrl = (doc) => {
+        if (!doc) return "";
+        if (doc.document_url) return doc.document_url;
+        if (doc.document_path) {
+          const { data: pub } = sb.storage.from(NOTULEN_BUCKET).getPublicUrl(doc.document_path);
+          return pub?.publicUrl || "";
+        }
+        return "";
+      };
 
       // Format date
       const fmtDT = (iso) =>
@@ -533,6 +576,32 @@
               year: "numeric",
             })
           : "-";
+
+      const trim = (v) => (v ?? "").toString().trim();
+
+      function setDocInfo(doc) {
+        if (!doc || !doc.document_url) {
+          if ($docCurrent) $docCurrent.textContent = "Belum ada dokumen.";
+          if ($docLink) $docLink.classList.add("d-none");
+          return;
+        }
+        const name = doc.document_name || "Dokumen Notulen";
+        const type = doc.document_type ? ` (${doc.document_type})` : "";
+        if ($docCurrent) $docCurrent.textContent = `${name}${type}`;
+        if ($docLink) {
+          $docLink.href = doc.document_url;
+          $docLink.classList.remove("d-none");
+        }
+      }
+
+      function buildDocPath(eventId, fileName) {
+        const safeName = String(fileName || "notulen")
+          .toLowerCase()
+          .replace(/[^a-z0-9._-]+/g, "_")
+          .replace(/_+/g, "_")
+          .slice(0, 80);
+        return `event_${eventId}/${Date.now()}_${safeName}`;
+      }
 
       const formatWita = (value) => {
         const raw = (value ?? "").toString().trim();
@@ -587,7 +656,7 @@
           // Load all notulen
           const { data: notulenList, error: notulenError } = await sb
             .from("notulen_acara")
-            .select("event_id,id,created_at,updated_at");
+            .select("event_id,id,document_url,document_path,document_name,document_type,created_at,updated_at");
 
           if (!notulenError && notulenList) {
             notulenList.forEach(n => {
@@ -622,7 +691,9 @@
         }
 
         $eventsTbody.innerHTML = EVENTS.map((event, index) => {
-          const hasNotulen = NOTULEN_MAP[event.id];
+          const notulenDoc = NOTULEN_MAP[event.id];
+          const hasDoc = !!(notulenDoc && (notulenDoc.document_url || notulenDoc.document_path || notulenDoc.document_name));
+          const docUrl = getDocumentUrl(notulenDoc);
           const statusClass = event.status === "done" ? "text-bg-success" : 
                              event.status === "active" ? "text-bg-primary" : 
                              "text-bg-secondary";
@@ -638,32 +709,26 @@
               <td>${esc(event.location || "-")}</td>
               <td><span class="badge ${statusClass}">${statusText}</span></td>
               <td>
-                ${hasNotulen 
-                  ? `<span class="badge text-bg-success"><i class="bi bi-check-circle me-1"></i>Ada</span>`
+                ${hasDoc
+                  ? `<span class="badge text-bg-success"><i class="bi bi-check-circle me-1"></i>Ada Dokumen</span>`
                   : `<span class="badge text-bg-secondary"><i class="bi bi-x-circle me-1"></i>Belum Ada</span>`
                 }
               </td>
               <td>
                 <div class="btn-group btn-group-sm" role="group">
-                  ${hasNotulen 
-                    ? `<button class="btn btn-outline-primary btn-view-notulen" data-event-id="${esc(event.id)}" title="Lihat Notulen">
+                  ${hasDoc
+                    ? `<a class="btn btn-outline-primary btn-view-doc" href="${esc(docUrl)}" title="Lihat Dokumen" target="_blank" rel="noopener">
                          <i class="bi bi-eye"></i>
+                       </a>
+                       <button class="btn btn-outline-warning btn-upload-doc" data-event-id="${esc(event.id)}" title="Ganti Dokumen">
+                         <i class="bi bi-upload"></i>
                        </button>
-                       <button class="btn btn-outline-warning btn-edit-notulen" data-event-id="${esc(event.id)}" title="Edit Notulen">
-                         <i class="bi bi-pencil"></i>
-                       </button>
-                       <button class="btn btn-outline-success btn-export-pdf-notulen" data-event-id="${esc(event.id)}" title="Export PDF">
-                         <i class="bi bi-file-pdf"></i>
-                       </button>`
-                    : `<button class="btn btn-outline-success btn-create-notulen" data-event-id="${esc(event.id)}" title="Buat Notulen">
-                         <i class="bi bi-plus-circle"></i>
-                       </button>`
-                  }
-                  ${hasNotulen 
-                    ? `<button class="btn btn-outline-danger btn-delete-notulen" data-event-id="${esc(event.id)}" title="Hapus Notulen">
+                       <button class="btn btn-outline-danger btn-delete-notulen" data-event-id="${esc(event.id)}" title="Hapus Dokumen">
                          <i class="bi bi-trash"></i>
                        </button>`
-                    : ""
+                    : `<button class="btn btn-outline-success btn-upload-doc" data-event-id="${esc(event.id)}" title="Upload Dokumen">
+                         <i class="bi bi-upload"></i>
+                       </button>`
                   }
                 </div>
               </td>
@@ -677,43 +742,19 @@
 
       // Attach event listeners to action buttons
       function attachEventListeners() {
-        // View notulen
-        document.querySelectorAll(".btn-view-notulen").forEach(btn => {
+        // Upload/replace dokumen
+        document.querySelectorAll(".btn-upload-doc").forEach((btn) => {
           btn.onclick = () => {
             const eventId = btn.getAttribute("data-event-id");
-            openNotulenModal(eventId, "view");
+            openNotulenModal(eventId, "upload");
           };
         });
 
-        // Edit notulen
-        document.querySelectorAll(".btn-edit-notulen").forEach(btn => {
-          btn.onclick = () => {
-            const eventId = btn.getAttribute("data-event-id");
-            openNotulenModal(eventId, "edit");
-          };
-        });
-
-        // Create notulen
-        document.querySelectorAll(".btn-create-notulen").forEach(btn => {
-          btn.onclick = () => {
-            const eventId = btn.getAttribute("data-event-id");
-            openNotulenModal(eventId, "create");
-          };
-        });
-
-        // Delete notulen
-        document.querySelectorAll(".btn-delete-notulen").forEach(btn => {
+        // Delete dokumen
+        document.querySelectorAll(".btn-delete-notulen").forEach((btn) => {
           btn.onclick = () => {
             const eventId = btn.getAttribute("data-event-id");
             deleteNotulen(eventId);
-          };
-        });
-
-        // Export PDF notulen
-        document.querySelectorAll(".btn-export-pdf-notulen").forEach(btn => {
-          btn.onclick = async () => {
-            const eventId = btn.getAttribute("data-event-id");
-            await exportNotulenToPDF(eventId);
           };
         });
       }
@@ -730,12 +771,12 @@
         }
 
         // Set modal title
-        $modalTitleText.textContent = `${mode === "view" ? "Lihat" : mode === "edit" ? "Edit" : "Buat"} Notulen - ${esc(event.title)}`;
+        $modalTitleText.textContent = `Upload Dokumen Notulen - ${esc(event.title)}`;
 
         // Disable form if view mode
         const formInputs = $form.querySelectorAll("input, textarea, select, button");
         formInputs.forEach(input => {
-          if (input.id !== "btn-save" && input.id !== "btn-reset" && input.id !== "input-foto" && input.id !== "btn-select-foto") {
+          if (input.id !== "btn-save-doc" && input.id !== "btn-save-legacy" && input.id !== "btn-reset" && input.id !== "input-foto" && input.id !== "btn-select-foto") {
             input.disabled = mode === "view";
           }
         });
@@ -762,7 +803,8 @@
       // Load notulen for selected event
       async function loadNotulen(eventId) {
         if (!eventId) {
-          resetForm();
+          currentNotulen = null;
+          setDocInfo(null);
           return;
         }
 
@@ -781,21 +823,12 @@
 
           if (data) {
             currentNotulen = data;
-            populateForm(data);
+            setDocInfo(data);
           } else {
             currentNotulen = null;
-            resetForm();
-            // Auto-fill from event if available
-            const event = EVENTS.find(e => e.id === eventId);
-            if (event) {
-              document.getElementById("sidang-rapat").value = event.title || "";
-              if (event.datetime) {
-                const eventDate = new Date(event.datetime);
-                document.getElementById("hari-tanggal").value = eventDate.toISOString().split('T')[0];
-                document.getElementById("waktu-sidang").value = eventDate.toTimeString().slice(0, 5);
-              }
-            }
+            setDocInfo(null);
           }
+          if ($inputDoc) $inputDoc.value = "";
         } catch (error) {
           console.error("Error loading notulen:", error);
           alert("Gagal memuat notulen: " + error.message);
@@ -852,6 +885,8 @@
       // Reset form
       function resetForm() {
         $form.reset();
+        setDocInfo(null);
+        if ($inputDoc) $inputDoc.value = "";
         $acaraList.innerHTML = "";
         addAcaraItem("", 1);
         $pesertaList.innerHTML = "";
@@ -1276,72 +1311,44 @@
 
         try {
           $btnSave.disabled = true;
-          $btnSave.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+          $btnSave.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengunggah...';
 
-          // Upload new photos first
-          const newPhotoUrls = [];
-          const uploadErrors = [];
-          
-          for (const file of photosToUpload) {
-            try {
-              const url = await uploadPhotoToStorage(file);
-              newPhotoUrls.push(url);
-            } catch (error) {
-              console.error("Error uploading photo:", error);
-              uploadErrors.push({
-                file: file.name,
-                error: error.message || "Unknown error"
+          const file = $inputDoc?.files?.[0] || null;
+          if (!file && !(currentNotulen && currentNotulen.document_url)) {
+            alert("Silakan pilih dokumen notulen (Word/PDF) terlebih dahulu.");
+            return;
+          }
+
+          let documentUrl = currentNotulen?.document_url || null;
+          let documentPath = currentNotulen?.document_path || null;
+          let documentName = currentNotulen?.document_name || null;
+          let documentType = currentNotulen?.document_type || null;
+
+          if (file) {
+            const filePath = buildDocPath(currentEventId, file.name);
+            const { error: upErr } = await sb.storage
+              .from(NOTULEN_BUCKET)
+              .upload(filePath, file, {
+                contentType: file.type || "application/octet-stream",
+                upsert: true,
               });
-              // Continue dengan foto lainnya, jangan stop semua upload
-            }
+            if (upErr) throw upErr;
+            const { data: pub } = sb.storage
+              .from(NOTULEN_BUCKET)
+              .getPublicUrl(filePath);
+            documentUrl = pub?.publicUrl || null;
+            documentPath = filePath;
+            documentName = file.name;
+            documentType = file.type || null;
           }
-
-          // Tampilkan error jika ada yang gagal
-          if (uploadErrors.length > 0) {
-            const errorMsg = `Gagal upload ${uploadErrors.length} dari ${photosToUpload.length} foto:\n\n` +
-              uploadErrors.map(e => `- ${e.file}: ${e.error}`).join('\n') +
-              (newPhotoUrls.length > 0 ? `\n\n${newPhotoUrls.length} foto berhasil diupload.` : '');
-            
-            if (newPhotoUrls.length === 0) {
-              // Jika semua gagal, throw error
-              throw new Error(errorMsg);
-            } else {
-              // Jika ada yang berhasil, tampilkan warning tapi lanjutkan
-              alert(errorMsg);
-            }
-          }
-
-          // Combine uploaded photos with new ones
-          const allPhotos = [...uploadedPhotos, ...newPhotoUrls];
-
-          // Collect acara (agenda)
-          const acara = Array.from($acaraList.querySelectorAll(".acara-input"))
-            .map(input => input.value.trim())
-            .filter(val => val);
-
-          // Collect peserta
-          const peserta = Array.from($pesertaList.querySelectorAll(".peserta-input"))
-            .map(input => input.value.trim())
-            .filter(val => val);
 
           const dataToSave = {
             event_id: currentEventId,
-            sidang_rapat: document.getElementById("sidang-rapat").value.trim() || null,
-            hari_tanggal: document.getElementById("hari-tanggal").value || null,
-            surat_undangan: document.getElementById("surat-undangan").value.trim() || null,
-            waktu_sidang_rapat: document.getElementById("waktu-sidang").value || null,
-            acara: acara.length > 0 ? acara : null,
-            ketua: document.getElementById("ketua").value.trim() || null,
-            sekretaris: document.getElementById("sekretaris").value.trim() || null,
-            pencatat: document.getElementById("pencatat").value.trim() || null,
-            peserta: peserta.length > 0 ? peserta : null,
-            kegiatan_sidang_rapat: document.getElementById("kegiatan-sidang").value.trim() || null,
-            nama_jabatan: document.getElementById("nama-jabatan").value.trim() || null,
-            nama_penandatangan: document.getElementById("nama-penandatangan").value.trim() || null,
-            pangkat_golongan: document.getElementById("pangkat-golongan").value.trim() || null,
-            nip: document.getElementById("nip").value.trim() || null,
-            foto: allPhotos.length > 0 ? allPhotos : null,
-            updated_at: new Date().toISOString()
+            document_url: documentUrl,
+            document_path: documentPath,
+            document_name: documentName,
+            document_type: documentType,
+            updated_at: new Date().toISOString(),
           };
 
           if (currentNotulen && currentNotulen.id) {
@@ -1350,17 +1357,15 @@
               .from("notulen_acara")
               .update(dataToSave)
               .eq("id", currentNotulen.id)
-              .select()
+              .select("id,event_id,document_url,document_path,document_name,document_type,created_at,updated_at")
               .single();
 
             if (error) throw error;
             currentNotulen = data;
             NOTULEN_MAP[currentEventId] = data;
-            // Clear pending uploads after successful save
-            photosToUpload = [];
-            uploadedPhotos = data.foto || [];
-            renderPhotoPreviews();
-            alert("Notulen berhasil diperbarui!");
+            setDocInfo(data);
+            if ($inputDoc) $inputDoc.value = "";
+            alert("Dokumen notulen berhasil diperbarui!");
           } else {
             // Insert
             const { data, error } = await sb
@@ -1372,18 +1377,16 @@
             if (error) throw error;
             currentNotulen = data;
             NOTULEN_MAP[currentEventId] = data;
-            // Clear pending uploads after successful save
-            photosToUpload = [];
-            uploadedPhotos = data.foto || [];
-            renderPhotoPreviews();
-            alert("Notulen berhasil disimpan!");
+            setDocInfo(data);
+            if ($inputDoc) $inputDoc.value = "";
+            alert("Dokumen notulen berhasil disimpan!");
           }
         } catch (error) {
           console.error("Error saving notulen:", error);
           alert("Gagal menyimpan notulen: " + error.message);
         } finally {
           $btnSave.disabled = false;
-          $btnSave.innerHTML = '<i class="bi bi-save me-2"></i>Simpan Notulen';
+          $btnSave.innerHTML = '<i class="bi bi-save me-2"></i>Simpan Dokumen';
         }
       }
 
@@ -2203,7 +2206,7 @@
 
       // Delete notulen
       async function deleteNotulen(eventId) {
-        if (!confirm("Apakah Anda yakin ingin menghapus notulen ini? Semua foto yang terkait juga akan dihapus.")) {
+        if (!confirm("Apakah Anda yakin ingin menghapus dokumen notulen ini?")) {
           return;
         }
 
@@ -2214,11 +2217,9 @@
             return;
           }
 
-          // Delete photos from storage
-          if (notulen.foto && Array.isArray(notulen.foto)) {
-            for (const photoUrl of notulen.foto) {
-              await deletePhotoFromStorage(photoUrl);
-            }
+          // Delete document from storage if available
+          if (notulen.document_path) {
+            await sb.storage.from(NOTULEN_BUCKET).remove([notulen.document_path]);
           }
 
           const { error } = await sb
@@ -2261,6 +2262,22 @@
 
       $btnTambahPeserta.addEventListener("click", function() {
         addPesertaItem();
+      });
+
+      // Document upload handlers
+      $btnSelectDoc?.addEventListener("click", function() {
+        $inputDoc?.click();
+      });
+
+      $inputDoc?.addEventListener("change", function(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        if ($docCurrent) {
+          $docCurrent.textContent = `${file.name}${file.type ? ` (${file.type})` : ""}`;
+        }
+        if ($docLink) {
+          $docLink.classList.add("d-none");
+        }
       });
 
       // Photo upload handlers

@@ -12,9 +12,50 @@
 
 ---
 
+## ✅ Fitur yang Sudah Diimplementasikan
+
+### 1. Upload Dokumen Notulen (Word/PDF)
+**Status:** ✅ Completed | **Prioritas:** 🔴 High  
+**Deskripsi:** Fitur upload dan kelola dokumen notulen untuk setiap acara  
+**Fitur:**
+- [x] Upload dokumen Word/PDF untuk notulen acara
+- [x] View dokumen yang sudah diupload (buka di tab baru)
+- [x] Ganti/update dokumen notulen
+- [x] Hapus dokumen notulen
+- [x] Storage bucket `notulen` dengan RLS policies
+- [x] Kolom database untuk metadata dokumen (document_url, document_name, document_type, document_path)
+- [x] UI sederhana dengan tombol Upload, View, Delete
+
+**Estimasi:** 1-2 hari  
+**Dependencies:** Supabase Storage, database schema update  
+**Tanggal Selesai:** 2025-01-27
+
+---
+
+### 2. Credit Roll Animation untuk Rekap Acara Live
+**Status:** ✅ Completed | **Prioritas:** 🟡 Medium  
+**Deskripsi:** Fitur animasi teks berjalan (credit roll) seperti post-credit bioskop untuk menampilkan daftar peserta di halaman Rekap Acara Live  
+**Fitur:**
+- [x] Animasi teks berjalan dari bawah ke atas (credit roll effect)
+- [x] Konten terlihat langsung saat data dimuat
+- [x] Delay 2 detik sebelum animasi dimulai (dapat dikonfigurasi)
+- [x] Tombol Play/Pause untuk mengontrol animasi
+- [x] Tombol Restart untuk memulai ulang animasi
+- [x] Efek fade di bagian atas dan bawah untuk transisi halus
+- [x] Loop seamless dengan duplikasi konten
+- [x] Durasi animasi otomatis disesuaikan berdasarkan jumlah peserta
+- [x] Support dark mode untuk efek fade
+- [x] Real-time update saat peserta baru ditambahkan
+
+**Estimasi:** 1 hari  
+**Dependencies:** CSS animations, JavaScript timing functions  
+**Tanggal Selesai:** 2025-01-27
+
+---
+
 ## 🔴 Prioritas Tinggi (High Value, Mudah Implementasi)
 
-### 1. Backup & Restore Data
+### 3. Backup & Restore Data
 **Status:** ⏳ Pending | **Prioritas:** 🔴 High  
 **Deskripsi:** Fitur untuk backup dan restore data aplikasi  
 **Fitur:**
@@ -29,7 +70,7 @@
 
 ---
 
-### 2. Manajemen Pengguna & Role
+### 4. Manajemen Pengguna & Role
 **Status:** ⏳ Pending | **Prioritas:** 🔴 High  
 **Deskripsi:** Sistem multi-level admin dengan permission berbeda  
 **Fitur:**
@@ -47,7 +88,7 @@
 
 ## 🟡 Prioritas Sedang (Menambah Nilai)
 
-### 3. Sertifikat Kehadiran Otomatis
+### 5. Sertifikat Kehadiran Otomatis
 **Status:** ⏳ Pending | **Prioritas:** 🟡 Medium  
 **Deskripsi:** Generate sertifikat PDF otomatis untuk peserta  
 **Fitur:**
@@ -64,13 +105,13 @@
 
 ## 📊 Progress Summary
 
-**Total Fitur:** 3  
-**Completed:** 0  
+**Total Fitur:** 5  
+**Completed:** 2  
 **In Progress:** 0  
 **Pending:** 3  
 **Cancelled:** 0  
 
-**Progress:** 0% ⏳
+**Progress:** 40% ✅
 
 ---
 
@@ -178,3 +219,11 @@
 
 **Last Updated:** 2025-01-27  
 **Maintained by:** Development Team
+
+---
+
+## 📝 Changelog
+
+### 2025-01-27
+- ✅ **Completed:** Upload Dokumen Notulen (Word/PDF) - Fitur upload, view, dan delete dokumen notulen untuk setiap acara. Storage bucket `notulen` dengan RLS policies sudah ditambahkan ke `database_schema.sql`.
+- ✅ **Completed:** Credit Roll Animation untuk Rekap Acara Live - Fitur animasi teks berjalan seperti post-credit bioskop untuk menampilkan daftar peserta. Animasi dimulai setelah delay 2 detik, dengan kontrol Play/Pause dan Restart. Efek fade di bagian atas dan bawah untuk transisi halus.

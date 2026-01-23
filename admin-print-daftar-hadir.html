@@ -473,6 +473,14 @@
             })
           : "-";
 
+      // Format gender ke bahasa Indonesia
+      const genderLabel = (g) => {
+        const v = (g || "").toLowerCase();
+        if (v === "male") return "Laki-laki";
+        if (v === "female") return "Perempuan";
+        return g || "-";
+      };
+
       // Fungsi untuk mendapatkan daftar tahun dari events
       function getAvailableYears(events) {
         const years = new Set();
@@ -1349,7 +1357,7 @@
                 color: rgb(0, 0, 0),
               });
             } else {
-              const genderText = rowData.gender || "-";
+              const genderText = genderLabel(rowData.gender || "-");
               const genderWidth = helveticaFont.widthOfTextAtSize(genderText, fontSize);
               // Center vertically: topY - (height/2) - fontSize/2
               const genderBaselineY = rowTopY - (maxRowHeight / 2) - (fontSize / 2);
