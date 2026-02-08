@@ -222,6 +222,17 @@
 
 ---
 
+## 📚 Dokumentasi Terkait
+
+- 📖 **[UPGRADE_RECOMMENDATIONS.md](./UPGRADE_RECOMMENDATIONS.md)** - Rekomendasi upgrade komprehensif untuk versi 3.0
+  - Fitur prioritas tinggi
+  - Upgrade teknologi
+  - Keamanan & compliance
+  - Performance optimization
+  - Roadmap versi 3.0
+
+---
+
 ## 📝 Changelog
 
 ### 2025-01-27

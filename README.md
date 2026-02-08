@@ -194,6 +194,20 @@ window.SUPABASE_URL = "your-supabase-url";
 window.SUPABASE_ANON_KEY = "your-supabase-anon-key";
 ```
 
+### **Notifikasi WhatsApp (Opsional)**
+Agar konfirmasi absen dikirim ke nomor WhatsApp peserta setelah submit:
+
+1. **Daftar Fonnte** – Buat akun di [Fonnte](https://fonnte.com), buat device, dan dapatkan **Token API**.
+2. **Deploy Edge Function** – Di folder project:
+   ```bash
+   npx supabase functions deploy send-wa
+   ```
+3. **Set secret token** – Di Supabase Dashboard → Edge Functions → send-wa → Secrets, atau via CLI:
+   ```bash
+   npx supabase secrets set FONNTE_TOKEN=your_fonnte_token
+   ```
+4. Peserta mengisi **No. Handphone** di form kehadiran; setelah submit, konfirmasi otomatis dikirim ke WhatsApp nomor tersebut.
+
 ## 📱 Penggunaan
 
 ### **Untuk Peserta**
@@ -308,7 +322,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 🙏 Acknowledgments
 
-- **Diskominfo Hulu Sungai Tengah** - Instansi pengguna
+- **Dinas Komunikasi, Informatika, Statistik, dan Persandian Kabupaten Hulu Sungai Tengah** - Instansi pengguna
 - **Supabase** - Backend infrastructure
 - **Bootstrap** - UI framework
 - **Chart.js** - Data visualization
@@ -326,5 +340,5 @@ Jika mengalami masalah atau membutuhkan bantuan:
 
 <div align="center">
   <p><strong>Dikembangkan dengan ❤️ untuk Pemerintah Kabupaten Hulu Sungai Tengah</strong></p>
-  <p>© 2025 Diskominfo Hulu Sungai Tengah. All Rights Reserved.</p>
+  <p>© 2025 Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. Hulu Sungai Tengah. All Rights Reserved.</p>
 </div>

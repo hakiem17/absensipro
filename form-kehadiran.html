@@ -589,12 +589,12 @@
               </div>
 
               <div class="mb-3">
-                <label for="jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
+                <label for="jabatan" class="form-label">Jabatan / Kelas <span class="text-danger">*</span></label>
                 <input
                   id="jabatan"
                   class="form-control"
                   type="text"
-                  placeholder="Masukkan jabatan Anda"
+                  placeholder="Masukkan jabatan/ Kelas Anda"
                   required
                 />
                 <div class="form-text help-text text-danger">
@@ -604,13 +604,13 @@
 
               <div class="mb-3">
                 <label for="instansi" class="form-label"
-                  >Instansi / Unit Kerja <span class="text-danger">*</span></label
+                  >Instansi / Unit Kerja / Sekolah <span class="text-danger">*</span></label
                 >
                 <input
                   id="instansi"
                   class="form-control"
                   type="text"
-                  placeholder="Masukkan instansi Anda"
+                  placeholder="Masukkan instansi/ Sekolah Anda"
                   required
                 />
                 <div class="form-text help-text text-danger">
@@ -663,6 +663,9 @@
                   Hadir
                 </button>
               </div>
+              <p class="small text-muted mt-2 mb-0" id="notif-hint">
+                <i class="bi bi-whatsapp"></i> Isi No. Handphone agar konfirmasi absen dikirim ke WhatsApp Anda setelah submit.
+              </p>
             </form>
 
             <div id="bad-link" class="alert alert-warning mt-3 d-none">
@@ -677,7 +680,7 @@
     <!-- FOOTER -->
     <footer class="footer-bar">
       <div class="container text-center">
-        &copy; <span id="copyright-year"></span> Diskominfo Hulu Sungai Tengah.
+        &copy; <span id="copyright-year"></span> Dinas Komunikasi, Informatika, Statistik, dan Persandian Kabupaten Hulu Sungai Tengah.
       </div>
     </footer>
 
@@ -763,6 +766,7 @@
 
       const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       const trim = (v) => (v ?? "").toString().trim();
+
       function normalizePhone(input) {
         const raw = trim(input);
         if (!raw) return "";
@@ -786,6 +790,7 @@
 
       const params = new URLSearchParams(location.search);
       const eventId = params.get("event");
+      let eventTitleText = ""; // untuk notifikasi
 
       async function loadEventTitle() {
         if (!eventId) {
@@ -807,6 +812,7 @@
           $badLink.classList.remove("d-none");
           return;
         }
+        eventTitleText = (data.title || "Acara").toString();
         const dt = data.datetime ? new Date(data.datetime) : null;
         const meta = dt
           ? dt.toLocaleString("id-ID", {
@@ -1073,13 +1079,46 @@
           const ins = await sb.from("attendees").insert(payload);
           if (ins.error) throw ins.error;
 
-          // 3) Beres
+          // 3) Beres + notifikasi ke handphone
+          const phoneForWa = payload.phone;
+          const nameForWa = payload.name;
           $form.reset();
           signaturePad?.clear();
           $btn.textContent = "Tersimpan ✓";
           await sleep(900);
           $btn.textContent = oldText;
-          alert("Terima kasih! Kehadiran Anda sudah tercatat.");
+
+          // Notifikasi WhatsApp ke no HP (via Edge Function + Fonnte)
+          let waOk = true;
+          if (phoneForWa) {
+            const linkDaftarAbsensi = window.location.origin + "/daftar-hadir-publik.html?event=" + encodeURIComponent(eventId || "");
+            try {
+              const { data, error } = await sb.functions.invoke("send-wa", {
+                body: {
+                  target: phoneForWa,
+                  eventTitle: eventTitleText,
+                  name: nameForWa,
+                  linkDaftarAbsensi: linkDaftarAbsensi,
+                },
+              });
+              if (error) {
+                waOk = false;
+                console.error("WA notif error:", error);
+              } else if (data && data.success === false) {
+                waOk = false;
+                console.error("WA notif ditolak:", data);
+              }
+            } catch (e) {
+              waOk = false;
+              console.error("WA notif exception:", e);
+            }
+          }
+
+          const alertMsg = "Terima kasih! Kehadiran Anda sudah tercatat." +
+            (phoneForWa
+              ? (waOk ? " Konfirmasi akan dikirim ke WhatsApp Anda." : " Konfirmasi WA mungkin gagal—cek device Fonnte dan nomor HP.")
+              : "");
+          alert(alertMsg);
         } catch (err) {
           console.error("Error menyimpan kehadiran:", err);
           const detail = (err && (err.message || err.error_description)) ? (err.message || err.error_description) : "";
