@@ -42,20 +42,21 @@
         overflow: hidden;
         padding: 2.5rem 2rem;
       }
-      .logo-wrap {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
+      .header-center {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .logo-block {
+        display: block;
         margin-bottom: 1.5rem;
       }
-      .logo-wrap img {
-        height: 48px;
+      .logo-block img {
+        height: 72px;
         width: auto;
       }
-      .logo-wrap .brand {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #1e293b;
+      .thank-block {
+        text-align: center;
+        margin-bottom: 1.5rem;
       }
       .thank-title {
         font-size: 1.75rem;
@@ -66,7 +67,7 @@
       .thank-sub {
         font-size: 0.9rem;
         color: #64748b;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
       }
       .intro-text {
         font-size: 0.95rem;
@@ -173,16 +174,19 @@
           <p class="mb-0">Memuat daftar hadir...</p>
         </div>
         <div id="content" class="d-none">
-          <div class="logo-wrap">
-            <img src="assets/img/logo_hst.png" alt="Logo" onerror="this.style.display='none'" />
-            <span class="brand">Dinas Komunikasi, Informatika, Statistik, dan Persandian Kabupaten Hulu Sungai Tengah</span>
+          <div class="header-center">
+            <div class="logo-block">
+              <img src="assets/img/logo_hst.png" alt="Logo" onerror="this.style.display='none'" />
+            </div>
+            <div class="thank-block">
+              <h1 class="thank-title">Terima Kasih</h1>
+              <p class="thank-sub">(Thank You)</p>
+              <p class="intro-text">Atas partisipasi dan konfirmasi kehadirannya dalam Acara</p>
+              <div class="event-title" id="event-title"></div>
+              <p class="list-desc">Partisipan yang telah mengisi Daftar Hadir</p>
+              <p class="list-desc-sort">Nama diurutkan berdasarkan abjad</p>
+            </div>
           </div>
-          <h1 class="thank-title">Terima Kasih</h1>
-          <p class="thank-sub">(Thank You)</p>
-          <p class="intro-text">Atas partisipasi dan konfirmasi kehadirannya dalam Acara</p>
-          <div class="event-title" id="event-title"></div>
-          <p class="list-desc">Partisipan yang telah mengisi Daftar Hadir</p>
-          <p class="list-desc-sort">Nama diurutkan berdasarkan abjad</p>
           <div class="table-wrap">
             <table class="table table-striped mb-0">
               <thead>
