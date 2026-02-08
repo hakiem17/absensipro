@@ -1,0 +1,7 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/byhg1475/public_html/absensipro.byhakiem.com
+    - /bin/cp index.html form-kehadiran.html pilih-acara.html login.html daftar-hadir-publik.html $DEPLOYPATH
+    - /bin/cp admin-dashboard.html admin-daftar-hadir.html admin-manajemen-acara.html admin-notulen-acara.html admin-print-daftar-hadir.html admin-rekap-acara.html $DEPLOYPATH
+    - /bin/cp -r assets $DEPLOYPATH
