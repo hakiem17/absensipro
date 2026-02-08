@@ -16,6 +16,58 @@
 
 ---
 
+## 🎨 Roadmap Redesign UI/UX 2026 (Bertahap)
+
+Rencana peremajaan tampilan dan pengalaman pengguna (User Experience) agar lebih modern, bersih, dan mudah digunakan (mobile-first).
+
+### Tahap 1: Halaman Publik (Peserta)
+**Fokus:** Memberikan kesan pertama yang profesional dan memudahkan peserta mengisi absen.
+
+- [ ] **Global:** Tentukan color palette baru (Primary, Secondary, Background) & Tipografi (Inter/Plus Jakarta Sans).
+- [x] **Pilih Acara (`pilih-acara.html`):**
+  - [x] Hero section dengan sambutan & logo instansi yang prominen.
+  - [x] Kartu acara (Event Card) dengan desain modern (shadow, rounded corners).
+  - [x] Search bar yang besar dan responsif.
+  - [x] Empty state yang ramah jika tidak ada acara.
+- [ ] **Form Kehadiran (`form-kehadiran.html`):**
+  - [ ] Layout single-column yang fokus (distraction-free).
+  - [ ] Input field dengan styling modern (floating label atau spacing yang lega).
+  - [ ] Signature pad yang lebih luas dan responsif.
+  - [ ] Loading indicators yang halus saat submit.
+  - [ ] Halaman sukses/konfirmasi yang visual (ikon centang animasi).
+- [ ] **Daftar Hadir Publik (`daftar-hadir-publik.html`):**
+  - [ ] Header "Terima Kasih" yang elegan (sudah dimulai).
+  - [ ] Tabel peserta yang rapi (card view di mobile).
+
+### Tahap 2: Dashboard Admin
+**Fokus:** Memudahkan pengelola memantau dan mengurus data dengan efisien.
+
+- [ ] **Layout Admin:**
+  - [ ] Sidebar navigasi yang modern (collapsible, icon jelas).
+  - [ ] Header dengan profil user & notifikasi.
+- [ ] **Dashboard (`admin-dashboard.html`):**
+  - [ ] Stats Cards (Total Acara, Peserta) dengan visual grafik mini.
+  - [ ] Tabel "Acara Terbaru" dengan status badge yang kontras.
+- [ ] **Manajemen Acara (`admin-manajemen-acara.html`):**
+  - [ ] Modal form (Tambah/Edit) yang lebih rapi.
+  - [ ] List acara dengan aksi cepat (Edit, Link, QR) yang mudah diakses.
+
+### Tahap 3: Fitur Detail & Interaksi
+**Fokus:** Micro-interactions dan detail kecil yang meningkatkan kenyamanan.
+
+- [ ] **Daftar Hadir Admin (`admin-daftar-hadir.html`):**
+  - [ ] Filter & Search yang real-time dan cepat.
+  - [ ] Tampilan foto tanda tangan (lightbox/modal preview).
+- [ ] **Notulen & Print:**
+  - [ ] UI upload file yang mendukung drag-and-drop.
+  - [ ] Preview dokumen sebelum print.
+- [ ] **System-wide:**
+  - [ ] Toast notifications (sukses/gagal) yang konsisten.
+  - [ ] Transisi halaman (page transitions).
+  - [ ] Dark mode support yang lebih baik (opsional).
+
+---
+
 ## 📋 Daftar Isi
 
 1. [Fitur Prioritas Tinggi](#fitur-prioritas-tinggi)
