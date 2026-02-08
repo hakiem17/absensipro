@@ -2,8 +2,17 @@
 
 > Dokumen rekomendasi upgrade untuk meningkatkan kualitas, keamanan, dan fungsionalitas aplikasi AbsensiPro
 
-**Last Updated:** 2025-01-27  
-**Version Target:** 3.0
+**Last Updated:** 2026-02-08  
+**Version Target:** 3.0  
+**Current Version:** 2.1
+
+---
+
+## ✅ Baru Diimplementasikan (v2.1)
+
+- **Notifikasi WhatsApp** – Konfirmasi absen ke nomor HP peserta via Fonnte (Supabase Edge Function `send-wa`).
+- **Daftar Hadir Publik** – Halaman `daftar-hadir-publik.html` (Terima Kasih + tabel peserta); link dikirim di pesan WA.
+- **Deploy cPanel** – `.cpanel.yml` untuk auto-deploy on push ke repo cPanel.
 
 ---
 
@@ -341,13 +350,29 @@ CREATE TABLE activity_logs (
 
 ---
 
+### 5. RLS untuk Daftar Hadir Publik (Opsional)
+**Status:** 🟡 Low Priority | **Estimasi:** 0.5 hari
+
+**Konteks:** Halaman `daftar-hadir-publik.html` membaca tabel `events` dan `attendees` dengan anon key.
+
+**Rekomendasi:**
+- Pastikan policy RLS mengizinkan `SELECT` untuk role `anon` pada tabel `events` dan `attendees` (atau batasi per `event_id` dari query string).
+- Jika saat ini sudah jalan, cukup didokumentasikan; jika belum, tambah policy agar halaman publik bisa load data.
+
+---
+
 ## 🗺️ Roadmap Versi 3.0
 
+### Phase 0: Delivered (v2.1 - Feb 2026)
+- ✅ Notifikasi WhatsApp (Fonnte + Edge Function)
+- ✅ Daftar Hadir Publik (read-only untuk peserta)
+- ✅ Deploy otomatis cPanel (.cpanel.yml)
+
 ### Phase 1: Security & Foundation (Q1 2025)
-- ✅ Backup & Restore Data
-- ✅ RBAC & User Management
-- ✅ Security Enhancements
-- ✅ Error Tracking
+- ⏳ Backup & Restore Data
+- ⏳ RBAC & User Management
+- ⏳ Security Enhancements
+- ⏳ Error Tracking
 
 **Timeline:** 2-3 minggu
 
@@ -455,5 +480,5 @@ CREATE TABLE activity_logs (
 
 ---
 
-**Last Updated:** 2025-01-27  
-**Next Review:** 2025-02-27
+**Last Updated:** 2026-02-08  
+**Next Review:** 2026-03-08

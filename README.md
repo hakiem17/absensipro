@@ -1,8 +1,10 @@
 # AbsensiPro 📋
 
-**Sistem Manajemen Kehadiran Digital untuk Pemerintah Kabupaten Hulu Sungai Tengah**
+**Sistem Manajemen Kehadiran Digital untuk Dinas Komunikasi, Informatika, Statistik, dan Persandian Kabupaten Hulu Sungai Tengah**
 
-[![Version](https://img.shields.io/badge/version-2.0-blue?style=flat-square)](https://github.com/hakiem17/absensipro/releases/tag/v2.0)
+Sistem absensi digital dengan form kehadiran, daftar hadir, notulen, print daftar hadir, dan **konfirmasi otomatis ke WhatsApp** peserta setelah submit absen.
+
+[![Version](https://img.shields.io/badge/version-2.1-blue?style=flat-square)](https://github.com/hakiem17/absensipro/releases)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=flat-square&logo=github)](https://github.com/hakiem17/absensipro)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -13,41 +15,29 @@
 
 AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk meningkatkan efisiensi dan akurasi data kehadiran dalam setiap acara di lingkungan Pemerintah Kabupaten Hulu Sungai Tengah. Aplikasi ini menyediakan solusi modern untuk menggantikan sistem absensi manual tradisional.
 
-## 🆕 Versi 2.0 - What's New
+## 🆕 Versi 2.1 - What's New (Terbaru)
 
-**Versi 2.0** membawa perbaikan signifikan dan fitur-fitur baru:
-
-### 🐛 **Perbaikan Bug Kritis**
-- ✅ Fixed: Admin daftar hadir sekarang dapat memuat acara dengan benar
-- ✅ Improved: Alur autentikasi dengan proper async/await handling
-- ✅ Enhanced: Error handling yang lebih baik dengan try-catch blocks
-- ✅ Added: Loading states untuk UX yang lebih baik (spinners, indicators)
+**Versi 2.1** menambah notifikasi WhatsApp dan halaman publik daftar hadir:
 
 ### ✨ **Fitur Baru**
-- 📝 **Admin Notulen Acara** - Manajemen notulen rapat/acara
-- 🖨️ **Admin Print Daftar Hadir** - Cetak daftar hadir dengan format resmi
-- ✍️ **Master Tanda Tangan** - Pengelolaan data master penandatangan
-- 📋 **FEATURES.md** - Dokumentasi tracking fitur dan roadmap
+- 📱 **Notifikasi WhatsApp** - Konfirmasi absen otomatis dikirim ke nomor HP peserta via Fonnte setelah submit (Supabase Edge Function `send-wa`)
+- 📄 **Daftar Hadir Publik** - Halaman `daftar-hadir-publik.html` untuk peserta melihat "Terima Kasih" + daftar hadir (tanpa login); link dikirim di pesan WA
+- 🚀 **Deploy cPanel** - Konfigurasi `.cpanel.yml` untuk auto-deploy (push to cPanel repo → deploy ke production)
 
-### 🏗️ **Peningkatan Struktur Kode**
-- 🔧 Separated `admin-common.js` untuk fungsi-fungsi shared
-- 📊 Added `admin-dashboard.js` untuk logika dashboard spesifik
-- 🎨 Added CSS dan font assets untuk styling yang lebih baik
-- 🧹 Cleaned up unused files dan dokumentasi
-
-### 📈 **Peningkatan Kualitas**
-- ⚡ Improved realtime subscription handling
-- 🛡️ Better error messages dan user feedback
-- 🎯 Enhanced code organization dan maintainability
+### 📌 **Versi 2.0** (sebelumnya)
+- 📝 Admin Notulen Acara, 🖨️ Print Daftar Hadir, ✍️ Master Tanda Tangan
+- 🐛 Perbaikan bug admin daftar hadir, loading states, error handling
+- 🏗️ Struktur kode: `admin-common.js`, `admin-dashboard.js`, assets
 
 ## ✨ Fitur Utama
 
 ### 👥 **Untuk Peserta**
 - 🎯 **Pilih Acara** - Akses mudah ke daftar acara yang tersedia
 - 📝 **Form Kehadiran Digital** - Isi data kehadiran secara online
+- 📱 **Konfirmasi WhatsApp** - Notifikasi konfirmasi absen dikirim ke nomor HP setelah submit (via Fonnte)
+- 📄 **Daftar Hadir Publik** - Lihat halaman "Terima Kasih" + daftar peserta (link di pesan WA)
 - ✍️ **Tanda Tangan Digital** - Fitur signature pad untuk tanda tangan
 - 📱 **Responsive Design** - Optimal di semua perangkat (mobile, tablet, desktop)
-- 🌙 **Dark/Light Mode** - Tema yang dapat disesuaikan
 
 ### 🔧 **Untuk Admin**
 - 📊 **Dashboard Analytics** - Statistik lengkap dengan Chart.js
@@ -73,11 +63,15 @@ AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk
 
 ### **Backend & Database**
 - **Supabase** - Backend-as-a-Service
+- **Supabase Edge Functions** - `send-wa` untuk kirim notifikasi WhatsApp (Fonnte API)
 - **PostgreSQL** - Database relasional
 - **Real-time Subscriptions** - Update data secara live
 - **Supabase Storage** - Penyimpanan file:
   - **Bucket `signatures`** - Tanda tangan digital peserta
   - **Bucket `notulen`** - Dokumen notulen (Word/PDF)
+
+### **Integrasi**
+- **Fonnte** - Gateway WhatsApp untuk kirim konfirmasi ke peserta
 
 ### **Libraries & Tools**
 - **Chart.js** - Visualisasi data dashboard
@@ -91,7 +85,8 @@ AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk
 absensipro/
 ├── 📄 index.html                    # Redirect ke pilih acara
 ├── 🎯 pilih-acara.html              # Landing page peserta
-├── 📝 form-kehadiran.html           # Form isi kehadiran
+├── 📝 form-kehadiran.html           # Form isi kehadiran (+ trigger notif WA)
+├── 📄 daftar-hadir-publik.html      # Daftar hadir publik (Terima Kasih + tabel peserta)
 ├── 🔐 login.html                    # Login admin
 ├── 📊 admin-dashboard.html           # Dashboard statistik
 ├── 📅 admin-manajemen-acara.html    # CRUD acara
@@ -113,7 +108,9 @@ absensipro/
 │       └── logo_hst.png            # Logo resmi HST
 ├── 📄 Template Surat.pdf            # Template untuk print (NEW in v2.0)
 ├── 📄 FEATURES.md                   # Feature tracking & roadmap (NEW in v2.0)
-├── 📄 database_schema.sql           # Database schema lengkap (NEW in v2.0)
+├── 📄 database_schema.sql           # Database schema lengkap
+├── 📄 .cpanel.yml                   # Deploy cPanel (auto-deploy on push)
+├── 📁 supabase/functions/send-wa/   # Edge Function: kirim WA via Fonnte
 ├── 📄 README.md                     # Dokumentasi
 └── 📄 .gitignore                    # Git ignore rules
 ```
@@ -140,10 +137,8 @@ absensipro/
    - Update konfigurasi di `assets/js/config.js`
 
 3. **Deploy ke Web Server**
-   ```bash
-   # Upload semua file ke web server
-   # Pastikan file dapat diakses via HTTP/HTTPS
-   ```
+   - **cPanel (Git Version Control):** Push ke repo cPanel; file `.cpanel.yml` akan menjalankan deploy otomatis ke folder production.
+   - **Manual:** Upload semua file (HTML, folder `assets/`) ke web server; pastikan dapat diakses via HTTP/HTTPS.
 
 4. **Konfigurasi Database**
    
@@ -293,18 +288,19 @@ Jika Anda menggunakan versi 1.0 atau sebelumnya, berikut langkah upgrade ke v2.0
 
 ## 📦 Release History
 
-### Version 2.0 (Current) - 2025-01-27
-- 🐛 Fixed critical bug: Admin daftar hadir event loading
-- ✨ Added Admin Notulen Acara - Upload & kelola dokumen notulen (Word/PDF) untuk setiap acara
-- ✨ Added Admin Print Daftar Hadir feature
-- ✨ Added Master Tanda Tangan management
-- ✨ Added Edit & Delete fitur untuk daftar hadir peserta
-- ✨ Added Credit Roll Animation untuk Rekap Acara Live - Animasi teks berjalan seperti post-credit bioskop dengan kontrol Play/Pause dan Restart
-- 🏗️ Improved code organization and structure
-- 🎨 Enhanced UI/UX with loading states
-- 🛡️ Better error handling and user feedback
-- 📋 Added FEATURES.md for feature tracking
-- 📦 Added storage bucket setup untuk dokumen notulen di database_schema.sql
+### Version 2.1 (Current) - 2026-02-08
+- 📱 Notifikasi WhatsApp: konfirmasi absen ke nomor HP peserta via Fonnte (Edge Function `send-wa`)
+- 📄 Daftar Hadir Publik: halaman "Terima Kasih" + tabel peserta (link di pesan WA)
+- 🚀 `.cpanel.yml` untuk deploy cPanel (auto-deploy on push)
+- 🔧 CORS & header (`apikey`, `x-client-info`) untuk invoke Edge Function dari browser
+- 📝 Nama instansi lengkap: Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. HST
+
+### Version 2.0 - 2025-01-27
+- 🐛 Fixed: Admin daftar hadir event loading
+- ✨ Admin Notulen Acara, Print Daftar Hadir, Master Tanda Tangan
+- ✨ Edit & Delete daftar hadir, Credit Roll Rekap Acara
+- 🏗️ Struktur kode, loading states, error handling
+- 📋 FEATURES.md, database_schema.sql
 
 ### Version 1.0
 - 🎉 Initial release
