@@ -21,7 +21,7 @@ AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk
 
 ### ✨ **Fitur Baru**
 - 📱 **Notifikasi WhatsApp** - Konfirmasi absen otomatis dikirim ke nomor HP peserta via Fonnte setelah submit (Supabase Edge Function `send-wa`)
-- 📄 **Daftar Hadir Publik** - Halaman `daftar-hadir-publik.html` untuk peserta melihat "Terima Kasih" + daftar hadir (tanpa login); link dikirim di pesan WA
+- 📄 **Daftar Hadir Publik** - Halaman `daftar-hadir-publik.html`: logo, teks rata tengah (Terima Kasih, judul acara, partisipan), dan tabel daftar hadir; tanpa login; link dikirim di pesan WA
 - 🚀 **Deploy cPanel** - Konfigurasi `.cpanel.yml` untuk auto-deploy (push to cPanel repo → deploy ke production)
 
 ### 📌 **Versi 2.0** (sebelumnya)
@@ -35,7 +35,7 @@ AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk
 - 🎯 **Pilih Acara** - Akses mudah ke daftar acara yang tersedia
 - 📝 **Form Kehadiran Digital** - Isi data kehadiran secara online
 - 📱 **Konfirmasi WhatsApp** - Notifikasi konfirmasi absen dikirim ke nomor HP setelah submit (via Fonnte)
-- 📄 **Daftar Hadir Publik** - Lihat halaman "Terima Kasih" + daftar peserta (link di pesan WA)
+- 📄 **Daftar Hadir Publik** - Halaman dengan logo, teks rata tengah, dan daftar peserta (link di pesan WA)
 - ✍️ **Tanda Tangan Digital** - Fitur signature pad untuk tanda tangan
 - 📱 **Responsive Design** - Optimal di semua perangkat (mobile, tablet, desktop)
 
@@ -45,9 +45,9 @@ AbsensiPro adalah sistem manajemen kehadiran digital yang dirancang khusus untuk
 - 👥 **Daftar Hadir** - Pencarian, filter, dan pagination dengan loading states
 - 📺 **Rekap Live** - Animasi credit roll (post-credit style) untuk tampilan real-time dengan kontrol Play/Pause dan Restart
 - 📄 **Export & Print** - Export CSV dan cetak laporan dengan kop surat resmi
-- 🖨️ **Print Daftar Hadir** - Cetak daftar hadir dengan format profesional (NEW in v2.0)
-- 📝 **Notulen Acara** - Upload dan kelola dokumen notulen (Word/PDF) untuk setiap acara (NEW in v2.0)
-- ✍️ **Master Tanda Tangan** - Pengelolaan data master penandatangan (NEW in v2.0)
+- 🖨️ **Print Daftar Hadir** - Cetak daftar hadir dengan format profesional
+- 📝 **Notulen Acara** - Upload dan kelola dokumen notulen (Word/PDF) untuk setiap acara
+- ✍️ **Master Tanda Tangan** - Pengelolaan data master penandatangan
 - 🔗 **QR Code Generator** - Generate QR code untuk akses form
 - ⚡ **Real-time Updates** - Update kehadiran secara live dengan error handling yang lebih baik
 - 🎨 **Improved UI/UX** - Loading states, better error messages, dan user feedback
@@ -86,32 +86,34 @@ absensipro/
 ├── 📄 index.html                    # Redirect ke pilih acara
 ├── 🎯 pilih-acara.html              # Landing page peserta
 ├── 📝 form-kehadiran.html           # Form isi kehadiran (+ trigger notif WA)
-├── 📄 daftar-hadir-publik.html      # Daftar hadir publik (Terima Kasih + tabel peserta)
+├── 📄 daftar-hadir-publik.html      # Daftar hadir publik (logo, teks rata tengah, tabel peserta)
 ├── 🔐 login.html                    # Login admin
 ├── 📊 admin-dashboard.html           # Dashboard statistik
 ├── 📅 admin-manajemen-acara.html    # CRUD acara
 ├── 👥 admin-daftar-hadir.html       # Daftar hadir peserta (improved in v2.0)
 ├── 📺 admin-rekap-acara.html        # Rekap live dengan animasi
-├── 📝 admin-notulen-acara.html      # Upload & kelola dokumen notulen Word/PDF (NEW in v2.0)
-├── 🖨️ admin-print-daftar-hadir.html # Print daftar hadir (NEW in v2.0)
+├── 📝 admin-notulen-acara.html      # Upload & kelola dokumen notulen Word/PDF
+├── 🖨️ admin-print-daftar-hadir.html # Print daftar hadir
 ├── 📁 assets/
 │   ├── 📁 js/
 │   │   ├── config.js               # Konfigurasi Supabase
 │   │   ├── auth.js                 # Sistem autentikasi
-│   │   ├── admin-common.js         # Shared admin functions (NEW in v2.0)
-│   │   └── admin-dashboard.js      # Dashboard logic (NEW in v2.0)
+│   │   ├── admin-common.js         # Shared admin functions
+│   │   └── admin-dashboard.js      # Dashboard logic
 │   ├── 📁 css/
-│   │   └── admin.css               # Admin styling (NEW in v2.0)
+│   │   └── admin.css               # Admin styling
 │   ├── 📁 font/
-│   │   └── arial/                  # Font assets (NEW in v2.0)
+│   │   └── arial/                  # Font assets
 │   └── 📁 img/
 │       └── logo_hst.png            # Logo resmi HST
-├── 📄 Template Surat.pdf            # Template untuk print (NEW in v2.0)
-├── 📄 FEATURES.md                   # Feature tracking & roadmap (NEW in v2.0)
+├── 📄 Template Surat.pdf            # Template untuk print
+├── 📄 FEATURES.md                   # Feature tracking & roadmap
 ├── 📄 database_schema.sql           # Database schema lengkap
 ├── 📄 .cpanel.yml                   # Deploy cPanel (auto-deploy on push)
+├── 📁 .github/workflows/            # GitHub Actions (e.g. deploy.yml untuk GitHub Pages)
 ├── 📁 supabase/functions/send-wa/   # Edge Function: kirim WA via Fonnte
 ├── 📄 README.md                     # Dokumentasi
+├── 📄 UPGRADE_RECOMMENDATIONS.md    # Rekomendasi upgrade & roadmap
 └── 📄 .gitignore                    # Git ignore rules
 ```
 
@@ -137,7 +139,8 @@ absensipro/
    - Update konfigurasi di `assets/js/config.js`
 
 3. **Deploy ke Web Server**
-   - **cPanel (Git Version Control):** Push ke repo cPanel; file `.cpanel.yml` akan menjalankan deploy otomatis ke folder production.
+   - **cPanel (Git Version Control):** Push ke repo cPanel; file `.cpanel.yml` menjalankan deploy otomatis ke folder production.
+   - **GitHub Pages:** Workflow `.github/workflows/deploy.yml` bisa dipakai untuk deploy ke branch `gh-pages` (atur Source di Settings → Pages).
    - **Manual:** Upload semua file (HTML, folder `assets/`) ke web server; pastikan dapat diakses via HTTP/HTTPS.
 
 4. **Konfigurasi Database**
@@ -249,7 +252,7 @@ Agar konfirmasi absen dikirim ke nomor WhatsApp peserta setelah submit:
 
 ## 🔄 Upgrade dari Versi Sebelumnya
 
-Jika Anda menggunakan versi 1.0 atau sebelumnya, berikut langkah upgrade ke v2.0:
+Jika Anda menggunakan versi 1.0 atau 2.0, berikut langkah upgrade ke v2.1:
 
 1. **Backup Data**
    ```bash
@@ -259,22 +262,20 @@ Jika Anda menggunakan versi 1.0 atau sebelumnya, berikut langkah upgrade ke v2.0
 2. **Update Files**
    ```bash
    git pull origin main
-   # atau
-   git checkout v2.0
    ```
 
-3. **Update Database Schema** (jika diperlukan)
-   - Tabel baru untuk notulen dan master tanda tangan
-   - Lihat dokumentasi database di folder project
+3. **Update Database Schema** (jika dari v1.0)
+   - Import `database_schema.sql` untuk tabel notulen, master tanda tangan, dll.
 
-4. **Clear Browser Cache**
+4. **Notifikasi WhatsApp (opsional)**
+   - Deploy Edge Function `send-wa` dan set `FONNTE_TOKEN` (lihat bagian Konfigurasi).
+
+5. **Clear Browser Cache**
    - Hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
-   - Clear cache untuk memastikan file baru ter-load
 
-5. **Test Fitur Baru**
-   - Test admin daftar hadir loading
-   - Test fitur notulen acara
-   - Test print daftar hadir
+6. **Test**
+   - Form kehadiran + nomor HP → cek konfirmasi WA
+   - Buka link daftar hadir publik dari pesan WA
 
 ## 🤝 Contributing
 
@@ -284,16 +285,17 @@ Jika Anda menggunakan versi 1.0 atau sebelumnya, berikut langkah upgrade ke v2.0
 4. Push ke branch (`git push origin feature/AmazingFeature`)
 5. Buat Pull Request
 
-**Note:** Untuk kontribusi ke versi 2.0+, pastikan mengikuti struktur kode yang sudah diperbaiki.
+**Note:** Untuk kontribusi ke versi 2.1+, pastikan mengikuti struktur kode dan konfigurasi yang ada.
 
 ## 📦 Release History
 
 ### Version 2.1 (Current) - 2026-02-08
 - 📱 Notifikasi WhatsApp: konfirmasi absen ke nomor HP peserta via Fonnte (Edge Function `send-wa`)
-- 📄 Daftar Hadir Publik: halaman "Terima Kasih" + tabel peserta (link di pesan WA)
+- 📄 Daftar Hadir Publik: logo, teks rata tengah (Terima Kasih, judul acara, partisipan), tabel peserta; link di pesan WA
 - 🚀 `.cpanel.yml` untuk deploy cPanel (auto-deploy on push)
 - 🔧 CORS & header (`apikey`, `x-client-info`) untuk invoke Edge Function dari browser
 - 📝 Nama instansi lengkap: Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. HST
+- 📋 README & UPGRADE_RECOMMENDATIONS diperbarui
 
 ### Version 2.0 - 2025-01-27
 - 🐛 Fixed: Admin daftar hadir event loading
@@ -336,5 +338,5 @@ Jika mengalami masalah atau membutuhkan bantuan:
 
 <div align="center">
   <p><strong>Dikembangkan dengan ❤️ untuk Pemerintah Kabupaten Hulu Sungai Tengah</strong></p>
-  <p>© 2025 Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. Hulu Sungai Tengah. All Rights Reserved.</p>
+  <p>© 2026 Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. Hulu Sungai Tengah. All Rights Reserved.</p>
 </div>
