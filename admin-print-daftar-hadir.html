@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Print Daftar Hadir - Admin Panel</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/admin.css" />
+  </head>
+  <body>
+    <script>
+      (function () {
+        const t = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Mobile Hamburger Menu Button - Always Visible -->
+    <button class="sidebar-toggle mobile-hamburger" id="sidebarToggle" aria-label="Toggle Sidebar">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <div class="main-wrapper">
+      <!-- Modern Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="#" class="sidebar-brand">
+            <i class="bi bi-shield-check"></i>
+            <span>Admin Panel</span>
+          </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="admin-dashboard.html">
+                <i class="bi bi-house-door"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-manajemen-acara.html">
+                <i class="bi bi-calendar-event"></i>
+                <span>Manajemen Acara</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-daftar-hadir.html">
+                <i class="bi bi-people"></i>
+                <span>Daftar Hadir</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-rekap-acara.html">
+                <i class="bi bi-display"></i>
+                <span>Rekap Acara (Live)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="admin-print-daftar-hadir.html">
+                <i class="bi bi-printer"></i>
+                <span>Print Daftar Hadir</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-notulen-acara.html">
+                <i class="bi bi-file-text"></i>
+                <span>Notulen Acara</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="btn-master-ttd" data-bs-toggle="modal" data-bs-target="#modalMasterTTD">
+                <i class="bi bi-pen"></i>
+                <span>Master Tanda Tangan</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Theme Toggle di Sidebar -->
+        <div style="padding: 0.5rem 0.75rem;">
+          <button id="theme-toggle" class="sidebar-theme-toggle">
+            <i class="bi bi-sun-fill"></i>
+            <span>Mode Gelap/Terang</span>
+          </button>
+        </div>
+        
+        <!-- User Info di Footer Sidebar -->
+        <div class="sidebar-footer">
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="sidebar-user-details">
+              <div class="sidebar-user-name">Admin User</div>
+              <div class="sidebar-user-role">Administrator</div>
+            </div>
+            <button id="btn-logout" class="sidebar-logout-btn" title="Logout">
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <div class="main-content-wrapper">
+        <!-- Modern Header -->
+        <header class="top-header">
+          <div class="header-left">
+            <h1 class="page-title">
+              <i class="bi bi-printer"></i>
+              Print Daftar Hadir
+            </h1>
+          </div>
+          <div class="header-right">
+            <a href="admin-manajemen-acara.html" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>
+              Kembali
+            </a>
+          </div>
+        </header>
+
+        <main class="main-content">
+          <div class="container-fluid">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3" style="padding-top: 1.5rem;">
+              <div>
+                <h2 class="h4 mb-1 text-gradient">Print Daftar Hadir</h2>
+                <p class="text-muted mb-0">Pilih acara untuk generate PDF daftar hadir</p>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <label for="year-filter" class="form-label mb-0 small text-muted fw-medium">Filter Tahun:</label>
+                <select id="year-filter" class="form-select form-select-sm" style="width: auto; min-width: 120px;">
+                  <option value="">Memuat...</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- List Acara -->
+            <div class="card mb-4">
+              <div class="card-header">
+                <h5 class="card-title mb-0">
+                  <i class="bi bi-calendar-event me-2"></i>
+                  Daftar Acara
+                </h5>
+              </div>
+              <div class="card-body">
+                <div id="events-list" class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead>
+                      <tr>
+                        <th style="width: 50px;">No</th>
+                        <th>Judul Acara</th>
+                        <th>Tanggal & Waktu</th>
+                        <th>Lokasi</th>
+                        <th>Status</th>
+                        <th>Jumlah Peserta</th>
+                        <th style="width: 200px;">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="events-tbody">
+                      <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                          <i class="bi bi-hourglass-split me-2"></i>Memuat data...
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+        <!-- Modal Master Tanda Tangan -->
+        <div class="modal fade" id="modalMasterTTD" tabindex="-1" aria-labelledby="modalMasterTTDLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalMasterTTDLabel">
+                  <i class="bi bi-pen me-2"></i>
+                  Master Tanda Tangan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Tabel Data Master TTD -->
+                <div class="mb-4">
+                  <h6 class="mb-3">Data Master Tanda Tangan yang Tersimpan</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="table-master-ttd">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Nama</th>
+                          <th>Jabatan</th>
+                          <th>Instansi</th>
+                          <th>Golongan</th>
+                          <th>NIP</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbody-master-ttd">
+                        <tr>
+                          <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Form Input/Edit -->
+                <h6 class="mb-3">Form Master Tanda Tangan</h6>
+                <form id="form-master-ttd">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-nama" class="form-label">Nama <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-nama" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-jabatan" required>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-instansi" class="form-label">Instansi <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-instansi" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-golongan" class="form-label">Golongan</label>
+                      <input type="text" class="form-control" id="ttd-golongan">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-nip" class="form-label">NIP</label>
+                      <input type="text" class="form-control" id="ttd-nip">
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-save-master-ttd">
+                  <i class="bi bi-save me-2"></i>
+                  Simpan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="mb-0">
+                  &copy; <span id="copyright-year"></span> AbsensiPro. All rights
+                  reserved.
+                </p>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script>
+      document.getElementById("copyright-year").textContent =
+        new Date().getFullYear();
+
+      const sb = supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_ANON_KEY
+      );
+
+      // ===== MASTER TANDA TANGAN =====
+      let masterTTD = null;
+
+      // Update tabel Master TTD
+      function updateMasterTTDTable(data) {
+        const tbody = document.getElementById("tbody-master-ttd");
+        if (!tbody) return;
+        
+        if (data) {
+          tbody.innerHTML = `
+            <tr>
+              <td>${escapeHtml(data.nama || "-")}</td>
+              <td>${escapeHtml(data.jabatan || "-")}</td>
+              <td>${escapeHtml(data.instansi || "-")}</td>
+              <td>${escapeHtml(data.golongan || "-")}</td>
+              <td>${escapeHtml(data.nip || "-")}</td>
+            </tr>
+          `;
+        } else {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+            </tr>
+          `;
+        }
+      }
+
+      // Helper function untuk escape HTML
+      function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Load master tanda tangan
+      async function loadMasterTTD() {
+        try {
+          const { data, error } = await sb
+            .from("master_tanda_tangan")
+            .select("*")
+            .limit(1)
+            .single();
+
+          if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+            console.error("Error loading master TTD:", error);
+            updateMasterTTDTable(null);
+            return;
+          }
+
+          if (data) {
+            masterTTD = data;
+            // Update tabel
+            updateMasterTTDTable(data);
+            // Isi form jika ada data
+            document.getElementById("ttd-nama").value = data.nama || "";
+            document.getElementById("ttd-jabatan").value = data.jabatan || "";
+            document.getElementById("ttd-instansi").value = data.instansi || "";
+            document.getElementById("ttd-golongan").value = data.golongan || "";
+            document.getElementById("ttd-nip").value = data.nip || "";
+          } else {
+            updateMasterTTDTable(null);
+            // Reset form
+            document.getElementById("ttd-nama").value = "";
+            document.getElementById("ttd-jabatan").value = "";
+            document.getElementById("ttd-instansi").value = "";
+            document.getElementById("ttd-golongan").value = "";
+            document.getElementById("ttd-nip").value = "";
+          }
+        } catch (error) {
+          console.error("Error loading master TTD:", error);
+          updateMasterTTDTable(null);
+        }
+      }
+
+      // Save master tanda tangan
+      async function saveMasterTTD() {
+        const nama = document.getElementById("ttd-nama").value.trim();
+        const jabatan = document.getElementById("ttd-jabatan").value.trim();
+        const instansi = document.getElementById("ttd-instansi").value.trim();
+        const golongan = document.getElementById("ttd-golongan").value.trim();
+        const nip = document.getElementById("ttd-nip").value.trim();
+
+        if (!nama || !jabatan || !instansi) {
+          alert("Nama, Jabatan, dan Instansi wajib diisi!");
+          return;
+        }
+
+        try {
+          const dataToSave = {
+            nama,
+            jabatan,
+            instansi,
+            golongan: golongan || null,
+            nip: nip || null,
+            updated_at: new Date().toISOString()
+          };
+
+          if (masterTTD && masterTTD.id) {
+            // Update existing
+            const { data, error } = await sb
+              .from("master_tanda_tangan")
+              .update(dataToSave)
+              .eq("id", masterTTD.id)
+              .select()
+              .single();
+
+            if (error) throw error;
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            alert("Master tanda tangan berhasil diperbarui!");
+          } else {
+            // Insert new
+            const { data, error } = await sb
+              .from("master_tanda_tangan")
+              .insert(dataToSave)
+              .select()
+              .single();
+
+            if (error) throw error;
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            alert("Master tanda tangan berhasil disimpan!");
+          }
+
+          // Reload data untuk memastikan tabel ter-update
+          await loadMasterTTD();
+          
+          // Tutup modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById("modalMasterTTD"));
+          if (modal) modal.hide();
+        } catch (error) {
+          console.error("Error saving master TTD:", error);
+          alert("Gagal menyimpan master tanda tangan: " + error.message);
+        }
+      }
+
+      // Event listeners untuk Master Tanda Tangan
+      document.addEventListener("DOMContentLoaded", function() {
+        const btnSave = document.getElementById("btn-save-master-ttd");
+        const modal = document.getElementById("modalMasterTTD");
+        
+        if (btnSave) {
+          btnSave.addEventListener("click", saveMasterTTD);
+        }
+        
+        if (modal) {
+          modal.addEventListener("show.bs.modal", loadMasterTTD);
+        }
+      });
+
+      const $eventsTbody = document.getElementById("events-tbody");
+
+      let EVENTS = [];
+      let ALL_EVENTS = []; // Semua events tanpa filter
+      let ATTENDEE_COUNTS = {}; // Map event_id -> count
+      let currentEventId = null;
+      let currentEvent = null;
+      let attendees = [];
+      let selectedYear = 2026; // Default tahun 2026
+
+      const esc = (s) =>
+        String(s ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+
+      const fmtDT = (iso) =>
+        iso
+          ? new Date(iso).toLocaleString("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "-";
+
+      // Format gender ke bahasa Indonesia
+      const genderLabel = (g) => {
+        const v = (g || "").toLowerCase();
+        if (v === "male") return "Laki-laki";
+        if (v === "female") return "Perempuan";
+        return g || "-";
+      };
+
+      // Fungsi untuk mendapatkan daftar tahun dari events
+      function getAvailableYears(events) {
+        const years = new Set();
+        events.forEach(event => {
+          if (event.datetime) {
+            const year = new Date(event.datetime).getFullYear();
+            years.add(year);
+          }
+        });
+        return Array.from(years).sort((a, b) => b - a); // Sort descending
+      }
+
+      // Fungsi untuk populate dropdown tahun
+      function populateYearFilter(events) {
+        const yearFilter = document.getElementById("year-filter");
+        if (!yearFilter) return;
+
+        const years = getAvailableYears(events);
+        
+        // Clear existing options
+        yearFilter.innerHTML = "";
+        
+        // Add default option
+        yearFilter.innerHTML = '<option value="">Semua Tahun</option>';
+        
+        // Add year options
+        years.forEach(year => {
+          const option = document.createElement("option");
+          option.value = year;
+          option.textContent = year;
+          if (year === selectedYear) {
+            option.selected = true;
+          }
+          yearFilter.appendChild(option);
+        });
+
+        // Set default to 2026 if available, otherwise use latest year
+        if (years.length > 0) {
+          if (years.includes(2026)) {
+            selectedYear = 2026;
+            yearFilter.value = "2026";
+          } else {
+            selectedYear = years[0]; // Use latest year
+            yearFilter.value = selectedYear.toString();
+          }
+        } else {
+          selectedYear = null;
+        }
+      }
+
+      // Filter events berdasarkan tahun
+      function filterEventsByYear(events, year) {
+        if (!year || year === "" || year === null) {
+          return events;
+        }
+        return events.filter(event => {
+          if (!event.datetime) return false;
+          const eventYear = new Date(event.datetime).getFullYear();
+          return eventYear === parseInt(year);
+        });
+      }
+
+      async function loadEvents() {
+        try {
+          // Load all events
+          const { data: events, error: eventsError } = await sb
+            .from("events")
+            .select("id,title,datetime,location,status")
+            .order("datetime", { ascending: false });
+
+          if (eventsError) {
+            throw eventsError;
+          }
+
+          ALL_EVENTS = events || [];
+          
+          // Populate year filter dropdown
+          populateYearFilter(ALL_EVENTS);
+          
+          // Filter events berdasarkan tahun yang dipilih
+          EVENTS = filterEventsByYear(ALL_EVENTS, selectedYear);
+
+          // Load attendee counts for filtered events
+          if (EVENTS.length > 0) {
+            const eventIds = EVENTS.map(e => e.id);
+            const { data: countsData, error: countsError } = await sb
+              .from("attendees")
+              .select("event_id")
+              .in("event_id", eventIds);
+
+            if (!countsError && countsData) {
+              ATTENDEE_COUNTS = {};
+              countsData.forEach(a => {
+                ATTENDEE_COUNTS[a.event_id] = (ATTENDEE_COUNTS[a.event_id] || 0) + 1;
+              });
+            }
+          }
+
+          renderEventsList();
+
+          // Check URL parameter (langsung export)
+          const urlEventId = new URLSearchParams(location.search).get("event");
+          if (urlEventId && EVENTS.find((e) => e.id === urlEventId)) {
+            exportEventPdf(urlEventId);
+          }
+        } catch (error) {
+          console.error("Error loading events:", error);
+          $eventsTbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="text-center text-danger py-4">
+                <i class="bi bi-exclamation-triangle me-2"></i>Gagal memuat data: ${esc(error.message)}
+              </td>
+            </tr>
+          `;
+        }
+      }
+
+      // Render events list
+      function renderEventsList() {
+        if (!EVENTS.length) {
+          $eventsTbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">
+                <i class="bi bi-inbox me-2"></i>Belum ada acara
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        $eventsTbody.innerHTML = EVENTS.map((event, index) => {
+          const attendeeCount = ATTENDEE_COUNTS[event.id] || 0;
+          const statusClass = event.status === "done" ? "text-bg-success" : 
+                             event.status === "active" ? "text-bg-primary" : 
+                             "text-bg-secondary";
+          const statusText = event.status === "done" ? "Selesai" : 
+                            event.status === "active" ? "Aktif" : 
+                            "Upcoming";
+
+          return `
+            <tr>
+              <td>${index + 1}</td>
+              <td><strong>${esc(event.title || "-")}</strong></td>
+              <td>${fmtDT(event.datetime)}</td>
+              <td>${esc(event.location || "-")}</td>
+              <td><span class="badge ${statusClass}">${statusText}</span></td>
+              <td>
+                <span class="badge ${attendeeCount > 0 ? "text-bg-info" : "text-bg-secondary"}">
+                  <i class="bi bi-people me-1"></i>${attendeeCount}
+                </span>
+              </td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <button class="btn btn-outline-success btn-generate-pdf-event" data-event-id="${esc(event.id)}" title="Export PDF" ${attendeeCount === 0 ? "disabled" : ""}>
+                    <i class="bi bi-file-pdf me-1"></i>Export PDF
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
+
+        // Attach event listeners
+        attachEventListeners();
+      }
+
+      // Attach event listeners to action buttons
+      function attachEventListeners() {
+        // Generate PDF for event (langsung export)
+        document.querySelectorAll(".btn-generate-pdf-event").forEach((btn) => {
+          btn.onclick = async () => {
+            const eventId = btn.getAttribute("data-event-id");
+            if (!eventId) return;
+            await exportEventPdf(eventId, btn);
+          };
+        });
+      }
+
+      async function exportEventPdf(eventId, btn) {
+        const originalHtml = btn ? btn.innerHTML : "";
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-1"></span>Exporting...';
+        }
+        try {
+          await loadForEvent(eventId);
+          await generateSimplePDF(btn);
+        } finally {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+          }
+        }
+      }
+
+      async function loadForEvent(eventId) {
+        if (!eventId) {
+          currentEventId = null;
+          currentEvent = null;
+          attendees = [];
+          return;
+        }
+        currentEventId = eventId;
+        currentEvent = EVENTS.find((e) => e.id === eventId);
+        
+        if (!currentEvent) {
+          alert("Acara tidak ditemukan!");
+          return;
+        }
+        
+        const { data, error } = await sb
+          .from("attendees")
+          .select("id,name,instansi,jabatan,gender,email,phone,ts,signature_url")
+          .eq("event_id", eventId)
+          .order("ts", { ascending: true });
+        if (error) {
+          alert("Gagal memuat peserta.");
+          attendees = [];
+          return;
+        }
+        attendees = (data || []).map((a, idx) => ({
+          no: idx + 1,
+          id: a.id,
+          name: a.name || "-",
+          instansi: a.instansi || "-",
+          jabatan: a.jabatan || "-",
+          gender: a.gender || "-",
+          signatureUrl: a.signature_url || null,
+        }));
+      }
+
+      async function generateSimplePDF(btnEl) {
+        if (!currentEvent || !attendees.length) {
+          alert("Pilih acara dan pastikan ada data peserta.");
+          return;
+        }
+
+        try {
+          if (btnEl) {
+            btnEl.disabled = true;
+          }
+
+          // Load master tanda tangan
+          let masterTTDData = null;
+          try {
+            const { data, error } = await sb
+              .from("master_tanda_tangan")
+              .select("*")
+              .limit(1)
+              .single();
+            
+            if (!error && data) {
+              masterTTDData = data;
+            }
+          } catch (error) {
+            console.warn("Master tanda tangan tidak ditemukan:", error);
+          }
+
+          // Create new PDF document without template (A4 size)
+          // A4 dimensions in points: 595.28 x 841.89
+          const pdfDoc = await PDFLib.PDFDocument.create();
+          const width = 595.28; // A4 width in points
+          const height = 841.89; // A4 height in points
+          const firstPage = pdfDoc.addPage([width, height]);
+
+          // Embed fonts - Arial
+          // Menggunakan file Arial dari assets/font/arial/
+          let arialFont, arialBoldFont;
+          
+          try {
+            // Load Arial dari file lokal
+            const arialRegularResponse = await fetch('assets/font/arial/ARIAL.TTF');
+            const arialBoldResponse = await fetch('assets/font/arial/ARIALBD.TTF');
+            
+            if (arialRegularResponse.ok && arialBoldResponse.ok) {
+              const arialRegularBytes = await arialRegularResponse.arrayBuffer();
+              const arialBoldBytes = await arialBoldResponse.arrayBuffer();
+              arialFont = await pdfDoc.embedFont(arialRegularBytes);
+              arialBoldFont = await pdfDoc.embedFont(arialBoldBytes);
+              console.log('Arial font berhasil dimuat dari file lokal');
+            } else {
+              throw new Error('File font Arial tidak ditemukan');
+            }
+          } catch (error) {
+            console.warn('File font Arial tidak ditemukan, menggunakan Helvetica (mirip Arial) sebagai fallback:', error);
+            // Fallback ke Helvetica (sangat mirip dengan Arial)
+            arialFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+            arialBoldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+          }
+          
+          // Alias untuk konsistensi kode (menggunakan nama helvetica untuk kompatibilitas)
+          const helveticaFont = arialFont;
+          const helveticaBoldFont = arialBoldFont;
+
+          const rgb = PDFLib.rgb;
+
+          // Layout configuration
+          const marginLeft = 50;
+          const marginRight = width - 50;
+          
+          // Kop Surat text constants (defined outside function for reuse)
+          const textCenterX = width / 2; // Center of page for alignment
+          const line1Text = "PEMERINTAH KABUPATEN HULU SUNGAI TENGAH";
+          const line2aText = "DINAS KOMUNIKASI, INFORMATIKA,"; // Baris pertama setelah enter
+          const line2bText = "STATISTIK, DAN PERSANDIAN"; // Baris kedua
+          const line3Text = "Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai, Kalimantan Selatan 71315";
+          const line4Text = "Telepon (0517) 3791750, Faksimile (0517) 3791750";
+          const line5Text = "Laman: diskominfosp.hstkab.go.id, Pos-el: diskominfosp@hstkab.go.id";
+          
+          // ====== LOGO ======
+          const embedLogo = async () => {
+            try {
+              const logoPath = "assets/img/logo_hst.png";
+              const response = await fetch(logoPath);
+              if (!response.ok) return null;
+              const bytes = await response.arrayBuffer();
+
+              // coba PNG dulu, kalau gagal baru JPG
+              try { return await pdfDoc.embedPng(bytes); } 
+              catch { 
+                try { return await pdfDoc.embedJpg(bytes); } 
+                catch { return null; }
+              }
+            } catch {
+              return null;
+            }
+          };
+
+          const drawKopSurat = async (page, startTopY) => {
+            // ===== Layout area =====
+            const pageLeft = marginLeft;          // 50
+            const pageRight = width - marginLeft; // 545.28
+
+            // ===== Logo =====
+            const logoW = 2.41 * 28.35; // 74.277
+            const logoH = 2.41 * 28.35; // 68.3235
+            const gapLogoText = 14;
+
+            const logoX = pageLeft - 16; //geser ke kiri 18 points
+            const logoTopY = startTopY + 6;
+            const logoBottomY = logoTopY - logoH;
+
+            // ===== Text area (kanan logo) =====
+            const textAreaLeft = logoX + logoW + gapLogoText;
+            const textAreaRight = pageRight;
+            const textCenterX = (textAreaLeft + textAreaRight) / 2;
+
+            const drawCentered = (text, baselineY, size, font) => {
+              const w = font.widthOfTextAtSize(text, size);
+              page.drawText(text, {
+                x: textCenterX - w / 2,
+                y: baselineY,
+                size,
+                font,
+                color: rgb(0, 0, 0),
+              });
+            };
+
+            // ===== Teks kop =====
+            const line1Text = "PEMERINTAH KABUPATEN HULU SUNGAI TENGAH";
+            const line2aText = "DINAS KOMUNIKASI, INFORMATIKA,";
+            const line2bText = "STATISTIK, DAN PERSANDIAN";
+            const line3Text =
+              "Jalan Perintis Kemerdekaan, Desa Benawa Tengah, Barabai, Kalimantan Selatan 71315";
+            const line4Text = "Telepon (0517) 3791750, Faksimile (0517) 3791750";
+            const line5Text =
+              "Laman: diskominfosp.hstkab.go.id, Pos-el: diskominfosp@hstkab.go.id";
+
+            // ===== Ukuran font (mirip contoh 2) =====
+            const s1 = 15;
+            const s2 = 16;
+            const s3 = 11;
+            const s4 = 11;
+            const s5 = 11;
+
+            // ===== Leading (jarak antarbaris konsisten) =====
+            const leadS1 = 10; // jarak baseline line1 -> line2a
+            const leadS2 = 18; // jarak baseline line2a -> line2b
+            const leadInfo = 14; // jarak baseline antar info lines (alamat/telp/email)
+
+            // ===== Extra gap (hanya di transisi tertentu, seperti surat resmi) =====
+            const gapAfterLine1 = 8;  // setelah PEMKAB
+            const gapAfterDinas = 3;  // setelah "STATISTIK, ..."
+            const gapBeforeLine = 8; // sebelum separator
+
+            // ===== 1) Draw logo =====
+            const logoImage = await embedLogo();
+            if (logoImage) {
+              page.drawImage(logoImage, {
+                x: logoX,
+                y: logoBottomY,
+                width: logoW,
+                height: logoH,
+              });
+            }
+
+            // ===== 2) Start baseline =====
+            // Baseline awal: turunkan sedikit dari top supaya tidak "nempel"
+            let y = startTopY - 6;
+
+            // Line 1
+            drawCentered(line1Text, y, s1, helveticaFont);
+            y -= (leadS1 + gapAfterLine1);
+
+            // Line 2a
+            drawCentered(line2aText, y, s2, helveticaBoldFont);
+            y -= leadS2;
+
+            // Line 2b
+            drawCentered(line2bText, y, s2, helveticaBoldFont);
+            y -= (s2*0.6 + gapAfterDinas);
+
+            // Info lines (rapat & konsisten)
+            drawCentered(line3Text, y, s3, helveticaFont);
+            y -= leadInfo;
+
+            drawCentered(line4Text, y, s4, helveticaFont);
+            y -= leadInfo;
+
+            drawCentered(line5Text, y, s5, helveticaFont);
+            y -= (leadInfo + gapBeforeLine);
+            y += 6; // naikkan garis separator ke atas
+
+            // ===== 3) Separator (panjang full, seperti contoh 2) =====
+            const lineStartX = pageLeft;
+            const lineEndX = pageRight;
+
+            // Tebal atas
+            page.drawLine({
+              start: { x: lineStartX, y },
+              end: { x: lineEndX, y },
+              thickness: 2.4,
+              color: rgb(0, 0, 0),
+            });
+
+            // Tipis bawah
+            page.drawLine({
+              start: { x: lineStartX, y: y - 3.5 },
+              end: { x: lineEndX, y: y - 3.5 },
+              thickness: 0.9,
+              color: rgb(0, 0, 0),
+            });
+
+            // Return posisi y sesudah kop (jarak bawah kop ke konten)
+            return y - 26;
+          };
+          
+          // Draw kop surat on first page
+          let currentY = await drawKopSurat(firstPage, height - 35);
+          
+          // Font size configuration
+          const fontSize = 10;
+          const headerFontSize = 12;
+          const lineHeight = 16;
+          
+          // Helper function to wrap text (defined early so it can be used)
+          const wrapText = (text, font, size, maxWidth) => {
+            const words = String(text || "").split(/\s+/);
+            const lines = [];
+            let line = "";
+
+            for (const w of words) {
+              const test = line ? `${line} ${w}` : w;
+              const testWidth = font.widthOfTextAtSize(test, size);
+
+              if (testWidth <= maxWidth) {
+                line = test;
+              } else {
+                if (line) lines.push(line);
+                line = w; // mulai baris baru
+              }
+            }
+            if (line) lines.push(line);
+            return lines;
+          };
+          
+          // Title: DAFTAR HADIR PESERTA
+          const titleText = "DAFTAR HADIR PESERTA";
+          const titleWidth = helveticaBoldFont.widthOfTextAtSize(titleText, headerFontSize);
+          firstPage.drawText(titleText, {
+            x: (width - titleWidth) / 2,
+            y: currentY,
+            size: headerFontSize,
+            font: helveticaBoldFont,
+            color: rgb(0, 0, 0),
+          });
+          currentY -= 30;
+
+          // Event info - hitung lebar maksimum label agar titik dua sejajar
+          const labels = ["Judul Rapat:", "Tanggal:", "Waktu:", "Lokasi:"];
+          const maxLabelWidth = Math.max(...labels.map(l => helveticaBoldFont.widthOfTextAtSize(l, fontSize)));
+          const colonX = marginLeft + maxLabelWidth; // Posisi X untuk titik dua (sejajar)
+          
+          const maxTextWidth = (width - marginLeft - 50); // kanan margin 50 (sama seperti kiri)
+          const labelJudul = "Judul Rapat";
+          const judulContent = currentEvent.title;
+          const judulLines = wrapText(
+            judulContent,
+            helveticaFont,
+            fontSize,
+            maxTextWidth - colonX - 5 // Kurangi lebar label dan sedikit spacing
+          );
+
+          // Baris pertama: label bold + titik dua + isi pertama
+          const labelJudulWidth = helveticaBoldFont.widthOfTextAtSize(labelJudul, fontSize);
+          firstPage.drawText(labelJudul, {
+            x: marginLeft,
+            y: currentY,
+            size: fontSize,
+            font: helveticaBoldFont,
+            color: rgb(0, 0, 0),
+          });
+          firstPage.drawText(":", {
+            x: colonX,
+            y: currentY,
+            size: fontSize,
+            font: helveticaBoldFont,
+            color: rgb(0, 0, 0),
+          });
+          if (judulLines.length > 0) {
+            firstPage.drawText(judulLines[0], {
+              x: colonX + 5, // Spacing setelah titik dua
+              y: currentY,
+              size: fontSize,
+              font: helveticaFont,
+              color: rgb(0, 0, 0),
+            });
+          }
+          currentY -= lineHeight;
+
+          // Baris berikutnya (jika ada): hanya isi (indent sesuai titik dua)
+          for (let i = 1; i < judulLines.length; i++) {
+            firstPage.drawText(judulLines[i], {
+              x: colonX + 5, // Indent sesuai titik dua
+              y: currentY,
+              size: fontSize,
+              font: helveticaFont,
+              color: rgb(0, 0, 0),
+            });
+            currentY -= lineHeight;
+          }
+
+          const eventDate = fmtDT(currentEvent.datetime);
+          // Pisahkan tanggal dan waktu
+          // Format bisa: "12 Januari 2026, pukul 01.00" atau "12 Januari 2026 pukul 01.00"
+          let tanggalPart = eventDate;
+          let waktuPart = "";
+          
+          // Cek apakah ada koma (format dengan koma)
+          if (eventDate.includes(",")) {
+            const parts = eventDate.split(",");
+            tanggalPart = parts[0].trim();
+            waktuPart = parts[1]?.trim() || "";
+          } else if (eventDate.includes("pukul") || eventDate.includes("Pukul")) {
+            // Format tanpa koma, cari kata "pukul" sebagai pemisah
+            const pukulIndex = eventDate.toLowerCase().indexOf("pukul");
+            if (pukulIndex > 0) {
+              tanggalPart = eventDate.substring(0, pukulIndex).trim();
+              waktuPart = eventDate.substring(pukulIndex).trim();
+            }
+          }
+          
+          // Tanggal tanpa waktu
+          const labelTanggal = "Tanggal";
+          const labelTanggalWidth = helveticaBoldFont.widthOfTextAtSize(labelTanggal, fontSize);
+          firstPage.drawText(labelTanggal, {
+            x: marginLeft,
+            y: currentY,
+            size: fontSize,
+            font: helveticaBoldFont,
+            color: rgb(0, 0, 0),
+          });
+          firstPage.drawText(":", {
+            x: colonX,
+            y: currentY,
+            size: fontSize,
+            font: helveticaBoldFont,
+            color: rgb(0, 0, 0),
+          });
+          firstPage.drawText(tanggalPart, {
+            x: colonX + 5, // Spacing setelah titik dua
+            y: currentY,
+            size: fontSize,
+            font: helveticaFont,
+            color: rgb(0, 0, 0),
+          });
+          currentY -= lineHeight;
+
+          // Waktu di baris baru dengan WITA
+          if (waktuPart) {
+            // Ubah "pukul" menjadi "Pukul" (huruf P kapital)
+            const formattedTime = waktuPart.replace(/pukul/i, "Pukul");
+            const labelWaktu = "Waktu";
+            firstPage.drawText(labelWaktu, {
+              x: marginLeft,
+              y: currentY,
+              size: fontSize,
+              font: helveticaBoldFont,
+              color: rgb(0, 0, 0),
+            });
+            firstPage.drawText(":", {
+              x: colonX,
+              y: currentY,
+              size: fontSize,
+              font: helveticaBoldFont,
+              color: rgb(0, 0, 0),
+            });
+            firstPage.drawText(`${formattedTime} WITA`, {
+              x: colonX + 5, // Spacing setelah titik dua
+              y: currentY,
+              size: fontSize,
+              font: helveticaFont,
+              color: rgb(0, 0, 0),
+            });
+            currentY -= lineHeight;
+          }
+
+          const labelLokasi = "Lokasi";
+          firstPage.drawText(labelLokasi, {
+            x: marginLeft,
+            y: currentY,
+            size: fontSize,
+            font: helveticaBoldFont,
+            color: rgb(0, 0, 0),
+          });
+          firstPage.drawText(":", {
+            x: colonX,
+            y: currentY,
+            size: fontSize,
+            font: helveticaBoldFont,
+            color: rgb(0, 0, 0),
+          });
+          firstPage.drawText(currentEvent.location || "-", {
+            x: colonX + 5, // Spacing setelah titik dua
+            y: currentY,
+            size: fontSize,
+            font: helveticaFont,
+            color: rgb(0, 0, 0),
+          });
+          currentY -= 25;
+
+          // Table configuration - sesuai dengan gambar
+          // Total available width: 595.28 - 50 - 50 = 495.28
+          const colWidths = {
+            no: 30,
+            nama: 100,
+            instansi: 130,
+            jabatan: 120,
+            gender: 70,
+            ttd: 45
+          };
+          
+          const totalTableWidth = colWidths.no + colWidths.nama + colWidths.instansi + 
+                                  colWidths.jabatan + colWidths.gender + colWidths.ttd;
+          const tableStartX = marginLeft;
+          const tableEndX = tableStartX + totalTableWidth;
+          const tableStartY = currentY + 10; // Start position for table
+          let tableCurrentY = tableStartY;
+          const headerHeight = 18;
+          const cellPadding = 4;
+          const rowHeight = 16;
+          let rowNum = 0;
+          const maxRowsPerPage = 25;
+
+          // Helper function to calculate multi-line text height
+          const calculateMultiLineHeight = (text, maxWidth, fontSize, font, maxLines = 3) => {
+            if (!text || text === "-") {
+              return { height: rowHeight, lines: 1, textLines: ["-"] };
+            }
+            
+            // Gunakan wrapText untuk mendapatkan lines
+            const allLines = wrapText(text, font, fontSize, maxWidth);
+            const lines = allLines.slice(0, maxLines); // Batasi jumlah baris
+            const lineSpacing = fontSize + 2;
+            
+            // Calculate height with padding
+            const calculatedHeight = lines.length === 1 ? rowHeight : (lines.length * lineSpacing) + 4;
+            
+            return { 
+              height: Math.max(rowHeight, calculatedHeight), 
+              lines: lines.length,
+              textLines: lines
+            };
+          };
+
+          // Helper function to draw multi-line text in cell (top-based coordinates)
+          // topY: Y coordinate of the top of the cell (from top of page, high value)
+          const drawMultiLineTextInCell = (page, text, x, topY, maxWidth, fontSize, font, color, maxLines = 3) => {
+            const result = calculateMultiLineHeight(text, maxWidth, fontSize, font, maxLines);
+            const lineSpacing = fontSize + 2;
+            // Start from top, convert to baseline (PDF uses baseline for text, Y decreases downward)
+            // topY is high value (near top of page), baseline = topY - fontSize
+            let baselineY = topY - fontSize - cellPadding; // First line baseline with padding
+            
+            // If single line, draw normally
+            if (result.lines === 1) {
+              page.drawText(result.textLines[0], {
+                x: x + cellPadding,
+                y: baselineY,
+                size: fontSize,
+                font: font,
+                color: color
+              });
+            } else {
+              // Multi-line: draw from top, going down (Y decreases)
+              for (const line of result.textLines) {
+                page.drawText(line, {
+                  x: x + cellPadding,
+                  y: baselineY,
+                  size: fontSize,
+                  font: font,
+                  color: color
+                });
+                baselineY -= lineSpacing; // Move down (decrease Y) for next line
+              }
+            }
+            return result;
+          };
+
+          // Helper function to embed signature image
+          const embedSignatureImage = async (imageUrl) => {
+            try {
+              const response = await fetch(imageUrl);
+              if (!response.ok) return null;
+              const imageBytes = await response.arrayBuffer();
+              try {
+                return await pdfDoc.embedPng(imageBytes);
+              } catch {
+                try {
+                  return await pdfDoc.embedJpg(imageBytes);
+                } catch {
+                  return null;
+                }
+              }
+            } catch (error) {
+              console.warn("Gagal memuat gambar tanda tangan:", error);
+              return null;
+            }
+          };
+
+          // Function to draw table row with borders (top-based coordinates)
+          const drawTableRow = (page, rowData, isHeader = false) => {
+            // rowTopY is the top of the row (top-based coordinate system)
+            const rowTopY = tableCurrentY;
+            let xPos = tableStartX;
+            let maxRowHeight = headerHeight;
+            
+            // Calculate max height for multi-line cells (only for data rows)
+            if (!isHeader && rowData) {
+              const nameResult = calculateMultiLineHeight(rowData.name || "-", colWidths.nama - (cellPadding * 2), fontSize, helveticaFont, 3);
+              const instansiResult = calculateMultiLineHeight(rowData.instansi || "-", colWidths.instansi - (cellPadding * 2), fontSize, helveticaFont, 3);
+              const jabatanResult = calculateMultiLineHeight(rowData.jabatan || "-", colWidths.jabatan - (cellPadding * 2), fontSize, helveticaFont, 3);
+              maxRowHeight = Math.max(rowHeight, nameResult.height, instansiResult.height, jabatanResult.height);
+              // Add padding for better spacing
+              maxRowHeight += 4;
+            } else if (isHeader) {
+              // Header with "Jenis Kelamin" on two lines
+              maxRowHeight = headerHeight + fontSize + 2 + 4;
+            }
+            
+            // Calculate bottom of row (top-based: topY - height)
+            const rowBottomY = rowTopY - maxRowHeight;
+            
+            // Draw left border (top-based: rowTopY is top, rowBottomY is bottom)
+            page.drawLine({
+              start: { x: tableStartX, y: rowTopY },
+              end: { x: tableStartX, y: rowBottomY },
+              thickness: 0.5,
+              color: rgb(0, 0, 0),
+            });
+            
+            // No column - center vertically if row is tall (top-based)
+            const noText = isHeader ? "No" : String(rowData?.no || "");
+            const noWidth = (isHeader ? helveticaBoldFont : helveticaFont).widthOfTextAtSize(noText, fontSize);
+            // Center vertically: topY - (height/2) - fontSize/2 (to get baseline)
+            // rowTopY is top, center is at rowTopY - (maxRowHeight/2), baseline = center - fontSize/2
+            const noBaselineY = isHeader 
+              ? rowTopY - fontSize - cellPadding // Header: slightly below top with padding
+              : rowTopY - (maxRowHeight / 2) - (fontSize / 2); // Center vertically
+            page.drawText(noText, {
+              x: xPos + (colWidths.no - noWidth) / 2, // Center horizontally
+              y: noBaselineY,
+              size: fontSize,
+              font: isHeader ? helveticaBoldFont : helveticaFont,
+              color: rgb(0, 0, 0),
+            });
+            xPos += colWidths.no;
+            page.drawLine({
+              start: { x: xPos, y: rowTopY },
+              end: { x: xPos, y: rowBottomY },
+              thickness: 0.5,
+              color: rgb(0, 0, 0),
+            });
+            
+            // Nama column (top-based)
+            if (isHeader) {
+              page.drawText("Nama", {
+                x: xPos + cellPadding,
+                y: rowTopY - fontSize - cellPadding, // Baseline from top with padding
+                size: fontSize,
+                font: helveticaBoldFont,
+                color: rgb(0, 0, 0),
+              });
+            } else {
+              drawMultiLineTextInCell(page, rowData.name || "-", xPos, rowTopY, colWidths.nama - (cellPadding * 2), fontSize, helveticaFont, rgb(0, 0, 0), 3);
+            }
+            xPos += colWidths.nama;
+            page.drawLine({
+              start: { x: xPos, y: rowTopY },
+              end: { x: xPos, y: rowBottomY },
+              thickness: 0.5,
+              color: rgb(0, 0, 0),
+            });
+            
+            // Instansi column (top-based)
+            if (isHeader) {
+              page.drawText("Instansi", {
+                x: xPos + cellPadding,
+                y: rowTopY - fontSize - 2, // Baseline from top
+                size: fontSize,
+                font: helveticaBoldFont,
+                color: rgb(0, 0, 0),
+              });
+            } else {
+              drawMultiLineTextInCell(page, rowData.instansi || "-", xPos, rowTopY, colWidths.instansi - (cellPadding * 2), fontSize, helveticaFont, rgb(0, 0, 0), 3);
+            }
+            xPos += colWidths.instansi;
+            page.drawLine({
+              start: { x: xPos, y: rowTopY },
+              end: { x: xPos, y: rowBottomY },
+              thickness: 0.5,
+              color: rgb(0, 0, 0),
+            });
+            
+            // Jabatan column (top-based)
+            if (isHeader) {
+              page.drawText("Jabatan", {
+                x: xPos + cellPadding,
+                y: rowTopY - fontSize - cellPadding, // Baseline from top with padding
+                size: fontSize,
+                font: helveticaBoldFont,
+                color: rgb(0, 0, 0),
+              });
+            } else {
+              drawMultiLineTextInCell(page, rowData.jabatan || "-", xPos, rowTopY, colWidths.jabatan - (cellPadding * 2), fontSize, helveticaFont, rgb(0, 0, 0), 3);
+            }
+            xPos += colWidths.jabatan;
+            page.drawLine({
+              start: { x: xPos, y: rowTopY },
+              end: { x: xPos, y: rowBottomY },
+              thickness: 0.5,
+              color: rgb(0, 0, 0),
+            });
+            
+            // Jenis Kelamin column (top-based)
+            if (isHeader) {
+              const jenisWidth = helveticaBoldFont.widthOfTextAtSize("Jenis", fontSize);
+              const kelaminWidth = helveticaBoldFont.widthOfTextAtSize("Kelamin", fontSize);
+              const maxWidth = Math.max(jenisWidth, kelaminWidth);
+              const lineSpacing = fontSize + 2;
+              page.drawText("Jenis", {
+                x: xPos + (colWidths.gender - maxWidth) / 2,
+                y: rowTopY - fontSize - cellPadding, // First line baseline from top
+                size: fontSize,
+                font: helveticaBoldFont,
+                color: rgb(0, 0, 0),
+              });
+              page.drawText("Kelamin", {
+                x: xPos + (colWidths.gender - maxWidth) / 2,
+                y: rowTopY - fontSize - cellPadding - lineSpacing, // Second line baseline from top
+                size: fontSize,
+                font: helveticaBoldFont,
+                color: rgb(0, 0, 0),
+              });
+            } else {
+              const genderText = genderLabel(rowData.gender || "-");
+              const genderWidth = helveticaFont.widthOfTextAtSize(genderText, fontSize);
+              // Center vertically: topY - (height/2) - fontSize/2
+              const genderBaselineY = rowTopY - (maxRowHeight / 2) - (fontSize / 2);
+              page.drawText(genderText, {
+                x: xPos + (colWidths.gender - genderWidth) / 2, // Center horizontally
+                y: genderBaselineY, // Center vertically
+                size: fontSize,
+                font: helveticaFont,
+                color: rgb(0, 0, 0),
+              });
+            }
+            xPos += colWidths.gender;
+            page.drawLine({
+              start: { x: xPos, y: rowTopY },
+              end: { x: xPos, y: rowBottomY },
+              thickness: 0.5,
+              color: rgb(0, 0, 0),
+            });
+            
+            // TTD column (top-based, will be drawn separately for data rows)
+            const ttdX = xPos;
+            if (isHeader) {
+              page.drawText("TTD", {
+                x: xPos + (colWidths.ttd - helveticaBoldFont.widthOfTextAtSize("TTD", fontSize)) / 2,
+                y: rowTopY - fontSize - cellPadding, // Baseline from top with padding
+                size: fontSize,
+                font: helveticaBoldFont,
+                color: rgb(0, 0, 0),
+              });
+            }
+            xPos += colWidths.ttd;
+            
+            // Draw right border
+            page.drawLine({
+              start: { x: tableEndX, y: rowTopY },
+              end: { x: tableEndX, y: rowBottomY },
+              thickness: 0.5,
+              color: rgb(0, 0, 0),
+            });
+            
+            // Draw horizontal lines (top and bottom)
+            page.drawLine({
+              start: { x: tableStartX, y: rowTopY },
+              end: { x: tableEndX, y: rowTopY },
+              thickness: isHeader ? 1.5 : 0.5,
+              color: rgb(0, 0, 0),
+            });
+            page.drawLine({
+              start: { x: tableStartX, y: rowBottomY },
+              end: { x: tableEndX, y: rowBottomY },
+              thickness: 0.5,
+              color: rgb(0, 0, 0),
+            });
+            
+            return { height: maxRowHeight, ttdX: ttdX };
+          };
+
+          // Draw header
+          const headerResult = drawTableRow(firstPage, {}, true);
+          // Adjust for header with "Jenis Kelamin" on two lines
+          tableCurrentY -= headerResult.height + 3;
+          rowNum++;
+
+          // Data rows with proper table format
+          let currentPage = firstPage;
+          const minSpaceForRow = 60; // Minimum space needed for a row (including spacing)
+          
+          for (let i = 0; i < attendees.length; i++) {
+            const att = attendees[i];
+
+            // Hitung tinggi baris terlebih dahulu untuk cek apakah muat
+            const nameResult = calculateMultiLineHeight(att.name || "-", colWidths.nama - (cellPadding * 2), fontSize, helveticaFont, 3);
+            const instansiResult = calculateMultiLineHeight(att.instansi || "-", colWidths.instansi - (cellPadding * 2), fontSize, helveticaFont, 3);
+            const jabatanResult = calculateMultiLineHeight(att.jabatan || "-", colWidths.jabatan - (cellPadding * 2), fontSize, helveticaFont, 3);
+            const estimatedRowHeight = Math.max(rowHeight, nameResult.height, instansiResult.height, jabatanResult.height) + 4 + 3; // height + padding + spacing
+
+            // Cek apakah baris berikutnya masih muat di halaman saat ini
+            // Jangan potong baris di tengah-tengah - cek SEBELUM menggambar
+            if (rowNum >= maxRowsPerPage || (tableCurrentY - estimatedRowHeight) < minSpaceForRow) {
+              currentPage = pdfDoc.addPage([width, height]);
+              // Redraw kop surat on new page
+              const newStartY = await drawKopSurat(currentPage, height - 55);
+              // Set top of table (top-based coordinate)
+              tableCurrentY = newStartY - 25;
+              rowNum = 0;
+
+              // Redraw header on new page (top-based)
+              const newHeaderResult = drawTableRow(currentPage, {}, true);
+              // Move to next row (top-based: subtract height and spacing)
+              tableCurrentY -= (newHeaderResult.height + 3);
+              rowNum++;
+            }
+
+            // Draw row with borders
+            const rowResult = drawTableRow(currentPage, {
+              no: att.no,
+              name: att.name,
+              instansi: att.instansi,
+              jabatan: att.jabatan,
+              gender: att.gender
+            }, false);
+            
+            // Draw TTD - embed image from Supabase (top-based coordinates)
+            const ttdX = rowResult.ttdX;
+            const rowTopY = tableCurrentY; // Top of the row (top-based)
+            const actualRowHeight = rowResult.height;
+            
+            // Center TTD vertically in the cell (top-based: topY - height/2)
+            // Center point: rowTopY - (actualRowHeight / 2)
+            const ttdCenterTopY = rowTopY - (actualRowHeight / 2);
+            
+            if (att.signatureUrl) {
+              try {
+                const signatureImage = await embedSignatureImage(att.signatureUrl);
+                if (signatureImage) {
+                  const sigWidth = 28;
+                  const sigHeight = 10;
+                  // Center signature vertically and horizontally (top-based)
+                  // Image Y coordinate is top-left corner
+                  // Center top Y minus half image height gives us the top of centered image
+                  currentPage.drawImage(signatureImage, {
+                    x: ttdX + (colWidths.ttd - sigWidth) / 2,
+                    y: ttdCenterTopY - (sigHeight / 2), // Top of image centered
+                    width: sigWidth,
+                    height: sigHeight
+                  });
+                } else {
+                  // Fallback to checkmark (top-based)
+                  const checkmarkWidth = helveticaFont.widthOfTextAtSize("✓", fontSize);
+                  // Baseline = centerTopY - fontSize/2 (to center text)
+                  const checkmarkBaselineY = ttdCenterTopY - (fontSize / 2);
+                  currentPage.drawText("✓", {
+                    x: ttdX + (colWidths.ttd - checkmarkWidth) / 2,
+                    y: checkmarkBaselineY,
+                    size: fontSize,
+                    font: helveticaFont,
+                    color: rgb(0, 1, 0), // Green color
+                  });
+                }
+              } catch (error) {
+                console.warn("Error embedding signature:", error);
+                const checkmarkWidth = helveticaFont.widthOfTextAtSize("✓", fontSize);
+                const checkmarkBaselineY = ttdCenterTopY - (fontSize / 2);
+                currentPage.drawText("✓", {
+                  x: ttdX + (colWidths.ttd - checkmarkWidth) / 2,
+                  y: checkmarkBaselineY,
+                  size: fontSize,
+                  font: helveticaFont,
+                  color: rgb(0, 1, 0),
+                });
+              }
+            } else {
+              const dashWidth = helveticaFont.widthOfTextAtSize("-", fontSize);
+              const dashBaselineY = ttdCenterTopY - (fontSize / 2);
+              currentPage.drawText("-", {
+                x: ttdX + (colWidths.ttd - dashWidth) / 2,
+                y: dashBaselineY,
+                size: fontSize,
+                font: helveticaFont,
+                color: rgb(0, 0, 0),
+              });
+            }
+
+            // Move to next row (top-based: subtract height and spacing)
+            tableCurrentY -= (actualRowHeight + 3); // Spacing antar baris
+            rowNum++;
+          }
+
+          // ===== PENANDATANGAN =====
+          // Tambahkan spacing setelah tabel
+          let footerY = tableCurrentY - 30; // Spacing setelah tabel
+          
+          // Pastikan ada ruang di halaman terakhir, jika tidak cukup buat halaman baru
+          if (footerY < 150) { // Perlu lebih banyak ruang untuk data penandatangan
+            currentPage = pdfDoc.addPage([width, height]);
+            const newStartY = await drawKopSurat(currentPage, height - 55);
+            footerY = newStartY - 25;
+          }
+
+          // ===== PENANDATANGAN (Rata tengah, di kanan) =====
+          // Posisi X untuk penandatangan (di kanan, center aligned)
+          const penandatanganAreaWidth = 200; // Lebar area penandatangan
+          const penandatanganStartX = width - marginLeft - penandatanganAreaWidth; // Mulai dari kanan
+          const penandatanganCenterX = penandatanganStartX + (penandatanganAreaWidth / 2); // Center X
+          
+          let penandatanganY = footerY;
+          
+          // Helper function untuk center text
+          const drawCenteredText = (text, y, size, font) => {
+            const textWidth = font.widthOfTextAtSize(text, size);
+            currentPage.drawText(text, {
+              x: penandatanganCenterX - (textWidth / 2),
+              y: y,
+              size: size,
+              font: font,
+              color: rgb(0, 0, 0),
+            });
+          };
+          
+          // 1. "Mengetahui,"
+          drawCenteredText("Mengetahui,", penandatanganY, fontSize, helveticaFont);
+          penandatanganY -= lineHeight;
+
+          // 2. "Kepala Dinas Komunikasi, Informatika,"
+          const jabatanLine1 = "Kepala Dinas Komunikasi, Informatika,";
+          drawCenteredText(jabatanLine1, penandatanganY, fontSize, helveticaFont);
+          penandatanganY -= lineHeight;
+
+          // 3. "Statistik dan Persandian"
+          const jabatanLine2 = "Statistik dan Persandian";
+          drawCenteredText(jabatanLine2, penandatanganY, fontSize, helveticaFont);
+          penandatanganY -= (lineHeight * 4); // Spasi untuk jarak TTD
+
+          // 4. Data penandatangan dari master tanda tangan (tanpa garis)
+          if (masterTTDData) {
+            // Nama penandatangan (bold)
+            if (masterTTDData.nama) {
+              drawCenteredText(masterTTDData.nama, penandatanganY, fontSize, helveticaBoldFont);
+              penandatanganY -= lineHeight;
+            }
+
+            // Golongan (jika ada) - langsung tampilkan teks golongan tanpa label
+            if (masterTTDData.golongan) {
+              drawCenteredText(masterTTDData.golongan, penandatanganY, fontSize, helveticaFont);
+              penandatanganY -= lineHeight;
+            }
+
+            // NIP (jika ada) - format: "NIP. 1973..."
+            if (masterTTDData.nip) {
+              drawCenteredText(`NIP. ${masterTTDData.nip}`, penandatanganY, fontSize, helveticaFont);
+            }
+          }
+
+          // Save PDF
+          const pdfBytes = await pdfDoc.save();
+          const blob = new Blob([pdfBytes], { type: "application/pdf" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `Daftar_Hadir_${currentEvent.title.replace(/[^a-z0-9]/gi, "_")}_${new Date().getTime()}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          alert("PDF berhasil dibuat!");
+        } catch (error) {
+          console.error("Error generating PDF:", error);
+          alert("Gagal membuat PDF: " + error.message);
+        } finally {
+          if (btnEl) {
+            btnEl.disabled = false;
+          }
+        }
+      }
+
+      // Event listener untuk filter tahun
+      function setupYearFilter() {
+        const yearFilter = document.getElementById("year-filter");
+        if (yearFilter) {
+          yearFilter.addEventListener("change", async (e) => {
+            selectedYear = e.target.value ? parseInt(e.target.value) : null;
+            
+            // Filter events berdasarkan tahun yang dipilih
+            EVENTS = filterEventsByYear(ALL_EVENTS, selectedYear);
+            
+            // Reload attendee counts untuk events yang terfilter
+            if (EVENTS.length > 0) {
+              const eventIds = EVENTS.map(e => e.id);
+              const { data: countsData, error: countsError } = await sb
+                .from("attendees")
+                .select("event_id")
+                .in("event_id", eventIds);
+
+              if (!countsError && countsData) {
+                ATTENDEE_COUNTS = {};
+                countsData.forEach(a => {
+                  ATTENDEE_COUNTS[a.event_id] = (ATTENDEE_COUNTS[a.event_id] || 0) + 1;
+                });
+              }
+            } else {
+              ATTENDEE_COUNTS = {};
+            }
+            
+            renderEventsList();
+            
+            // Reset current event jika sudah tidak ada di filter
+            if (currentEventId && !EVENTS.find((e) => e.id === currentEventId)) {
+              loadForEvent(null);
+            }
+          });
+        }
+      }
+
+      (function init() {
+        AdminAuth.requireAdmin();
+        document
+          .getElementById("btn-logout")
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            AdminAuth.logout();
+          });
+
+        setupYearFilter();
+        loadEvents();
+      })();
+    </script>
+    <script src="assets/js/admin-common.js"></script>
+  </body>
+</html>

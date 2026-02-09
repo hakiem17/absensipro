@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pilih Acara - AbsensiPro</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+      :root {
+        --content-gutter-x: clamp(16px, 2.5vw, 28px);
+        --border-radius: 10px;
+        --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+      }
+
+      /* Palette: Navy, Purple, Lavender, Pink */
+      :root {
+        --navy: #0E21A0;
+        --purple: #4D2FB2;
+        --lavender: #B153D7;
+        --pink: #F375C2;
+      }
+
+      /* Professional Theme System – pakai palette */
+      :root[data-theme="light"] {
+        --bg-main: #f8fafc;
+        --bg-secondary: #ffffff;
+        --card-bg: #ffffff;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.3);
+        --border-hover: rgba(255, 255, 255, 0.5);
+        
+        --primary: var(--navy);
+        --primary-hover: var(--purple);
+        --primary-light: rgba(14, 33, 160, 0.15);
+        
+        --accent: var(--lavender);
+        
+        --status-active-bg: rgba(177, 83, 215, 0.25);
+        --status-active-text: #4D2FB2;
+        
+        --status-upcoming-bg: rgba(243, 117, 194, 0.2);
+        --status-upcoming-text: #4D2FB2;
+
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.12), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --header-bg: rgba(255, 255, 255, 0.95);
+      }
+
+      :root[data-theme="dark"] {
+        --bg-main: #0a0a12;
+        --bg-secondary: #1a1a2e;
+        --card-bg: rgba(30, 30, 50, 0.9);
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --border-hover: rgba(255, 255, 255, 0.2);
+        
+        --primary: var(--lavender);
+        --primary-hover: var(--pink);
+        --primary-light: rgba(177, 83, 215, 0.2);
+        
+        --accent: var(--pink);
+        
+        --status-active-bg: rgba(177, 83, 215, 0.25);
+        --status-active-text: #e9d5ff;
+        
+        --status-upcoming-bg: rgba(243, 117, 194, 0.2);
+        --status-upcoming-text: #fbcfe8;
+
+        --shadow-sm: none;
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        --header-bg: rgba(14, 33, 160, 0.4);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg-main);
+        color: var(--text-primary);
+        font-family: var(--font-sans);
+        line-height: 1.5;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+
+      /* Background solid – palette (bukan gradient) */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background: var(--navy);
+        pointer-events: none;
+      }
+
+      [data-theme="dark"] body::before {
+        background: #0a0620;
+      }
+
+      /* Header – solid Purple dari palette */
+      .modern-header {
+        background: var(--purple);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      [data-theme="dark"] .modern-header {
+        background: var(--purple);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .header-content {
+        padding: 0.75rem var(--content-gutter-x);
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #ffffff;
+        text-decoration: none;
+      }
+      [data-theme="dark"] .logo { color: #f8fafc; }
+      .logo:hover { opacity: 0.85; }
+
+      .logo-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--primary);
+        color: white;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.125rem;
+      }
+
+      .header-actions { display: flex; gap: 0.5rem; }
+
+      .btn-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: transparent;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .btn-icon:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+      .btn-icon {
+        color: rgba(255, 255, 255, 0.9);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      [data-theme="dark"] .btn-icon {
+        color: var(--text-muted);
+        border-color: var(--border-color);
+      }
+      [data-theme="dark"] .btn-icon:hover {
+        background: var(--bg-main);
+        color: var(--primary);
+        border-color: var(--primary);
+      }
+
+      /* Hero – transparan, gradasi ungu terlihat */
+      .hero-section {
+        padding: 2.5rem var(--content-gutter-x) 2rem;
+        text-align: center;
+        background: transparent;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+      }
+      [data-theme="dark"] .hero-section {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .hero-content-wrapper { position: relative; z-index: 1; }
+
+      .hero-logo {
+        display: block;
+        margin: 0 auto 1rem;
+        max-height: 64px;
+        width: auto;
+        max-width: 180px;
+        height: auto;
+        object-fit: contain;
+      }
+
+      .hero-title {
+        font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.92);
+        max-width: 560px;
+        margin: 0 auto 1.5rem;
+      }
+
+      /* Search */
+      .search-wrapper {
+        max-width: 480px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.75rem;
+        font-size: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.88);
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+      }
+      [data-theme="dark"] .search-input {
+        background: rgba(30, 41, 59, 0.9);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+      .search-input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px var(--primary-light);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+      }
+
+      /* Main + Grid */
+      .main-content {
+        flex: 1;
+        padding: 2rem var(--content-gutter-x);
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.25rem;
+        overflow: visible;
+      }
+
+      @keyframes fadeInUp {
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Event Card – tanpa putih, sedikit transparan */
+      .event-card {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 0.6s ease-out forwards;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, border-color 0.2s ease;
+      }
+
+      .event-card:hover {
+        will-change: transform;
+        transform: translateY(-14px) scale(1.03);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(37, 99, 235, 0.15);
+        border-color: var(--primary);
+        z-index: 10;
+      }
+      [data-theme="dark"] .event-card {
+        background: rgba(30, 41, 59, 0.85);
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      /* Status Badge */
+      .event-status {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.35rem 0.75rem;
+        border-radius: 99px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: background 0.2s;
+      }
+
+      .status-active {
+        background: var(--status-active-bg);
+        color: var(--status-active-text);
+        box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
+      }
+
+      .status-upcoming {
+        background: var(--status-upcoming-bg);
+        color: var(--status-upcoming-text);
+        border: 1px solid var(--border-color);
+      }
+
+      .event-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .event-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        line-height: 1.4;
+      }
+
+      .event-location {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 2rem;
+        flex-grow: 1;
+      }
+
+      /* Primary Button */
+      .btn-primary-clean {
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.875rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        margin-top: auto;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      }
+
+      .btn-primary-clean:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(77, 47, 178, 0.4);
+        color: white;
+      }
+
+      .btn-primary-clean:active {
+        transform: translateY(0);
+      }
+
+      /* Empty State – teks terang di background Navy */
+      .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        animation: fadeInUp 0.5s ease-out;
+      }
+
+      .empty-state .h5, .empty-state .fw-bold { color: #ffffff; }
+
+      .empty-icon {
+        font-size: 3rem;
+        color: var(--lavender);
+        margin-bottom: 1rem;
+      }
+
+      /* Footer – solid Purple dari palette */
+      .clean-footer {
+        background: var(--purple);
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 2rem var(--content-gutter-x);
+        text-align: center;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 0.875rem;
+        margin-top: auto;
+      }
+      [data-theme="dark"] .clean-footer {
+        border-top-color: rgba(255, 255, 255, 0.08);
+        color: var(--text-muted);
+      }
+
+      /* Loading */
+      .spinner-clean {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--border-color);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      (function () {
+        const t = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+
+    <header class="modern-header">
+      <div class="header-content">
+        <a href="#" class="logo">
+          <div class="logo-icon">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <span>AbsensiPro</span>
+        </a>
+        <div class="header-actions">
+          <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">
+            <i class="bi bi-sun"></i>
+          </button>
+          <button
+            class="btn-icon"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#menuOffcanvas"
+            aria-label="Menu"
+          >
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MENU OFFCANVAS -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="menuOffcanvas">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="offcanvas"
+          aria-label="Tutup"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <a href="admin-dashboard.html" class="btn btn-outline-secondary w-100 mb-2">
+          <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-content-wrapper">
+        <img 
+          src="assets/img/logo_hst.png" 
+          alt="Logo Instansi" 
+          class="hero-logo d-inline-block"
+        />
+        <h1 class="hero-title">Pilih Acara Anda</h1>
+        <p class="hero-subtitle">
+          Cari dan pilih acara yang tersedia untuk mengisi daftar hadir digital.
+        </p>
+        
+        <div class="search-wrapper">
+          <input 
+            type="text" 
+            id="search-input" 
+            class="search-input" 
+            placeholder="Cari berdasarkan judul atau lokasi..." 
+            autocomplete="off"
+          >
+          <i class="bi bi-search search-icon"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <div id="events-grid" class="events-grid">
+        <!-- Event cards injected here -->
+      </div>
+
+      <div id="empty" class="empty-state d-none">
+        <div class="empty-icon">
+          <i class="bi bi-inbox"></i>
+        </div>
+        <h3 class="h5 fw-bold text-body">Tidak ada acara ditemukan</h3>
+        <p>Coba gunakan kata kunci pencarian yang lain.</p>
+      </div>
+    </main>
+
+    <footer class="clean-footer">
+      <div>
+        &copy; <span id="year"></span> Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. Hulu Sungai Tengah.
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+
+    <script>
+      // Year
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Theme Logic
+      const themeBtn = document.getElementById("theme-toggle");
+      function syncThemeIcon() {
+        const t = document.documentElement.getAttribute("data-theme");
+        themeBtn.innerHTML = t === "dark" 
+          ? '<i class="bi bi-sun-fill"></i>' 
+          : '<i class="bi bi-moon-fill"></i>';
+      }
+      syncThemeIcon();
+      
+      themeBtn.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme");
+        const next = cur === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        syncThemeIcon();
+      });
+
+      // Search Logic
+      const searchInput = document.getElementById("search-input");
+      let allEvents = []; // Store events locally for filtering
+
+      searchInput.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allEvents.filter(ev => 
+          ev.title.toLowerCase().includes(term) || 
+          (ev.location && ev.location.toLowerCase().includes(term))
+        );
+        renderEvents(filtered, true);
+      });
+
+      // Data Loading
+      const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      const $grid = document.getElementById("events-grid");
+      const $empty = document.getElementById("empty");
+
+      function fmtDate(iso) {
+        const d = new Date(iso);
+        return d.toLocaleDateString("id-ID", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }) + " • " + d.toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function renderEvents(data, isSearch = false) {
+        if (!data.length) {
+          $grid.innerHTML = "";
+          $empty.classList.remove("d-none");
+          $empty.querySelector("h3").textContent = isSearch 
+            ? "Tidak ada hasil pencarian" 
+            : "Belum ada acara aktif";
+          $empty.querySelector("p").textContent = isSearch
+            ? "Coba kata kunci lain."
+            : "Silakan hubungi administrator.";
+          return;
+        }
+
+        $empty.classList.add("d-none");
+        $grid.innerHTML = data.map((ev, index) => {
+          const href = `form-kehadiran.html?event=${encodeURIComponent(ev.id)}`;
+          const isActive = ev.status === 'active';
+          const statusClass = isActive ? 'status-active' : 'status-upcoming';
+          const statusText = isActive ? 'AKTIF' : 'AKAN DATANG';
+
+          // Staggered animation delay
+          const delay = index * 0.1;
+
+          return `
+            <div class="event-card" style="animation-delay: ${delay}s">
+              <span class="event-status ${statusClass}">${statusText}</span>
+              <div class="event-date">
+                <i class="bi bi-calendar3"></i>
+                <span>${fmtDate(ev.datetime)}</span>
+              </div>
+              <h3 class="event-title">${ev.title}</h3>
+              <div class="event-location">
+                <i class="bi bi-geo-alt"></i>
+                <span>${ev.location || "Lokasi Online/Tidak ditentukan"}</span>
+              </div>
+              <a href="${href}" class="btn-primary-clean">
+                Isi Daftar Hadir <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          `;
+        }).join("");
+      }
+
+      async function loadEvents() {
+        $grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 2rem;">
+            <div class="spinner-clean"></div>
+            <p class="text-secondary">Memuat data acara...</p>
+          </div>
+        `;
+
+        try {
+          const a = await sb.from("events").select("*").eq("status", "active").order("datetime", { ascending: false });
+          const u = await sb.from("events").select("*").eq("status", "upcoming").order("datetime", { ascending: false });
+          
+          allEvents = [...(a.data || []), ...(u.data || [])];
+          renderEvents(allEvents);
+        } catch (error) {
+          console.error(error);
+          $grid.innerHTML = `<p class="text-danger text-center w-100">Gagal memuat data.</p>`;
+        }
+      }
+
+      loadEvents();
+    </script>
+  </body>
+</html>

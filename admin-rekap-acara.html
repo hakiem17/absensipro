@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rekap Acara Live - Admin Panel</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/admin.css" />
+  </head>
+  <body>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Mobile Hamburger Menu Button - Always Visible -->
+    <button class="sidebar-toggle mobile-hamburger" id="sidebarToggle" aria-label="Toggle Sidebar">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <div class="main-wrapper">
+      <!-- Modern Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <a href="#" class="sidebar-brand">
+            <i class="bi bi-shield-check"></i>
+            <span>Admin Panel</span>
+          </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="admin-dashboard.html">
+                <i class="bi bi-house-door"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-manajemen-acara.html">
+                <i class="bi bi-calendar-event"></i>
+                <span>Manajemen Acara</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-daftar-hadir.html">
+                <i class="bi bi-people"></i>
+                <span>Daftar Hadir</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="admin-rekap-acara.html">
+                <i class="bi bi-display"></i>
+                <span>Rekap Acara (Live)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-print-daftar-hadir.html">
+                <i class="bi bi-printer"></i>
+                <span>Print Daftar Hadir</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-notulen-acara.html">
+                <i class="bi bi-file-text"></i>
+                <span>Notulen Acara</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="btn-master-ttd" data-bs-toggle="modal" data-bs-target="#modalMasterTTD">
+                <i class="bi bi-pen"></i>
+                <span>Master Tanda Tangan</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Theme Toggle di Sidebar -->
+        <div style="padding: 0.5rem 0.75rem;">
+          <button id="theme-toggle" class="sidebar-theme-toggle">
+            <i class="bi bi-sun-fill"></i>
+            <span>Mode Gelap/Terang</span>
+          </button>
+        </div>
+        
+        <!-- User Info di Footer Sidebar -->
+        <div class="sidebar-footer">
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="sidebar-user-details">
+              <div class="sidebar-user-name">Admin User</div>
+              <div class="sidebar-user-role">Administrator</div>
+            </div>
+            <button id="btn-logout" class="sidebar-logout-btn" title="Logout">
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <div class="main-content-wrapper">
+        <!-- Modern Header -->
+        <header class="top-header">
+          <div class="header-left">
+            <div class="header-search">
+              <i class="bi bi-search"></i>
+              <input type="text" placeholder="Search..." class="search-input" />
+            </div>
+          </div>
+          
+          <div class="header-right">
+            <button id="theme-toggle-header" class="header-icon-btn" title="Toggle Theme">
+              <i class="bi bi-sun-fill"></i>
+            </button>
+            <div class="header-notification">
+              <button class="header-icon-btn notification-btn" title="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="notification-badge">3</span>
+              </button>
+            </div>
+            <div class="header-user-profile">
+              <div class="user-avatar-small">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <span class="user-name-header">Admin</span>
+              <i class="bi bi-chevron-down"></i>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+          <!-- Page Header -->
+          <div class="d-flex justify-content-between align-items-center mb-4" style="padding-top: 1.5rem;">
+            <div>
+              <h2 class="h4 mb-1 text-gradient">Rekap Kehadiran Live</h2>
+              <p class="text-muted mb-0">Tampilan real-time daftar kehadiran peserta</p>
+            </div>
+            <a href="admin-manajemen-acara.html" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>
+              Kembali
+            </a>
+          </div>
+
+          <!-- Modern Toolbar -->
+          <div class="toolbar-container">
+            <div class="toolbar-header">
+              <h3 class="toolbar-title">Pilih Acara</h3>
+            </div>
+            
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label for="event-select" class="form-label fw-bold" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Pilih Acara untuk Ditampilkan:</label>
+                <select id="event-select" class="form-select" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">
+                  <option>Memuat daftar acara...</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modern Live Display -->
+          <div class="live-display-container">
+            <div class="live-header">
+              <div class="live-indicator">
+                <div class="live-dot"></div>
+                <span>Live</span>
+              </div>
+              <h2 id="event-title" class="live-title" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Pilih Acara untuk Memulai</h2>
+              <p class="live-subtitle" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Daftar kehadiran akan ditampilkan secara real-time</p>
+            </div>
+
+            <!-- Modern Scrolling Table -->
+            <div class="table-wrapper">
+              <div class="table-header">
+                <table class="table align-middle">
+                  <colgroup>
+                    <col style="width:72px" />
+                    <col style="width:280px" />
+                    <col style="width:220px" />
+                    <col style="width:200px" />
+                    <col style="width:160px" />
+                    <col style="width:240px" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Nama Lengkap</th>
+                      <th>Instansi</th>
+                      <th>Jabatan</th>
+                      <th>Jenis Kelamin</th>
+                      <th>Waktu Kehadiran</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="table-body-scroll-container" id="scroll-container">
+                <div class="table-scroll-content" id="scroll-content">
+                  <!-- Konten tabel dinamis akan dimasukkan di sini oleh JS -->
+                </div>
+              </div>
+              
+              <!-- Tombol kontrol animasi -->
+              <div class="text-center mt-3">
+                <button id="play-pause-btn" class="btn btn-primary me-2">
+                  <i class="bi bi-pause-fill me-1"></i>
+                  Pause
+                </button>
+                <button id="restart-btn" class="btn btn-outline-primary">
+                  <i class="bi bi-arrow-clockwise me-1"></i>
+                  Restart
+                </button>
+              </div>
+            </div>
+
+
+          </div>
+        </main>
+
+        <!-- Modal Master Tanda Tangan -->
+        <div class="modal fade" id="modalMasterTTD" tabindex="-1" aria-labelledby="modalMasterTTDLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalMasterTTDLabel">
+                  <i class="bi bi-pen me-2"></i>
+                  Master Tanda Tangan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Tabel Data Master TTD -->
+                <div class="mb-4">
+                  <h6 class="mb-3">Data Master Tanda Tangan yang Tersimpan</h6>
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="table-master-ttd">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Nama</th>
+                          <th>Jabatan</th>
+                          <th>Instansi</th>
+                          <th>Golongan</th>
+                          <th>NIP</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbody-master-ttd">
+                        <tr>
+                          <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Form Input/Edit -->
+                <h6 class="mb-3">Form Master Tanda Tangan</h6>
+                <form id="form-master-ttd">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-nama" class="form-label">Nama <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-nama" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-jabatan" required>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-instansi" class="form-label">Instansi <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="ttd-instansi" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-golongan" class="form-label">Golongan</label>
+                      <input type="text" class="form-control" id="ttd-golongan">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="ttd-nip" class="form-label">NIP</label>
+                      <input type="text" class="form-control" id="ttd-nip">
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-save-master-ttd">
+                  <i class="bi bi-save me-2"></i>
+                  Simpan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modern Footer -->
+        <footer class="footer-professional">
+          <div class="footer-divider"></div>
+          <div class="text-center">
+            &copy; <span id="copyright-year"></span> Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. HST.
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Libs -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // --- Logika Dasar ---
+        document.getElementById("copyright-year").textContent =
+          new Date().getFullYear();
+        const themeToggle = document.getElementById("theme-toggle");
+        function updateIcon() {
+          themeToggle.querySelector("i").className =
+            document.documentElement.getAttribute("data-theme") === "dark"
+              ? "bi bi-sun-fill"
+              : "bi bi-moon-fill";
+        }
+        themeToggle.addEventListener("click", () => {
+          const t =
+            document.documentElement.getAttribute("data-theme") === "dark"
+              ? "light"
+              : "dark";
+          document.documentElement.setAttribute("data-theme", t);
+          localStorage.setItem("theme", t);
+          updateIcon();
+        });
+        updateIcon();
+        const sb = supabase.createClient(
+          window.SUPABASE_URL,
+          window.SUPABASE_ANON_KEY
+        );
+        AdminAuth.requireAdmin();
+        document
+          .getElementById("btn-logout")
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            AdminAuth.logout();
+          });
+
+
+        // Modern Sidebar Toggle
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        function toggleSidebar() {
+          sidebar.classList.toggle("show");
+          sidebarOverlay.classList.toggle("show");
+          document.body.style.overflow = sidebar.classList.contains("show") ? "hidden" : "";
+        }
+
+        function hideSidebar() {
+          sidebar.classList.remove("show");
+          sidebarOverlay.classList.remove("show");
+          document.body.style.overflow = "";
+        }
+
+        // Set active menu item based on current page
+        function setActiveMenuItem() {
+          const currentPage = window.location.pathname.split('/').pop() || 'admin-rekap-acara.html';
+          const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+          
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href');
+            if (href && (href === currentPage || href.includes(currentPage.split('.')[0]))) {
+              link.classList.add('active');
+            }
+          });
+          
+          // If no active link found, set based on current page
+          const hasActive = document.querySelector('.sidebar-nav .nav-link.active');
+          if (!hasActive) {
+            if (currentPage.includes('manajemen')) {
+              const link = document.querySelector('.sidebar-nav .nav-link[href*="manajemen"]');
+              if (link) link.classList.add('active');
+            } else if (currentPage.includes('daftar')) {
+              const link = document.querySelector('.sidebar-nav .nav-link[href*="daftar"]');
+              if (link) link.classList.add('active');
+            } else if (currentPage.includes('rekap')) {
+              const link = document.querySelector('.sidebar-nav .nav-link[href*="rekap"]');
+              if (link) link.classList.add('active');
+            } else if (currentPage.includes('dashboard')) {
+              const link = document.querySelector('.sidebar-nav .nav-link[href*="dashboard"]');
+              if (link) link.classList.add('active');
+            }
+          }
+        }
+
+        // Set active menu on load
+        setActiveMenuItem();
+
+        // Event listeners for modern sidebar
+        sidebarToggle?.addEventListener("click", toggleSidebar);
+        sidebarOverlay?.addEventListener("click", hideSidebar);
+        
+        // Close sidebar when clicking nav links (mobile)
+        sidebar.querySelectorAll(".nav-link").forEach(link => {
+          link.addEventListener("click", () => {
+            if (window.innerWidth < 992) {
+              hideSidebar();
+            }
+          });
+        });
+
+        // Close sidebar on escape key
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && sidebar.classList.contains("show")) {
+            hideSidebar();
+          }
+        });
+
+        // Handle window resize
+        window.addEventListener("resize", () => {
+          if (window.innerWidth >= 992) {
+            hideSidebar();
+          }
+        });
+
+        // --- Logika Halaman Rekap ---
+        const $eventSelect = document.getElementById("event-select");
+        const $eventTitle = document.getElementById("event-title");
+        const $scrollContainer = document.getElementById("scroll-container");
+        const $scrollContent = document.getElementById("scroll-content");
+        const $playPauseBtn = document.getElementById("play-pause-btn");
+        const $restartBtn = document.getElementById("restart-btn");
+
+        // Debug: Check if elements are found
+        console.log("DOM Elements found:");
+        console.log("eventSelect:", $eventSelect);
+        console.log("eventTitle:", $eventTitle);
+        console.log("scrollContainer:", $scrollContainer);
+        console.log("scrollContent:", $scrollContent);
+        
+        // Additional debug for scroll elements
+        if ($scrollContainer) {
+          console.log("Scroll container dimensions:", {
+            clientHeight: $scrollContainer.clientHeight,
+            offsetHeight: $scrollContainer.offsetHeight,
+            scrollHeight: $scrollContainer.scrollHeight
+          });
+        }
+        
+        if ($scrollContent) {
+          console.log("Scroll content initial state:", {
+            clientHeight: $scrollContent.clientHeight,
+            offsetHeight: $scrollContent.offsetHeight,
+            scrollHeight: $scrollContent.scrollHeight,
+            innerHTML: $scrollContent.innerHTML.length + " characters"
+          });
+        }
+
+        let attendeesList = [];
+        let activeChannel = null;
+        let isAnimating = true;
+        const ANIMATION_DELAY = 2000; // Delay sebelum animasi dimulai (2 detik)
+
+        // Utility functions
+        const esc = (s) =>
+          String(s ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        
+        const fmtDT = (iso) =>
+          iso
+            ? new Date(iso).toLocaleString("id-ID", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "-";
+
+        function genderLabel(g) {
+          const v = (g || "").toLowerCase();
+          if (v === "male") return "Laki-Laki";
+          if (v === "female") return "Perempuan";
+          return "";
+        }
+
+        function toggleAnimation() {
+          if (!$scrollContent || !$scrollContent.classList.contains("credit-roll")) {
+            return; // No animation to toggle
+          }
+          
+          if (isAnimating) {
+            $scrollContent.style.animationPlayState = "paused";
+            $scrollContent.classList.add("paused");
+            if ($playPauseBtn) {
+              $playPauseBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i>Play';
+            }
+            isAnimating = false;
+          } else {
+            $scrollContent.style.animationPlayState = "running";
+            $scrollContent.classList.remove("paused");
+            if ($playPauseBtn) {
+              $playPauseBtn.innerHTML = '<i class="bi bi-pause-fill me-1"></i>Pause';
+            }
+            isAnimating = true;
+          }
+        }
+
+        function restartAnimation() {
+          if (!$scrollContent || !$scrollContent.classList.contains("credit-roll")) {
+            return; // No animation to restart
+          }
+          
+          // Get current animation duration
+          const currentAnimation = $scrollContent.style.animation;
+          const durationMatch = currentAnimation.match(/(\d+(?:\.\d+)?)s/);
+          const duration = durationMatch ? durationMatch[1] : "30";
+          
+          // Reset animation
+          $scrollContent.style.animation = "none";
+          $scrollContent.offsetHeight; // Force reflow
+          $scrollContent.style.animation = `creditRoll ${duration}s linear infinite`;
+          $scrollContent.style.animationPlayState = "running";
+          $scrollContent.classList.remove("paused");
+          
+          if ($playPauseBtn) {
+            $playPauseBtn.innerHTML = '<i class="bi bi-pause-fill me-1"></i>Pause';
+          }
+          isAnimating = true;
+        }
+
+
+        function renderScrollingList() {
+          console.log("renderScrollingList called with", attendeesList.length, "attendees");
+          
+          // Clear previous content and remove animation
+          $scrollContent.innerHTML = "";
+          $scrollContent.classList.remove("credit-roll", "paused");
+          $scrollContent.style.animation = "none";
+          $scrollContent.style.transform = "translateY(0)"; // Reset transform to show content
+          
+          if (!attendeesList || attendeesList.length === 0) {
+            console.log("No attendees, showing waiting message");
+            $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-secondary py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Menunggu peserta...</td></tr></tbody></table>`;
+            isAnimating = false;
+            if ($playPauseBtn) {
+              $playPauseBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i>Play';
+            }
+            return;
+          }
+
+          console.log("Rendering attendees list");
+          // Sort by timestamp descending (newest first)
+          const sortedList = [...attendeesList].sort((a, b) => {
+            const tsA = a.ts ? new Date(a.ts).getTime() : 0;
+            const tsB = b.ts ? new Date(b.ts).getTime() : 0;
+            return tsB - tsA;
+          });
+
+          // Create wrapper for credit roll effect
+          const wrapper = document.createElement("div");
+          wrapper.style.position = "relative";
+          wrapper.style.width = "100%";
+          wrapper.style.display = "block";
+          wrapper.style.minHeight = "200%"; // Ensure enough height for smooth animation
+
+          // Function to create table
+          function createTable(list, startIndex = 0) {
+            const table = document.createElement("table");
+            table.className = "table table-striped align-middle";
+            table.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            table.style.marginBottom = "2rem";
+            table.style.width = "100%";
+            
+            // Create colgroup
+            const colgroup = document.createElement("colgroup");
+            colgroup.innerHTML = `
+              <col style="width:72px" />
+              <col style="width:280px" />
+              <col style="width:220px" />
+              <col style="width:200px" />
+              <col style="width:160px" />
+              <col style="width:240px" />
+            `;
+            table.appendChild(colgroup);
+            
+            // Create tbody
+            const tbody = document.createElement("tbody");
+            
+            // Create rows
+            list.forEach((att, idx) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td style="width: 72px; font-size: 0.8125rem;">${startIndex + idx + 1}</td>
+                <td style="font-size: 0.8125rem; font-weight: 500;">${esc(att.name || "-")}</td>
+                <td style="font-size: 0.8125rem;">${esc(att.instansi || "-")}</td>
+                <td style="font-size: 0.8125rem;">${esc(att.jabatan || "-")}</td>
+                <td style="font-size: 0.8125rem;">${esc(genderLabel(att.gender) || "-")}</td>
+                <td style="font-size: 0.8125rem;">${esc(fmtDT(att.ts))}</td>
+              `;
+              tbody.appendChild(row);
+            });
+            
+            table.appendChild(tbody);
+            return table;
+          }
+
+          // Create first table
+          const table1 = createTable(sortedList, 0);
+          wrapper.appendChild(table1);
+
+          // Duplicate table for seamless loop effect
+          const table2 = createTable(sortedList, sortedList.length);
+          wrapper.appendChild(table2);
+
+          // Clear and append wrapper
+          $scrollContent.innerHTML = "";
+          $scrollContent.appendChild(wrapper);
+          
+          // Ensure content is visible first (no animation initially)
+          $scrollContent.style.transform = "translateY(0)";
+          $scrollContent.style.opacity = "1";
+          $scrollContent.style.visibility = "visible";
+          $scrollContent.style.display = "block";
+          
+          // Calculate animation duration based on content height
+          // Adjust duration based on number of rows for consistent speed
+          const baseDuration = 30; // Base 30 seconds
+          const rowCount = sortedList.length;
+          const duration = Math.max(20, Math.min(60, baseDuration + (rowCount * 0.5))); // Between 20-60s
+          
+          // Force layout calculation
+          $scrollContent.offsetHeight;
+          
+          // Wait for layout to complete, then start animation after delay
+          // Show content first, then start animation after delay
+          setTimeout(() => {
+            // Add credit roll animation class
+            $scrollContent.classList.add("credit-roll");
+            
+            // Reset transform to start animation from current position
+            $scrollContent.style.transform = "translateY(0)";
+            
+            // Start animation
+            $scrollContent.style.animation = `creditRoll ${duration}s linear infinite`;
+            $scrollContent.style.animationPlayState = "running";
+            isAnimating = true;
+            
+            if ($playPauseBtn) {
+              $playPauseBtn.innerHTML = '<i class="bi bi-pause-fill me-1"></i>Pause';
+            }
+            
+            console.log(`Credit roll animation started after ${ANIMATION_DELAY}ms delay`);
+          }, ANIMATION_DELAY);
+          
+          console.log(`Attendees list rendered successfully, animation will start in ${ANIMATION_DELAY/1000} seconds`);
+        }
+
+        function handleNewAttendee(newAttendee) {
+          if (attendeesList.some((att) => att.id === newAttendee.id)) return;
+
+          // Add to list and maintain sorted order by timestamp
+          attendeesList.push(newAttendee);
+          attendeesList.sort((a, b) => {
+            const tsA = a.ts ? new Date(a.ts).getTime() : 0;
+            const tsB = b.ts ? new Date(b.ts).getTime() : 0;
+            return tsB - tsA; // Descending (newest first)
+          });
+          renderScrollingList();
+        }
+
+        async function loadRecapForEvent(eventId) {
+          console.log("loadRecapForEvent called with eventId:", eventId);
+          
+          if (activeChannel) sb.removeChannel(activeChannel);
+          if (!eventId) {
+            console.log("No eventId, showing select message");
+            $eventTitle.textContent = "Silakan pilih acara";
+            $eventTitle.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            if ($scrollContent) {
+              $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-secondary py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Pilih acara dari daftar di atas.</td></tr></tbody></table>`;
+            }
+            return;
+          }
+
+          console.log("Loading data for event:", eventId);
+          if ($scrollContent) {
+            $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-secondary py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Memuat data...</td></tr></tbody></table>`;
+          }
+          
+          try {
+            const [eventRes, attendeesRes] = await Promise.all([
+              sb.from("events").select("title").eq("id", eventId).single(),
+              sb
+                .from("attendees")
+                .select("id, name, jabatan, instansi, gender, ts")
+                .eq("event_id", eventId)
+                .order("ts", { ascending: false }),
+            ]);
+
+            console.log("Event result:", eventRes);
+            console.log("Attendees result:", attendeesRes);
+
+            // Check for errors
+            if (eventRes.error) {
+              console.error("Error loading event:", eventRes.error);
+              $eventTitle.textContent = "Error memuat acara";
+              $eventTitle.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+              if ($scrollContent) {
+                $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error memuat acara: ${esc(eventRes.error.message)}</td></tr></tbody></table>`;
+              }
+              return;
+            }
+
+            if (attendeesRes.error) {
+              console.error("Error loading attendees:", attendeesRes.error);
+              $eventTitle.textContent = eventRes.data
+                ? `Rekap Kehadiran: ${eventRes.data.title}`
+                : "Acara tidak ditemukan";
+              $eventTitle.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+              if ($scrollContent) {
+                $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error memuat peserta: ${esc(attendeesRes.error.message)}</td></tr></tbody></table>`;
+              }
+              return;
+            }
+
+            $eventTitle.textContent = eventRes.data
+              ? `Rekap Kehadiran: ${eventRes.data.title}`
+              : "Acara tidak ditemukan";
+            $eventTitle.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            attendeesList = attendeesRes.data || [];
+            
+            console.log(`Loaded ${attendeesList.length} attendees for event ${eventId}`);
+            renderScrollingList();
+
+            activeChannel = sb
+              .channel(`recap-channel-${eventId}`)
+              .on(
+                "postgres_changes",
+                {
+                  event: "INSERT",
+                  schema: "public",
+                  table: "attendees",
+                  filter: `event_id=eq.${eventId}`,
+                },
+                (payload) => {
+                  console.log("New attendee received:", payload.new);
+                  handleNewAttendee(payload.new);
+                }
+              )
+              .subscribe();
+          } catch (error) {
+            console.error("Error loading recap data:", error);
+            $eventTitle.textContent = "Error memuat data";
+            $eventTitle.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            if ($scrollContent) {
+              $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error loading data: ${esc(error.message)}</td></tr></tbody></table>`;
+            }
+          }
+        }
+
+        async function main() {
+          console.log("Main function started");
+          
+          try {
+            // HANYA AMBIL ACARA DENGAN STATUS 'active' ATAU 'upcoming'
+            const { data: events, error } = await sb
+              .from("events")
+              .select("id, title")
+              .in("status", ["active", "upcoming"])
+              .order("datetime", { ascending: false });
+
+            console.log("Events loaded:", events);
+            console.log("Error (if any):", error);
+
+            if (error) {
+              console.error("Error loading events:", error);
+              $eventSelect.innerHTML = `<option value="">-- Error memuat acara: ${esc(error.message)} --</option>`;
+              if ($scrollContent) {
+                $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error memuat acara: ${esc(error.message)}</td></tr></tbody></table>`;
+              }
+              return;
+            }
+
+            if (!events || events.length === 0) {
+              $eventSelect.innerHTML = `<option value="">-- Tidak ada acara aktif --</option>`;
+            } else {
+              $eventSelect.innerHTML =
+                `<option value="">-- Pilih Acara --</option>` +
+                events
+                  .map((e) => `<option value="${e.id}">${e.title}</option>`)
+                  .join("");
+            }
+
+            const urlEventId = new URLSearchParams(window.location.search).get(
+              "event"
+            );
+            if (urlEventId && events && events.some((e) => e.id === urlEventId)) {
+              $eventSelect.value = urlEventId;
+            }
+            
+            // Always show some content initially
+            if ($scrollContent) {
+              $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-secondary py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Pilih acara untuk melihat daftar kehadiran</td></tr></tbody></table>`;
+            }
+            
+            loadRecapForEvent($eventSelect.value);
+          } catch (err) {
+            console.error("Unexpected error in main():", err);
+            $eventSelect.innerHTML = `<option value="">-- Error: ${esc(err.message)} --</option>`;
+            if ($scrollContent) {
+              $scrollContent.innerHTML = `<table class="table align-middle"><tbody><tr><td colspan="6" class="text-center text-danger py-5" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">Error tidak terduga: ${esc(err.message)}</td></tr></tbody></table>`;
+            }
+          }
+
+          $eventSelect.addEventListener("change", (e) =>
+            loadRecapForEvent(e.target.value)
+          );
+
+          // Event listeners for animation controls
+          $playPauseBtn?.addEventListener("click", toggleAnimation);
+          $restartBtn?.addEventListener("click", restartAnimation);
+
+        }
+        main();
+      });
+    </script>
+    <script src="assets/js/admin-common.js"></script>
+    <script>
+      // ===== MASTER TANDA TANGAN =====
+      let masterTTD = null;
+
+      function updateMasterTTDTable(data) {
+        const tbody = document.getElementById("tbody-master-ttd");
+        if (!tbody) return;
+        
+        if (data) {
+          tbody.innerHTML = `
+            <tr>
+              <td>${escapeHtml(data.nama || "-")}</td>
+              <td>${escapeHtml(data.jabatan || "-")}</td>
+              <td>${escapeHtml(data.instansi || "-")}</td>
+              <td>${escapeHtml(data.golongan || "-")}</td>
+              <td>${escapeHtml(data.nip || "-")}</td>
+            </tr>
+          `;
+        } else {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+            </tr>
+          `;
+        }
+      }
+
+      function escapeHtml(text) {
+        if (!text) return "";
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      async function loadMasterTTD() {
+        try {
+          const { data, error } = await sb
+            .from("master_tanda_tangan")
+            .select("*")
+            .limit(1)
+            .single();
+
+          if (error && error.code !== 'PGRST116') {
+            console.error("Error loading master TTD:", error);
+            updateMasterTTDTable(null);
+            return;
+          }
+
+          if (data) {
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            document.getElementById("ttd-nama").value = data.nama || "";
+            document.getElementById("ttd-jabatan").value = data.jabatan || "";
+            document.getElementById("ttd-instansi").value = data.instansi || "";
+            document.getElementById("ttd-golongan").value = data.golongan || "";
+            document.getElementById("ttd-nip").value = data.nip || "";
+          } else {
+            updateMasterTTDTable(null);
+            document.getElementById("ttd-nama").value = "";
+            document.getElementById("ttd-jabatan").value = "";
+            document.getElementById("ttd-instansi").value = "";
+            document.getElementById("ttd-golongan").value = "";
+            document.getElementById("ttd-nip").value = "";
+          }
+        } catch (error) {
+          console.error("Error loading master TTD:", error);
+          updateMasterTTDTable(null);
+        }
+      }
+
+      async function saveMasterTTD() {
+        const nama = document.getElementById("ttd-nama").value.trim();
+        const jabatan = document.getElementById("ttd-jabatan").value.trim();
+        const instansi = document.getElementById("ttd-instansi").value.trim();
+        const golongan = document.getElementById("ttd-golongan").value.trim();
+        const nip = document.getElementById("ttd-nip").value.trim();
+
+        if (!nama || !jabatan || !instansi) {
+          alert("Nama, Jabatan, dan Instansi wajib diisi!");
+          return;
+        }
+
+        try {
+          const dataToSave = {
+            nama,
+            jabatan,
+            instansi,
+            golongan: golongan || null,
+            nip: nip || null,
+            updated_at: new Date().toISOString()
+          };
+
+          if (masterTTD && masterTTD.id) {
+            const { data, error } = await sb
+              .from("master_tanda_tangan")
+              .update(dataToSave)
+              .eq("id", masterTTD.id)
+              .select()
+              .single();
+
+            if (error) throw error;
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            alert("Master tanda tangan berhasil diperbarui!");
+          } else {
+            const { data, error } = await sb
+              .from("master_tanda_tangan")
+              .insert(dataToSave)
+              .select()
+              .single();
+
+            if (error) throw error;
+            masterTTD = data;
+            updateMasterTTDTable(data);
+            alert("Master tanda tangan berhasil disimpan!");
+          }
+
+          await loadMasterTTD();
+          const modal = bootstrap.Modal.getInstance(document.getElementById("modalMasterTTD"));
+          if (modal) modal.hide();
+        } catch (error) {
+          console.error("Error saving master TTD:", error);
+          alert("Gagal menyimpan master tanda tangan: " + error.message);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const btnSave = document.getElementById("btn-save-master-ttd");
+        const modal = document.getElementById("modalMasterTTD");
+        
+        if (btnSave) {
+          btnSave.addEventListener("click", saveMasterTTD);
+        }
+        
+        if (modal) {
+          modal.addEventListener("show.bs.modal", loadMasterTTD);
+        }
+      });
+    </script>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
