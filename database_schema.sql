@@ -326,5 +326,38 @@ CREATE POLICY "Notulen Delete Auth"
   USING (bucket_id = 'notulen' AND auth.role() = 'authenticated');
 
 -- =====================================================
+-- FUNCTIONS: Authentication & Admin Helpers
+-- =====================================================
+
+-- Function: Check if user is admin
+-- Used by: assets/js/auth.js
+CREATE OR REPLACE FUNCTION is_admin(uid UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 
+    FROM admin_profiles 
+    WHERE user_id = uid
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function: Get admin email from username
+-- Used by: assets/js/auth.js
+CREATE OR REPLACE FUNCTION admin_email_for_username(p_username TEXT)
+RETURNS TEXT AS $$
+DECLARE
+  v_email TEXT;
+BEGIN
+  SELECT u.email INTO v_email
+  FROM auth.users u
+  JOIN admin_profiles ap ON ap.user_id = u.id
+  WHERE ap.username = p_username;
+  
+  RETURN v_email;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =====================================================
 -- END OF SCHEMA
 -- =====================================================

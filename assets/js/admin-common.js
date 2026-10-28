@@ -9,6 +9,7 @@
   (function initTheme() {
     const theme = localStorage.getItem("theme") || "light";
     document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.setAttribute("data-bs-theme", theme);
   })();
 
   // Wait for DOM to be ready
@@ -34,11 +35,15 @@
     function updateThemeIcon() {
       const isDark = document.documentElement.getAttribute("data-theme") === "dark";
       const icon = themeToggle?.querySelector("i");
+      const label = themeToggle?.querySelector("span");
       const iconHeader = themeToggleHeader?.querySelector("i");
       
-      // Update sidebar icon: sun untuk dark mode (untuk switch ke light), moon untuk light mode (untuk switch ke dark)
+      // Update sidebar icon & label
       if (icon) {
         icon.className = isDark ? "bi bi-sun-fill" : "bi bi-moon-fill";
+      }
+      if (label) {
+        label.textContent = isDark ? "Mode Terang" : "Mode Gelap";
       }
       
       // Update header icon: sama seperti sidebar
@@ -51,8 +56,9 @@
       const currentTheme = document.documentElement.getAttribute("data-theme");
       const newTheme = currentTheme === "dark" ? "light" : "dark";
       
-      // Update theme
+      // Update theme (both custom data-theme and Bootstrap 5.3 data-bs-theme)
       document.documentElement.setAttribute("data-theme", newTheme);
+      document.documentElement.setAttribute("data-bs-theme", newTheme);
       localStorage.setItem("theme", newTheme);
       
       // Update icons
@@ -164,15 +170,31 @@
       navLinks.forEach(link => {
         link.classList.remove('active');
         const href = link.getAttribute('href');
-        if (href && (href === currentPage || currentPage.includes(href.replace('.html', '')))) {
+        if (href && href !== '#' && (href === currentPage || currentPage.includes(href.replace('.html', '')))) {
           link.classList.add('active');
         }
       });
     }
 
+    // Upgrade Sidebar Brand Header to Modern Navy Identity
+    function initSidebarBrand() {
+      const brand = document.querySelector('.sidebar-brand');
+      if (brand && !brand.querySelector('.sidebar-brand-text')) {
+        brand.setAttribute('href', 'admin-dashboard.html');
+        brand.innerHTML = `
+          <img src="assets/img/logo_hst.png" alt="Logo HST" class="sidebar-brand-logo" onerror="this.style.display='none'" />
+          <div class="sidebar-brand-text">
+            <span class="sidebar-brand-title">AbsensiPro</span>
+            <span class="sidebar-brand-subtitle">Admin Panel • HST</span>
+          </div>
+        `;
+      }
+    }
+
     // Initialize
     updateThemeIcon();
     setActiveMenuItem();
+    initSidebarBrand();
     
     // Set copyright year
     const copyrightYear = document.getElementById("copyright-year");

@@ -30,10 +30,11 @@
     }
 
     // Supabase client
-    const sb = supabase.createClient(
+    const sb = window.sb || supabase.createClient(
       window.SUPABASE_URL,
       window.SUPABASE_ANON_KEY
     );
+    window.sb = sb;
 
     // Auth check
     AdminAuth.requireAdmin();
@@ -57,7 +58,7 @@
   let selectedYear = new Date().getFullYear();
   let attendanceChartInstance = null;
 
-  // Theme Management
+  // Theme Management (handled by admin-common.js; listen to themechange to refresh chart if present)
   function updateThemeIcon() {
     const isDark = document.documentElement.getAttribute("data-theme") === "dark";
     const icon = themeToggle?.querySelector("i");
@@ -70,83 +71,12 @@
     }
   }
 
-  function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute("data-theme");
-    const newTheme = currentTheme === "dark" ? "light" : "dark";
-    
-    // Update theme
-    document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
-    
-    // Update icons
-    updateThemeIcon();
-    
-    // Trigger custom event untuk komponen lain yang perlu update
-    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
-    
-    // Rerender chart dengan warna tema baru
+  window.addEventListener("themechange", () => {
     if (attendanceChartInstance) {
       attendanceChartInstance.destroy();
       attendanceChartInstance = null;
     }
     loadChart();
-  }
-
-  // Sidebar Management
-  function toggleSidebar() {
-    sidebar?.classList.toggle("show");
-    sidebarOverlay?.classList.toggle("show");
-    document.body.style.overflow = sidebar?.classList.contains("show") ? "hidden" : "";
-  }
-
-  function hideSidebar() {
-    sidebar?.classList.remove("show");
-    sidebarOverlay?.classList.remove("show");
-    document.body.style.overflow = "";
-  }
-
-  // Event Listeners
-  if (sidebarToggle) {
-    sidebarToggle.addEventListener("click", toggleSidebar);
-  }
-
-  if (sidebarOverlay) {
-    sidebarOverlay.addEventListener("click", hideSidebar);
-  }
-
-  if (themeToggle) {
-    themeToggle.addEventListener("click", toggleTheme);
-  }
-
-  if (themeToggleHeader) {
-    themeToggleHeader.addEventListener("click", toggleTheme);
-  }
-
-  if (btnLogout) {
-    btnLogout.addEventListener("click", () => AdminAuth.logout());
-  }
-
-  // Close sidebar when clicking nav links (mobile)
-  sidebar?.querySelectorAll(".nav-link").forEach(link => {
-    link.addEventListener("click", () => {
-      if (window.innerWidth < 992) {
-        hideSidebar();
-      }
-    });
-  });
-
-  // Close sidebar on escape key
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && sidebar?.classList.contains("show")) {
-      hideSidebar();
-    }
-  });
-
-  // Handle window resize
-  window.addEventListener("resize", () => {
-    if (window.innerWidth >= 992) {
-      hideSidebar();
-    }
   });
 
   // Utility Functions
@@ -219,14 +149,16 @@
 
     if (!$yearFilter) return;
 
-    $yearFilter.innerHTML = "";
+    $yearFilter.innerHTML = '<option value="all">Semua Tahun</option>';
+    const defaultYear = years.includes(currentYear) ? currentYear : years[0];
+    selectedYear = defaultYear;
+
     years.forEach(year => {
       const option = document.createElement("option");
       option.value = year;
       option.textContent = year;
-      if (year === currentYear || (years.length > 0 && year === years[0])) {
+      if (year === defaultYear) {
         option.selected = true;
-        selectedYear = year;
       }
       $yearFilter.appendChild(option);
     });
@@ -237,47 +169,44 @@
   // Stats Loading
   async function loadStats() {
     try {
-      const { yearStart, yearEnd } = getYearFilter();
-      
-      const eventsQuery = sb
-        .from("events")
-        .select("*", { count: "exact", head: true })
-        .gte("datetime", yearStart)
-        .lte("datetime", yearEnd);
+      let query = sb.from("events").select("id, status, datetime");
+      if (selectedYear && selectedYear !== "all") {
+        const { yearStart, yearEnd } = getYearFilter();
+        query = query.gte("datetime", yearStart).lte("datetime", yearEnd);
+      }
 
-      const [ev, done, act] = await Promise.all([
-        eventsQuery,
-        eventsQuery.eq("status", "done"),
-        eventsQuery.neq("status", "done")
-      ]);
+      const { data: eventsInYear, error: evError } = await query;
+      if (evError) throw evError;
 
-      const { data: eventsInYear } = await sb
-        .from("events")
-        .select("id")
-        .gte("datetime", yearStart)
-        .lte("datetime", yearEnd);
+      const list = eventsInYear || [];
+      const totalEventsCount = list.length;
+      const doneEventsCount = list.filter(e => e.status === "done").length;
+      const activeEventsCount = list.filter(e => e.status !== "done").length;
 
-      const eventIds = eventsInYear?.map(e => e.id) || [];
-      let at = { count: 0 };
+      const eventIds = list.map(e => e.id);
+      let attendeesCount = 0;
       if (eventIds.length > 0) {
-        at = await sb
+        const { count, error: attError } = await sb
           .from("attendees")
           .select("*", { count: "exact", head: true })
           .in("event_id", eventIds);
+        if (!attError && typeof count === "number") {
+          attendeesCount = count;
+        }
       }
       
-      const updateValue = (el, value) => {
+      const updateValue = (el, countVal) => {
         if (!el) return;
         el.textContent = "";
-        const num = safeNum(value?.count || value);
+        const num = safeNum(countVal);
         el.textContent = num.toLocaleString("id-ID");
         el.classList.add("fade-in");
       };
       
-      updateValue($statEvents, ev);
-      updateValue($statDone, done);
-      updateValue($statActive, act);
-      updateValue($statAtt, at);
+      updateValue($statEvents, totalEventsCount);
+      updateValue($statDone, doneEventsCount);
+      updateValue($statActive, activeEventsCount);
+      updateValue($statAtt, attendeesCount);
     } catch (error) {
       console.error("Error loading stats:", error);
       if ($statEvents) $statEvents.textContent = "—";
@@ -301,7 +230,7 @@
         .gt("datetime", nowIso)
         .neq("status", "done")
         .order("datetime", { ascending: true })
-        .limit(5);
+        .limit(12);
       
       if (error) {
         if ($upcoming) {
@@ -314,12 +243,12 @@
       if (!data || !data.length) {
         if ($upcoming) {
           $upcoming.innerHTML = `
-            <div class="empty-state" style="padding: 2rem 1rem;">
-              <div class="empty-state-icon">
+            <div class="empty-state" style="padding: 1.25rem 1rem;">
+              <div class="empty-state-icon" style="font-size: 2.25rem; margin-bottom: 0.4rem;">
                 <i class="bi bi-calendar-x"></i>
               </div>
-              <div class="empty-state-title">Tidak ada acara</div>
-              <div class="empty-state-text">Belum ada acara yang akan datang</div>
+              <div class="empty-state-title" style="font-size: 0.95rem;">Tidak ada acara</div>
+              <div class="empty-state-text" style="font-size: 0.78rem;">Belum ada acara yang akan datang</div>
             </div>
           `;
         }
@@ -328,27 +257,68 @@
       
       if (!$upcoming) return;
 
-      $upcoming.innerHTML = "";
-      data.forEach((ev, index) => {
-        const a = document.createElement("a");
-        a.className = "list-group-item list-group-item-action fade-in";
-        a.style.animationDelay = `${index * 0.1}s`;
-        a.href = `admin-daftar-hadir.html?event=${encodeURIComponent(ev.id)}`;
-        a.innerHTML = `
-          <div class="d-flex align-items-start">
-            <i class="bi bi-calendar-event me-2 mt-1 text-primary"></i>
-            <div class="flex-grow-1">
-              <div class="fw-semibold">${ev.title}</div>
-              <small class="text-secondary">
-                <i class="bi bi-clock me-1"></i>${fmtDateShort(ev.datetime)}
-                ${ev.location ? `<br/><i class="bi bi-geo-alt me-1"></i>${ev.location}` : ""}
-              </small>
+      let upPage = 1;
+      const upPerPage = 2;
+      const upTotalPages = Math.max(1, Math.ceil(data.length / upPerPage));
+
+      function renderUpcomingPage() {
+        $upcoming.innerHTML = "";
+        const start = (upPage - 1) * upPerPage;
+        const slice = data.slice(start, start + upPerPage);
+
+        slice.forEach((ev, index) => {
+          const d = new Date(ev.datetime);
+          const dayStr = d.toLocaleDateString("id-ID", { day: "2-digit" });
+          const monthStr = d.toLocaleDateString("id-ID", { month: "short" });
+          const timeStr = d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+
+          const a = document.createElement("a");
+          a.className = "list-group-item list-group-item-action fade-in py-2 px-3";
+          a.style.animationDelay = `${index * 0.06}s`;
+          a.href = `admin-daftar-hadir.html?event=${encodeURIComponent(ev.id)}`;
+          a.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+              <div class="upcoming-date-badge" style="width: 40px; height: 42px;">
+                <span class="upcoming-date-day" style="font-size: 0.95rem;">${dayStr}</span>
+                <span class="upcoming-date-month" style="font-size: 0.58rem;">${monthStr}</span>
+              </div>
+              <div class="flex-grow-1 min-w-0">
+                <div class="fw-bold text-truncate mb-0" style="font-size: 0.82rem;">${ev.title}</div>
+                <div class="d-flex flex-wrap align-items-center gap-2 text-secondary" style="font-size: 0.72rem;">
+                  <span><i class="bi bi-clock me-1 text-primary"></i>${timeStr} WITA</span>
+                  ${ev.location ? `<span class="text-truncate" style="max-width: 150px;"><i class="bi bi-geo-alt me-1 text-danger"></i>${ev.location}</span>` : ""}
+                </div>
+              </div>
+              <i class="bi bi-chevron-right text-secondary small"></i>
             </div>
-            <i class="bi bi-chevron-right text-secondary"></i>
-          </div>
-        `;
-        $upcoming.appendChild(a);
-      });
+          `;
+          $upcoming.appendChild(a);
+        });
+
+        if (upTotalPages > 1) {
+          const nav = document.createElement("div");
+          nav.className = "d-flex justify-content-between align-items-center px-3 py-1 border-top mt-auto";
+          nav.style.background = "var(--bg-secondary)";
+          nav.innerHTML = `
+            <span class="small text-muted" style="font-size: 0.72rem;">Hal ${upPage}/${upTotalPages} (${data.length} agenda)</span>
+            <div class="btn-group btn-group-sm">
+              <button type="button" class="btn btn-outline-secondary py-0 px-2" id="upPrev" ${upPage <= 1 ? "disabled" : ""}><i class="bi bi-chevron-left"></i></button>
+              <button type="button" class="btn btn-outline-secondary py-0 px-2" id="upNext" ${upPage >= upTotalPages ? "disabled" : ""}><i class="bi bi-chevron-right"></i></button>
+            </div>
+          `;
+          $upcoming.appendChild(nav);
+          nav.querySelector("#upPrev")?.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (upPage > 1) { upPage--; renderUpcomingPage(); }
+          });
+          nav.querySelector("#upNext")?.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (upPage < upTotalPages) { upPage++; renderUpcomingPage(); }
+          });
+        }
+      }
+
+      renderUpcomingPage();
     } catch (error) {
       console.error("Error loading upcoming:", error);
       if ($upcoming) {
@@ -405,9 +375,16 @@
       const values = counts.slice().reverse();
       const c = getThemeColors();
       
-      const gradient = chartCtx.createLinearGradient(0, 0, 0, 400);
-      gradient.addColorStop(0, "rgba(59, 130, 246, 0.8)");
-      gradient.addColorStop(1, "rgba(59, 130, 246, 0.4)");
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      const gradient = chartCtx.createLinearGradient(0, 0, 0, 320);
+      if (isDark) {
+        gradient.addColorStop(0, "rgba(56, 189, 248, 0.9)");
+        gradient.addColorStop(1, "rgba(30, 64, 175, 0.5)");
+      } else {
+        gradient.addColorStop(0, "rgba(15, 37, 71, 0.92)");
+        gradient.addColorStop(0.6, "rgba(30, 64, 175, 0.85)");
+        gradient.addColorStop(1, "rgba(37, 99, 235, 0.65)");
+      }
       
       if (attendanceChartInstance) {
         attendanceChartInstance.destroy();
@@ -426,10 +403,11 @@
               label: "Jumlah Peserta",
               data: values,
               backgroundColor: gradient,
-              borderColor: "#3b82f6",
-              borderWidth: 2,
-              borderRadius: 8,
+              borderColor: isDark ? "#38bdf8" : "#0f2547",
+              borderWidth: 1.5,
+              borderRadius: 10,
               borderSkipped: false,
+              maxBarThickness: 54,
             },
           ],
         },
@@ -526,13 +504,13 @@
     navLinks.forEach(link => {
       link.classList.remove('active');
       const href = link.getAttribute('href');
-      if (href && (href === currentPage || href.includes(currentPage))) {
+      if (href && href !== '#' && (href === currentPage || href.includes(currentPage))) {
         link.classList.add('active');
       }
     });
     
     const hasActive = document.querySelector('.sidebar-nav .nav-link.active');
-    if (!hasActive && currentPage.includes('dashboard')) {
+    if (!hasActive && (currentPage === '' || currentPage.includes('dashboard'))) {
       const dashboardLink = document.querySelector('.sidebar-nav .nav-link[href*="dashboard"]');
       if (dashboardLink) {
         dashboardLink.classList.add('active');
@@ -540,15 +518,79 @@
     }
   }
 
+  // Dashboard Content View Pagination (Static 100vh without Scrolling)
+  function initDashboardPagination() {
+    const panes = Array.from(document.querySelectorAll('.dashboard-view-pane'));
+    if (!panes.length) return;
+
+    const prevBtn = document.getElementById('dashPrevBtn');
+    const nextBtn = document.getElementById('dashNextBtn');
+    const pageBtns = Array.from(document.querySelectorAll('#dashboardViewPager [data-dash-page]'));
+    const titleEl = document.getElementById('dashboard-pane-title');
+    const badgeEl = document.getElementById('dashboard-page-badge');
+    const titles = {
+      1: 'Menu Pintasan & Modul Administrasi — Modul Utama',
+      2: 'Menu Pintasan & Modul Administrasi — Dokumen & Sistem'
+    };
+
+    let currentDashPage = 1;
+    const totalDashPages = panes.length;
+
+    function showDashPage(pageNum) {
+      currentDashPage = Math.max(1, Math.min(totalDashPages, pageNum));
+      panes.forEach(pane => {
+        const p = parseInt(pane.getAttribute('data-dash-pane'), 10);
+        pane.classList.toggle('active', p === currentDashPage);
+      });
+      pageBtns.forEach(btn => {
+        const p = parseInt(btn.getAttribute('data-dash-page'), 10);
+        btn.classList.toggle('active', p === currentDashPage);
+      });
+      if (prevBtn) prevBtn.disabled = currentDashPage <= 1;
+      if (nextBtn) nextBtn.disabled = currentDashPage >= totalDashPages;
+      if (titleEl && titles[currentDashPage]) {
+        titleEl.textContent = titles[currentDashPage];
+      }
+      if (badgeEl) {
+        badgeEl.textContent = `Halaman ${currentDashPage} / ${totalDashPages}`;
+      }
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentDashPage > 1) showDashPage(currentDashPage - 1);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentDashPage < totalDashPages) showDashPage(currentDashPage + 1);
+      });
+    }
+
+    pageBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = parseInt(btn.getAttribute('data-dash-page'), 10);
+        if (target) showDashPage(target);
+      });
+    });
+
+    showDashPage(1);
+  }
+
   // Load All Data
   async function loadAllData() {
-    await Promise.all([loadStats(), loadUpcoming(), loadChart()]);
+    await loadStats();
   }
 
   // Year Filter Event Listener
   if ($yearFilter) {
     $yearFilter.addEventListener("change", (e) => {
-      selectedYear = parseInt(e.target.value);
+      const val = e.target.value;
+      selectedYear = val === "all" ? "all" : parseInt(val, 10);
       loadAllData();
     });
   }
@@ -556,13 +598,26 @@
     // Initialize
     (async () => {
       updateThemeIcon();
-      await populateYearFilter();
       setActiveMenuItem();
+      initDashboardPagination();
+      await populateYearFilter();
       
       // Set copyright year
       const copyrightYear = document.getElementById("copyright-year");
       if (copyrightYear) {
         copyrightYear.textContent = new Date().getFullYear();
+      }
+
+      // Set current date badge in hero
+      const currentDateDisplay = document.getElementById("current-date-display");
+      if (currentDateDisplay) {
+        const formattedDate = new Date().toLocaleDateString("id-ID", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
+        currentDateDisplay.textContent = `Panel Kendali • ${formattedDate}`;
       }
     })();
 
