@@ -44,6 +44,11 @@
   const $statActive = document.getElementById("stat-events-active");
   const $statDone = document.getElementById("stat-events-done");
   const $statAtt = document.getElementById("stat-attendees");
+  const $statAttendeesMeta = document.getElementById("stat-attendees-meta");
+  const $statAttendeesMetaIcon = document.getElementById("stat-attendees-meta-icon");
+  const $topEventBadge = document.getElementById("top-event-badge");
+  const $topEventTitle = document.getElementById("top-event-title");
+  const $topEventCount = document.getElementById("top-event-count");
   const $upcoming = document.getElementById("upcoming-list");
   const $yearFilter = document.getElementById("year-filter");
   const chartCtx = document.getElementById("attendanceChart")?.getContext("2d");
@@ -169,7 +174,7 @@
   // Stats Loading
   async function loadStats() {
     try {
-      let query = sb.from("events").select("id, status, datetime");
+      let query = sb.from("events").select("id, title, status, datetime");
       if (selectedYear && selectedYear !== "all") {
         const { yearStart, yearEnd } = getYearFilter();
         query = query.gte("datetime", yearStart).lte("datetime", yearEnd);
@@ -185,13 +190,40 @@
 
       const eventIds = list.map(e => e.id);
       let attendeesCount = 0;
+      let topEvent = null;
+      let topCount = 0;
+
       if (eventIds.length > 0) {
-        const { count, error: attError } = await sb
+        // Query attendees to count total and compute per-event count
+        const { data: attData, count, error: attError } = await sb
           .from("attendees")
-          .select("*", { count: "exact", head: true })
-          .in("event_id", eventIds);
-        if (!attError && typeof count === "number") {
-          attendeesCount = count;
+          .select("event_id", { count: "exact" })
+          .in("event_id", eventIds)
+          .limit(10000);
+
+        if (!attError) {
+          if (typeof count === "number") {
+            attendeesCount = count;
+          } else if (Array.isArray(attData)) {
+            attendeesCount = attData.length;
+          }
+
+          if (Array.isArray(attData) && attData.length > 0) {
+            const countByEvent = {};
+            attData.forEach(item => {
+              if (item.event_id) {
+                countByEvent[item.event_id] = (countByEvent[item.event_id] || 0) + 1;
+              }
+            });
+
+            list.forEach(ev => {
+              const c = countByEvent[ev.id] || 0;
+              if (c > topCount) {
+                topCount = c;
+                topEvent = ev;
+              }
+            });
+          }
         }
       }
       
@@ -207,12 +239,39 @@
       updateValue($statDone, doneEventsCount);
       updateValue($statActive, activeEventsCount);
       updateValue($statAtt, attendeesCount);
+
+      // Render Top Event Badge & Meta
+      if ($topEventBadge) {
+        if (topEvent && topCount > 0) {
+          if ($topEventTitle) $topEventTitle.textContent = topEvent.title || "Acara Tanpa Judul";
+          if ($topEventCount) $topEventCount.innerHTML = `<i class="bi bi-people-fill me-1"></i>${topCount.toLocaleString("id-ID")} Peserta`;
+          $topEventBadge.href = `admin-daftar-hadir.html?event=${encodeURIComponent(topEvent.id)}`;
+          $topEventBadge.title = `Rekor Partisipasi: ${topEvent.title} (${topCount.toLocaleString("id-ID")} Peserta) - Klik untuk buka presensi`;
+          $topEventBadge.classList.remove("d-none");
+
+          if ($statAttendeesMeta) {
+            $statAttendeesMeta.textContent = `Rekor: ${topEvent.title} (${topCount} org)`;
+          }
+          if ($statAttendeesMetaIcon) {
+            $statAttendeesMetaIcon.className = "bi bi-trophy-fill text-warning";
+          }
+        } else {
+          $topEventBadge.classList.add("d-none");
+          if ($statAttendeesMeta) {
+            $statAttendeesMeta.textContent = "Tanda tangan digital terverifikasi";
+          }
+          if ($statAttendeesMetaIcon) {
+            $statAttendeesMetaIcon.className = "bi bi-person-check-fill text-info";
+          }
+        }
+      }
     } catch (error) {
       console.error("Error loading stats:", error);
       if ($statEvents) $statEvents.textContent = "—";
       if ($statDone) $statDone.textContent = "—";
       if ($statActive) $statActive.textContent = "—";
       if ($statAtt) $statAtt.textContent = "—";
+      if ($topEventBadge) $topEventBadge.classList.add("d-none");
     }
   }
 

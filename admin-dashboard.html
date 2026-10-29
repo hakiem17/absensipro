@@ -262,8 +262,8 @@
               </div>
             </div>
             <div class="stat-meta">
-              <i class="bi bi-person-check-fill text-info"></i>
-              <span>Tanda tangan digital terverifikasi</span>
+              <i class="bi bi-person-check-fill text-info" id="stat-attendees-meta-icon"></i>
+              <span id="stat-attendees-meta">Tanda tangan digital terverifikasi</span>
             </div>
           </div>
         </div>
@@ -271,11 +271,24 @@
         <!-- Menu Pintasan & Modul Administrasi (Satu Jendela Penuh) -->
         <div class="dashboard-paged-area">
           <div class="section-header-bar fade-in">
-            <h2 class="section-header-title">
-              <i class="bi bi-grid-1x2-fill"></i>
-              <span>Menu Pintasan & Modul Administrasi</span>
-            </h2>
-            <p class="section-header-subtitle">Pilih modul untuk mengelola kegiatan, daftar hadir, laporan, dan sistem</p>
+            <div>
+              <h2 class="section-header-title mb-0">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Menu Pintasan & Modul Administrasi</span>
+              </h2>
+              <p class="section-header-subtitle">Pilih modul untuk mengelola kegiatan, daftar hadir, laporan, dan sistem</p>
+            </div>
+            <a id="top-event-badge" href="#" class="top-event-pill d-none" title="Buka Daftar Hadir Acara Rekor Ini">
+              <span class="top-event-tag">
+                <i class="bi bi-trophy-fill"></i>
+                <span>Rekor Agenda</span>
+              </span>
+              <span class="top-event-title" id="top-event-title">-</span>
+              <span class="top-event-count" id="top-event-count">
+                <i class="bi bi-people-fill me-1"></i>0 Peserta
+              </span>
+              <i class="bi bi-chevron-right top-event-arrow"></i>
+            </a>
           </div>
 
           <div class="quick-menu-grid fade-in">
