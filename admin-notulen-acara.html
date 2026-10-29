@@ -59,12 +59,6 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin-rekap-acara.html">
-              <i class="bi bi-display"></i>
-              <span>Rekap Acara (Live)</span>
-            </a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" href="admin-print-daftar-hadir.html">
               <i class="bi bi-printer"></i>
               <span>Print Daftar Hadir</span>
@@ -138,62 +132,119 @@
       </header>
 
       <main class="main-content">
-        <div class="container-fluid d-flex flex-column h-100" style="min-height: 0;">
-          <!-- Page Header -->
-          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2"
-            style="padding-top: 0.25rem; flex-shrink: 0;">
-            <div>
-              <h2 class="h5 mb-0 text-gradient fw-bold">Notulen Acara</h2>
-              <p class="text-muted mb-0 small">Upload dokumen notulen (Word/PDF) untuk setiap acara</p>
+        <!-- Executive Navy Banner Strip -->
+        <div class="dashboard-hero">
+          <div class="dashboard-hero-content">
+            <div class="dashboard-hero-left">
+              <h2 class="dashboard-hero-title">
+                <i class="bi bi-file-earmark-text-fill text-warning"></i>
+                Notulen & Arsip Acara
+              </h2>
+              <div class="dashboard-hero-badge">
+                <span class="pulse-dot"></span>
+                <span>Dokumen Rapat Resmi • Word / PDF • Multi-Format</span>
+              </div>
             </div>
-            <div class="d-flex align-items-center gap-2">
-              <label for="year-filter" class="form-label mb-0 small text-muted fw-medium">Tahun:</label>
-              <select id="year-filter" class="form-select form-select-sm" style="width: auto; min-width: 120px;">
-                <option value="">Memuat...</option>
-              </select>
+            <div class="dashboard-hero-actions">
+              <div class="hero-filter-box">
+                <label for="year-filter" class="form-label"><i class="bi bi-calendar3 me-1"></i>Tahun:</label>
+                <select id="year-filter" class="form-select form-select-sm" aria-label="Filter Tahun">
+                  <option value="">Memuat...</option>
+                </select>
+              </div>
+              <button class="btn-hero-action" type="button" data-bs-toggle="modal" data-bs-target="#modalMasterTTD" title="Kelola Master Tanda Tangan Dokumen">
+                <i class="bi bi-pen-fill"></i>
+                <span>Master TTD</span>
+              </button>
+              <a href="admin-manajemen-acara.html" class="btn-hero-outline" title="Kembali ke Manajemen Acara">
+                <i class="bi bi-arrow-left"></i>
+                <span>Acara</span>
+              </a>
             </div>
+          </div>
+        </div>
+
+        <!-- Unified Filter, Status Tabs & Search Toolbar -->
+        <div class="manajemen-filter-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <!-- Status Filter Tabs -->
+          <div class="status-filter-pills" id="notulen-status-tabs" role="group" aria-label="Filter Status Dokumen Notulen">
+            <button type="button" class="status-pill-btn active" data-filter="all">
+              <span>Semua Acara</span>
+              <span class="status-pill-count" id="count-notulen-all">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-filter="has_doc">
+              <i class="bi bi-check-circle-fill text-success" style="font-size: 0.75rem;"></i>
+              <span>Ada Dokumen</span>
+              <span class="status-pill-count" id="count-notulen-has">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-filter="no_doc">
+              <i class="bi bi-dash-circle text-muted" style="font-size: 0.75rem;"></i>
+              <span>Belum Ada</span>
+              <span class="status-pill-count" id="count-notulen-none">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-filter="done">
+              <span>Selesai</span>
+              <span class="status-pill-count" id="count-notulen-done">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-filter="active">
+              <span>Aktif</span>
+              <span class="status-pill-count" id="count-notulen-active">0</span>
+            </button>
           </div>
 
-          <!-- List Acara -->
-          <div class="card mb-0 d-flex flex-column" style="flex: 1; min-height: 0;">
-            <div class="card-header py-2 d-flex justify-content-between align-items-center">
-              <h5 class="card-title mb-0 fs-6">
-                <i class="bi bi-calendar-event me-2"></i>
-                Daftar Acara
-              </h5>
-              <span class="badge bg-secondary-subtle text-secondary border" id="notulen-page-info">Halaman 1 / 1</span>
-            </div>
-            <div class="card-body p-0 d-flex flex-column" style="flex: 1; min-height: 0; overflow: hidden;">
-              <div id="events-list" class="table-responsive" style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: auto;">
-                <table class="table table-hover align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th style="width: 50px;">No</th>
-                      <th>Judul Acara</th>
-                      <th>Tanggal & Waktu</th>
-                      <th>Lokasi</th>
-                      <th>Status</th>
-                      <th>Dokumen Notulen</th>
-                      <th style="width: 170px;">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody id="events-tbody">
-                    <tr>
-                      <td colspan="7" class="text-center text-muted py-4">
-                        <i class="bi bi-hourglass-split me-2"></i>Memuat data...
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top" style="background: var(--bg-secondary); flex-shrink: 0;">
-                <div class="small text-muted" id="notulen-total-info">Menampilkan 0 acara</div>
-                <nav aria-label="Pagination Notulen Acara">
-                  <ul class="pagination pagination-sm mb-0" id="notulen-pagination"></ul>
-                </nav>
-              </div>
+          <!-- Search Box -->
+          <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end" style="max-width: 420px;">
+            <div class="position-relative flex-grow-1">
+              <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 0.8rem;"></i>
+              <input id="search-notulen" type="search" class="form-control form-control-sm ps-4"
+                placeholder="Cari judul acara, lokasi, atau file..."
+                style="border-radius: 9px; font-size: 0.8rem;" />
             </div>
           </div>
+        </div>
+
+        <!-- Executive Card Table (10 Acara per Halaman) -->
+        <div class="card mb-0 d-flex flex-column" style="flex: 1; min-height: 0;">
+          <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0" style="font-size: 0.86rem;">
+              <i class="bi bi-file-earmark-text-fill text-warning me-1"></i>
+              Daftar Notulen & Arsip Kegiatan
+            </h5>
+            <span class="badge bg-primary-subtle text-primary border" id="notulen-page-info">Halaman 1 / 1</span>
+          </div>
+
+          <div class="card-body p-0 d-flex flex-column" style="flex: 1; min-height: 0; overflow: hidden;">
+            <div id="events-list" class="table-responsive" style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: auto;">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th style="width: 50px; text-align: center;">No</th>
+                    <th>Judul Acara & Agenda</th>
+                    <th>Tanggal & Waktu</th>
+                    <th>Lokasi</th>
+                    <th style="width: 120px; text-align: center;">Status</th>
+                    <th style="width: 170px; text-align: center;">Dokumen Notulen</th>
+                    <th style="width: 180px; text-align: center;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="events-tbody">
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                      <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                      Memuat data notulen...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top" style="background: var(--bg-secondary); flex-shrink: 0;">
+              <div class="small text-muted" id="notulen-total-info">Menampilkan 0 acara</div>
+              <nav aria-label="Pagination Notulen Acara">
+                <ul class="pagination pagination-sm mb-0" id="notulen-pagination"></ul>
+              </nav>
+            </div>
+          </div>
+        </div>
 
           <!-- Modal Form Notulen -->
           <div class="modal fade" id="modalNotulen" tabindex="-1" aria-labelledby="modalNotulenLabel"
@@ -425,7 +476,6 @@
               </div>
             </div>
           </div>
-        </div>
       </main>
 
       <!-- Modal Master Tanda Tangan -->
@@ -558,6 +608,8 @@
     let mode = "create"; // Track modal mode (create/edit/view)
     let selectedYear = 2026; // Default filter tahun 2026
     let currentNotulenPage = 1;
+    let activeFilterTab = "all";
+    let notulenSearchQuery = "";
     const NOTULEN_PER_PAGE = 10;
     const NOTULEN_BUCKET = "notulen";
 
@@ -660,6 +712,60 @@
         .lte("datetime", `${y}-12-31T23:59:59.999Z`);
     }
 
+    // Update counter badges on status filter pills
+    function updateNotulenCounters() {
+      const cAll = EVENTS.length;
+      let cHas = 0;
+      let cNone = 0;
+      let cDone = 0;
+      let cActive = 0;
+
+      EVENTS.forEach((e) => {
+        const notulenDoc = NOTULEN_MAP[e.id];
+        const hasDoc = !!(notulenDoc && (notulenDoc.document_url || notulenDoc.document_path || notulenDoc.document_name));
+        if (hasDoc) cHas++;
+        else cNone++;
+
+        if (e.status === "done") cDone++;
+        else if (e.status === "active") cActive++;
+      });
+
+      const elAll = document.getElementById("count-notulen-all");
+      const elHas = document.getElementById("count-notulen-has");
+      const elNone = document.getElementById("count-notulen-none");
+      const elDone = document.getElementById("count-notulen-done");
+      const elActive = document.getElementById("count-notulen-active");
+
+      if (elAll) elAll.textContent = cAll;
+      if (elHas) elHas.textContent = cHas;
+      if (elNone) elNone.textContent = cNone;
+      if (elDone) elDone.textContent = cDone;
+      if (elActive) elActive.textContent = cActive;
+    }
+
+    // Filter events by tab and search
+    function getFilteredEvents() {
+      return EVENTS.filter((ev) => {
+        const notulenDoc = NOTULEN_MAP[ev.id];
+        const hasDoc = !!(notulenDoc && (notulenDoc.document_url || notulenDoc.document_path || notulenDoc.document_name));
+
+        if (activeFilterTab === "has_doc" && !hasDoc) return false;
+        if (activeFilterTab === "no_doc" && hasDoc) return false;
+        if (activeFilterTab === "done" && ev.status !== "done") return false;
+        if (activeFilterTab === "active" && ev.status !== "active") return false;
+
+        if (notulenSearchQuery) {
+          const q = notulenSearchQuery.toLowerCase();
+          const matchTitle = (ev.title || "").toLowerCase().includes(q);
+          const matchLoc = (ev.location || "").toLowerCase().includes(q);
+          const matchDoc = (notulenDoc?.document_name || "").toLowerCase().includes(q);
+          if (!matchTitle && !matchLoc && !matchDoc) return false;
+        }
+
+        return true;
+      });
+    }
+
     // Load events and notulen
     async function loadEvents() {
       try {
@@ -703,15 +809,21 @@
 
     // Render events list
     function renderEventsList() {
+      updateNotulenCounters();
+
       const $pageInfo = document.getElementById("notulen-page-info");
       const $totalInfo = document.getElementById("notulen-total-info");
       const $pagination = document.getElementById("notulen-pagination");
 
-      if (!EVENTS.length) {
+      const filtered = getFilteredEvents();
+      const totalFiltered = filtered.length;
+
+      if (!totalFiltered) {
         $eventsTbody.innerHTML = `
             <tr>
-              <td colspan="7" class="text-center text-muted py-4">
-                <i class="bi bi-inbox me-2"></i>Belum ada acara
+              <td colspan="7" class="text-center text-muted py-5">
+                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                Tidak ada data acara yang sesuai filter
               </td>
             </tr>
           `;
@@ -721,17 +833,17 @@
         return;
       }
 
-      const totalPages = Math.max(1, Math.ceil(EVENTS.length / NOTULEN_PER_PAGE));
+      const totalPages = Math.max(1, Math.ceil(totalFiltered / NOTULEN_PER_PAGE));
       if (currentNotulenPage > totalPages) currentNotulenPage = totalPages;
       if (currentNotulenPage < 1) currentNotulenPage = 1;
 
       const startIdx = (currentNotulenPage - 1) * NOTULEN_PER_PAGE;
-      const pagedEvents = EVENTS.slice(startIdx, startIdx + NOTULEN_PER_PAGE);
+      const pagedEvents = filtered.slice(startIdx, startIdx + NOTULEN_PER_PAGE);
 
       if ($pageInfo) $pageInfo.textContent = `Halaman ${currentNotulenPage} / ${totalPages}`;
       if ($totalInfo) {
-        const endNum = Math.min(startIdx + NOTULEN_PER_PAGE, EVENTS.length);
-        $totalInfo.textContent = `Menampilkan ${startIdx + 1}–${endNum} dari ${EVENTS.length} acara`;
+        const endNum = Math.min(startIdx + NOTULEN_PER_PAGE, totalFiltered);
+        $totalInfo.textContent = `Menampilkan ${startIdx + 1}–${endNum} dari ${totalFiltered} acara (Halaman ${currentNotulenPage} / ${totalPages})`;
       }
 
       $eventsTbody.innerHTML = pagedEvents.map((event, idx) => {
@@ -739,42 +851,76 @@
         const notulenDoc = NOTULEN_MAP[event.id];
         const hasDoc = !!(notulenDoc && (notulenDoc.document_url || notulenDoc.document_path || notulenDoc.document_name));
         const docUrl = getDocumentUrl(notulenDoc);
-        const statusClass = event.status === "done" ? "text-bg-success" :
-          event.status === "active" ? "text-bg-primary" :
-            "text-bg-secondary";
-        const statusText = event.status === "done" ? "Selesai" :
-          event.status === "active" ? "Aktif" :
-            "Upcoming";
+        const docName = notulenDoc?.document_name || (hasDoc ? "Dokumen Notulen" : "");
+        const isPdf = (docName + " " + (docUrl || "")).toLowerCase().includes(".pdf");
+        const statusType = event.status === "done" ? "done" : event.status === "active" ? "active" : "upcoming";
+        const statusLabel = event.status === "done" ? "Selesai" : event.status === "active" ? "Aktif" : "Upcoming";
+
+        // Status pill
+        const statusPill = `
+          <span class="event-status-pill ${statusType}">
+            <span class="status-dot"></span>
+            <span class="status-label">${statusLabel}</span>
+          </span>
+        `;
+
+        // Dokumen badge
+        let docBadge = "";
+        if (hasDoc) {
+          const icon = isPdf ? "bi-file-earmark-pdf-fill text-danger" : "bi-file-earmark-word-fill text-primary";
+          docBadge = `
+            <div class="d-inline-flex align-items-center">
+              <span class="badge bg-success-subtle text-success border border-success-subtle py-1 px-2 text-truncate" style="max-width: 160px; font-weight: 500;" title="${esc(docName)}">
+                <i class="bi ${icon} me-1"></i>
+                <span class="text-truncate">${esc(docName || "Ada Dokumen")}</span>
+              </span>
+            </div>
+          `;
+        } else {
+          docBadge = `
+            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle py-1 px-2" style="font-weight: 500;">
+              <i class="bi bi-dash-circle me-1"></i>Belum Ada
+            </span>
+          `;
+        }
 
         return `
             <tr>
-              <td>${index + 1}</td>
-              <td><strong>${esc(event.title || "-")}</strong></td>
-              <td>${fmtDT(event.datetime)}</td>
-              <td>${esc(event.location || "-")}</td>
-              <td><span class="badge ${statusClass}">${statusText}</span></td>
+              <td class="text-center text-muted fw-semibold">${index + 1}</td>
               <td>
-                ${hasDoc
-            ? `<span class="badge text-bg-success"><i class="bi bi-check-circle me-1"></i>Ada Dokumen</span>`
-            : `<span class="badge text-bg-secondary"><i class="bi bi-x-circle me-1"></i>Belum Ada</span>`
-          }
+                <div class="fw-bold text-truncate" style="max-width: 340px; color: var(--text-primary);" title="${esc(event.title || "-")}">
+                  ${esc(event.title || "-")}
+                </div>
               </td>
               <td>
-                <div class="btn-group btn-group-sm" role="group">
+                <span class="small fw-medium" style="color: var(--text-secondary);">
+                  <i class="bi bi-calendar3 me-1 text-muted"></i>${fmtDT(event.datetime)}
+                </span>
+              </td>
+              <td>
+                <div class="small text-muted text-truncate" style="max-width: 220px;" title="${esc(event.location || "-")}">
+                  <i class="bi bi-geo-alt me-1 text-danger"></i>${esc(event.location || "-")}
+                </div>
+              </td>
+              <td class="text-center">${statusPill}</td>
+              <td class="text-center">${docBadge}</td>
+              <td class="text-center">
+                <div class="event-action-group justify-content-center">
                   ${hasDoc
-            ? `<a class="btn btn-sm btn-outline-primary btn-view-doc py-0 px-2" href="${esc(docUrl)}" title="Lihat Dokumen" target="_blank" rel="noopener">
+                    ? `<a class="btn-event-act act-primary py-1 px-2" href="${esc(docUrl)}" title="Lihat Dokumen" target="_blank" rel="noopener">
                          <i class="bi bi-eye"></i>
+                         <span class="d-none d-sm-inline">Lihat</span>
                        </a>
-                       <button class="btn btn-sm btn-outline-warning btn-upload-doc py-0 px-2" data-event-id="${esc(event.id)}" title="Ganti Dokumen">
-                         <i class="bi bi-upload"></i>
+                       <button class="btn btn-sm btn-outline-warning py-1 px-2 btn-upload-doc" data-event-id="${esc(event.id)}" title="Ganti Dokumen">
+                         <i class="bi bi-arrow-repeat"></i>
                        </button>
-                       <button class="btn btn-sm btn-outline-danger btn-delete-notulen py-0 px-2" data-event-id="${esc(event.id)}" title="Hapus Dokumen">
+                       <button class="btn btn-sm btn-outline-danger py-1 px-2 btn-delete-notulen" data-event-id="${esc(event.id)}" title="Hapus Dokumen">
                          <i class="bi bi-trash"></i>
                        </button>`
-            : `<button class="btn btn-sm btn-outline-success btn-upload-doc py-0 px-2" data-event-id="${esc(event.id)}" title="Upload Dokumen">
-                         <i class="bi bi-upload"></i>
+                    : `<button class="btn btn-sm btn-outline-success py-1 px-3 btn-upload-doc fw-semibold" data-event-id="${esc(event.id)}" title="Upload Dokumen">
+                         <i class="bi bi-cloud-arrow-up-fill me-1"></i>Upload
                        </button>`
-          }
+                  }
                 </div>
               </td>
             </tr>
@@ -784,7 +930,7 @@
       if ($pagination) {
         let html = `
           <li class="page-item ${currentNotulenPage <= 1 ? "disabled" : ""}">
-            <button class="page-link" type="button" data-page="${currentNotulenPage - 1}">&laquo;</button>
+            <button class="page-link" type="button" data-page="${currentNotulenPage - 1}" aria-label="Sebelumnya">&laquo;</button>
           </li>
         `;
         for (let p = 1; p <= totalPages; p++) {
@@ -796,7 +942,7 @@
         }
         html += `
           <li class="page-item ${currentNotulenPage >= totalPages ? "disabled" : ""}">
-            <button class="page-link" type="button" data-page="${currentNotulenPage + 1}">&raquo;</button>
+            <button class="page-link" type="button" data-page="${currentNotulenPage + 1}" aria-label="Selanjutnya">&raquo;</button>
           </li>
         `;
         $pagination.innerHTML = html;
@@ -2413,6 +2559,34 @@
         selectedYear = v ? parseInt(v, 10) : null;
         currentNotulenPage = 1;
         loadEvents();
+      });
+    }
+
+    // Filter status tabs (Semua, Ada Dokumen, Belum Ada, Selesai, Aktif)
+    const $notulenTabs = document.getElementById("notulen-status-tabs");
+    if ($notulenTabs) {
+      $notulenTabs.addEventListener("click", function (e) {
+        const btn = e.target.closest(".status-pill-btn");
+        if (!btn) return;
+        $notulenTabs.querySelectorAll(".status-pill-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeFilterTab = btn.getAttribute("data-filter") || "all";
+        currentNotulenPage = 1;
+        renderEventsList();
+      });
+    }
+
+    // Search input
+    const $searchNotulen = document.getElementById("search-notulen");
+    if ($searchNotulen) {
+      let searchTimeout;
+      $searchNotulen.addEventListener("input", function (e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          notulenSearchQuery = e.target.value.trim();
+          currentNotulenPage = 1;
+          renderEventsList();
+        }, 200);
       });
     }
 

@@ -59,12 +59,6 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin-rekap-acara.html">
-              <i class="bi bi-display"></i>
-              <span>Rekap Acara (Live)</span>
-            </a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link active" href="admin-print-daftar-hadir.html">
               <i class="bi bi-printer"></i>
               <span>Print Daftar Hadir</span>
@@ -137,64 +131,114 @@
         </div>
       </header>
 
+      <!-- Main Content -->
       <main class="main-content">
-        <div class="container-fluid d-flex flex-column h-100" style="min-height: 0;">
-          <!-- Page Header -->
-          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2"
-            style="padding-top: 0.25rem; flex-shrink: 0;">
-            <div>
-              <h2 class="h5 mb-0 text-gradient fw-bold">Print Daftar Hadir</h2>
-              <p class="text-muted mb-0 small">Pilih acara untuk generate PDF daftar hadir</p>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <label for="year-filter" class="form-label mb-0 small text-muted fw-medium">Filter Tahun:</label>
-              <select id="year-filter" class="form-select form-select-sm" style="width: auto; min-width: 120px;">
-                <option value="">Memuat...</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- List Acara -->
-          <div class="card mb-0 d-flex flex-column" style="flex: 1; min-height: 0;">
-            <div class="card-header py-2 d-flex justify-content-between align-items-center">
-              <h5 class="card-title mb-0 fs-6">
-                <i class="bi bi-calendar-event me-2"></i>
-                Daftar Acara
-              </h5>
-              <span class="badge bg-secondary-subtle text-secondary border" id="print-page-info">Halaman 1 / 1</span>
-            </div>
-            <div class="card-body p-0 d-flex flex-column" style="flex: 1; min-height: 0; overflow: hidden;">
-              <div id="events-list" class="table-responsive" style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: auto;">
-                <table class="table table-hover align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th style="width: 50px;">No</th>
-                      <th>Judul Acara</th>
-                      <th>Tanggal & Waktu</th>
-                      <th>Lokasi</th>
-                      <th>Status</th>
-                      <th>Jumlah Peserta</th>
-                      <th style="width: 170px;">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody id="events-tbody">
-                    <tr>
-                      <td colspan="7" class="text-center text-muted py-4">
-                        <i class="bi bi-hourglass-split me-2"></i>Memuat data...
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top" style="background: var(--bg-secondary); flex-shrink: 0;">
-                <div class="small text-muted" id="print-total-info">Menampilkan 0 acara</div>
-                <nav aria-label="Pagination Print Daftar Hadir">
-                  <ul class="pagination pagination-sm mb-0" id="print-pagination"></ul>
-                </nav>
+        <!-- Executive Navy Banner Strip -->
+        <div class="dashboard-hero">
+          <div class="dashboard-hero-content">
+            <div class="dashboard-hero-left">
+              <h2 class="dashboard-hero-title">
+                <i class="bi bi-printer-fill text-info"></i>
+                Print Dokumen Daftar Hadir
+              </h2>
+              <div class="dashboard-hero-badge">
+                <span class="pulse-dot"></span>
+                <span>Format Dokumen Resmi Bertanda Tangan • PDF</span>
               </div>
             </div>
+            <div class="dashboard-hero-actions">
+              <div class="hero-filter-box">
+                <label for="year-filter" class="form-label"><i class="bi bi-calendar3 me-1"></i>Tahun:</label>
+                <select id="year-filter" class="form-select form-select-sm" aria-label="Filter Tahun">
+                  <option value="">Memuat...</option>
+                </select>
+              </div>
+              <button class="btn-hero-action" type="button" data-bs-toggle="modal" data-bs-target="#modalMasterTTD" title="Kelola Master Tanda Tangan Dokumen">
+                <i class="bi bi-pen-fill"></i>
+                <span>Master TTD</span>
+              </button>
+              <a href="admin-manajemen-acara.html" class="btn-hero-outline" title="Kembali ke Manajemen Acara">
+                <i class="bi bi-arrow-left"></i>
+                <span>Acara</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unified Filter, Status Tabs & Search Toolbar -->
+        <div class="manajemen-filter-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <!-- Status Filter Tabs -->
+          <div class="status-filter-pills" id="print-status-tabs" role="group" aria-label="Filter Status Acara">
+            <button type="button" class="status-pill-btn active" data-status="">
+              <span>Semua</span>
+              <span class="status-pill-count" id="count-print-all">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-status="done">
+              <span>Selesai</span>
+              <span class="status-pill-count" id="count-print-done">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-status="active">
+              <span>Aktif</span>
+              <span class="status-pill-count" id="count-print-active">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-status="upcoming">
+              <span>Upcoming</span>
+              <span class="status-pill-count" id="count-print-upcoming">0</span>
+            </button>
           </div>
 
+          <!-- Search Box -->
+          <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end" style="max-width: 420px;">
+            <div class="position-relative flex-grow-1">
+              <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 0.8rem;"></i>
+              <input id="search-print" type="search" class="form-control form-control-sm ps-4"
+                placeholder="Cari judul acara atau lokasi kegiatan..."
+                style="border-radius: 9px; font-size: 0.8rem;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Executive Card Table (10 Acara per Halaman) -->
+        <div class="card mb-0 d-flex flex-column" style="flex: 1; min-height: 0;">
+          <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0" style="font-size: 0.86rem;">
+              <i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i>
+              Daftar Agenda Kegiatan Siap Cetak
+            </h5>
+            <span class="badge bg-primary-subtle text-primary border" id="print-page-info">Halaman 1 / 1</span>
+          </div>
+
+          <div class="card-body p-0 d-flex flex-column" style="flex: 1; min-height: 0; overflow: hidden;">
+            <div id="events-list" class="table-responsive" style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: auto;">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th style="width: 48px;">No</th>
+                    <th>Nama Acara & Lokasi</th>
+                    <th style="width: 185px;">Jadwal Pelaksanaan</th>
+                    <th style="width: 115px;">Status</th>
+                    <th style="width: 130px;">Jumlah Peserta</th>
+                    <th style="width: 180px;">Aksi Cetak</th>
+                  </tr>
+                </thead>
+                <tbody id="events-tbody">
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                      <i class="bi bi-hourglass-split me-2"></i>Memuat data acara...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pinned Pagination Bar -->
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top mt-auto" style="background: var(--bg-secondary); flex-shrink: 0;">
+              <div class="small text-muted" id="print-total-info">Menampilkan 0 acara</div>
+              <nav aria-label="Pagination Print Daftar Hadir">
+                <ul class="pagination pagination-sm mb-0" id="print-pagination"></ul>
+              </nav>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -464,6 +508,8 @@
     let selectedYear = 2026; // Default tahun 2026
     let currentEventPage = 1;
     const EVENTS_PER_PAGE = 10;
+    let printStatusFilter = "";
+    let printSearchQuery = "";
 
     const esc = (s) =>
       String(s ?? "")
@@ -609,17 +655,50 @@
       }
     }
 
+    // Filter status & search helper
+    function getPrintFilteredEvents() {
+      const cAll = EVENTS.length;
+      const cDone = EVENTS.filter((e) => e.status === "done").length;
+      const cActive = EVENTS.filter((e) => e.status === "active").length;
+      const cUpcoming = EVENTS.filter((e) => e.status !== "done" && e.status !== "active").length;
+
+      const elAll = document.getElementById("count-print-all");
+      const elDone = document.getElementById("count-print-done");
+      const elActive = document.getElementById("count-print-active");
+      const elUpcoming = document.getElementById("count-print-upcoming");
+      if (elAll) elAll.textContent = cAll;
+      if (elDone) elDone.textContent = cDone;
+      if (elActive) elActive.textContent = cActive;
+      if (elUpcoming) elUpcoming.textContent = cUpcoming;
+
+      return EVENTS.filter((ev) => {
+        if (printStatusFilter) {
+          if (printStatusFilter === "upcoming" && (ev.status === "done" || ev.status === "active")) return false;
+          if (printStatusFilter !== "upcoming" && ev.status !== printStatusFilter) return false;
+        }
+        if (printSearchQuery) {
+          const matchTitle = (ev.title || "").toLowerCase().includes(printSearchQuery);
+          const matchLoc = (ev.location || "").toLowerCase().includes(printSearchQuery);
+          if (!matchTitle && !matchLoc) return false;
+        }
+        return true;
+      });
+    }
+
     // Render events list
     function renderEventsList() {
       const $pageInfo = document.getElementById("print-page-info");
       const $totalInfo = document.getElementById("print-total-info");
       const $pagination = document.getElementById("print-pagination");
 
-      if (!EVENTS.length) {
+      const filtered = getPrintFilteredEvents();
+      const totalFiltered = filtered.length;
+
+      if (!totalFiltered) {
         $eventsTbody.innerHTML = `
             <tr>
-              <td colspan="7" class="text-center text-muted py-4">
-                <i class="bi bi-inbox me-2"></i>Belum ada acara
+              <td colspan="6" class="text-center text-muted py-4">
+                <i class="bi bi-calendar-x me-2"></i>Tidak ada acara yang sesuai filter
               </td>
             </tr>
           `;
@@ -629,46 +708,62 @@
         return;
       }
 
-      const totalPages = Math.max(1, Math.ceil(EVENTS.length / EVENTS_PER_PAGE));
+      const totalPages = Math.max(1, Math.ceil(totalFiltered / EVENTS_PER_PAGE));
       if (currentEventPage > totalPages) currentEventPage = totalPages;
       if (currentEventPage < 1) currentEventPage = 1;
 
       const startIdx = (currentEventPage - 1) * EVENTS_PER_PAGE;
-      const pagedEvents = EVENTS.slice(startIdx, startIdx + EVENTS_PER_PAGE);
+      const pagedEvents = filtered.slice(startIdx, startIdx + EVENTS_PER_PAGE);
 
       if ($pageInfo) $pageInfo.textContent = `Halaman ${currentEventPage} / ${totalPages}`;
       if ($totalInfo) {
-        const endNum = Math.min(startIdx + EVENTS_PER_PAGE, EVENTS.length);
-        $totalInfo.textContent = `Menampilkan ${startIdx + 1}–${endNum} dari ${EVENTS.length} acara`;
+        const endNum = Math.min(startIdx + EVENTS_PER_PAGE, totalFiltered);
+        $totalInfo.textContent = `Menampilkan ${startIdx + 1}–${endNum} dari ${totalFiltered} acara (Halaman ${currentEventPage} / ${totalPages})`;
       }
 
       $eventsTbody.innerHTML = pagedEvents.map((event, idx) => {
         const index = startIdx + idx;
         const attendeeCount = ATTENDEE_COUNTS[event.id] || 0;
-        const statusClass = event.status === "done" ? "text-bg-success" :
-          event.status === "active" ? "text-bg-primary" :
-            "text-bg-secondary";
-        const statusText = event.status === "done" ? "Selesai" :
-          event.status === "active" ? "Aktif" :
-            "Upcoming";
+        const statusType = event.status === "done" ? "done" : event.status === "active" ? "active" : "upcoming";
+        const statusLabel = event.status === "done" ? "Selesai" : event.status === "active" ? "Aktif" : "Upcoming";
+        const viewUrl = `admin-daftar-hadir.html?event=${encodeURIComponent(event.id)}`;
 
         return `
             <tr>
-              <td>${index + 1}</td>
-              <td><strong>${esc(event.title || "-")}</strong></td>
-              <td>${fmtDT(event.datetime)}</td>
-              <td>${esc(event.location || "-")}</td>
-              <td><span class="badge ${statusClass}">${statusText}</span></td>
+              <td class="text-muted fw-semibold">${index + 1}</td>
               <td>
-                <span class="badge ${attendeeCount > 0 ? "text-bg-info" : "text-bg-secondary"}">
-                  <i class="bi bi-people me-1"></i>${attendeeCount}
+                <div class="fw-bold text-truncate" style="max-width: 380px; color: var(--text-primary);" title="${esc(event.title || "-")}">
+                  ${esc(event.title || "-")}
+                </div>
+                <div class="text-muted" style="font-size: 0.72rem;">
+                  <i class="bi bi-geo-alt me-1 text-primary"></i>${esc(event.location || "Lokasi belum ditentukan")}
+                </div>
+              </td>
+              <td>
+                <span class="small fw-medium" style="color: var(--text-secondary);">
+                  <i class="bi bi-calendar3 me-1 text-muted"></i>${fmtDT(event.datetime)}
                 </span>
               </td>
               <td>
-                <div class="btn-group btn-group-sm" role="group">
-                  <button class="btn btn-sm btn-outline-success btn-generate-pdf-event py-0 px-2" data-event-id="${esc(event.id)}" title="Export PDF" ${attendeeCount === 0 ? "disabled" : ""}>
-                    <i class="bi bi-file-pdf me-1"></i>Export PDF
+                <span class="event-status-pill ${statusType}">
+                  <span class="status-dot"></span>
+                  <span class="status-label">${statusLabel}</span>
+                </span>
+              </td>
+              <td>
+                <a href="${viewUrl}" class="attendee-count-pill" title="Lihat Daftar Hadir">
+                  <i class="bi bi-people-fill"></i>
+                  <span>${attendeeCount} Peserta</span>
+                </a>
+              </td>
+              <td>
+                <div class="event-action-group">
+                  <button class="btn btn-sm btn-outline-danger btn-generate-pdf-event py-1 px-2 fw-semibold" data-event-id="${esc(event.id)}" title="Export PDF Daftar Hadir" ${attendeeCount === 0 ? 'disabled title="Belum ada peserta hadir"' : ""}>
+                    <i class="bi bi-file-earmark-pdf-fill me-1"></i>Export PDF
                   </button>
+                  <a href="${viewUrl}" class="btn-event-act act-primary py-1 px-2" title="Buka Daftar Hadir">
+                    <i class="bi bi-people"></i>
+                  </a>
                 </div>
               </td>
             </tr>
@@ -1715,6 +1810,35 @@
       }
     }
 
+    // Setup status tabs & search filter listeners
+    function setupFilterListeners() {
+      const tabsGroup = document.getElementById("print-status-tabs");
+      if (tabsGroup) {
+        tabsGroup.addEventListener("click", (e) => {
+          const btn = e.target.closest(".status-pill-btn");
+          if (!btn) return;
+          tabsGroup.querySelectorAll(".status-pill-btn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          printStatusFilter = btn.getAttribute("data-status") || "";
+          currentEventPage = 1;
+          renderEventsList();
+        });
+      }
+
+      const searchInput = document.getElementById("search-print");
+      if (searchInput) {
+        let timer;
+        searchInput.addEventListener("input", (e) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            printSearchQuery = (e.target.value || "").trim().toLowerCase();
+            currentEventPage = 1;
+            renderEventsList();
+          }, 300);
+        });
+      }
+    }
+
     (function init() {
       AdminAuth.requireAdmin();
       document
@@ -1724,6 +1848,7 @@
           AdminAuth.logout();
         });
 
+      setupFilterListeners();
       setupYearFilter();
       loadEvents();
     })();
