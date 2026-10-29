@@ -71,6 +71,12 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="display-qr.html" target="_blank" rel="noopener">
+              <i class="bi bi-projector"></i>
+              <span>Display QR Proyektor</span>
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="admin-backup.html">
               <i class="bi bi-database-gear"></i>
               <span>Backup & Restore</span>
@@ -493,9 +499,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body text-center">
-          <div class="mb-3">
-            <canvas id="qrCanvas"
-              style="max-width: 100%; border: 1px solid var(--border-color); border-radius: 8px;"></canvas>
+          <div class="mb-3 d-flex justify-content-center">
+            <div id="qrCanvasContainer" style="padding: 8px; background: #ffffff; border-radius: 12px; display: inline-block; min-width: 280px; min-height: 280px;"></div>
           </div>
           <div class="small text-secondary mt-2" id="qrLink" style="word-break: break-all;"></div>
           <div class="small text-muted mt-2">
@@ -518,7 +523,7 @@
   <!-- JS libs -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="assets/js/qrcode.min.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/auth.js"></script>
 
@@ -942,45 +947,52 @@
         "/"
       );
       url.searchParams.set("event", currentEventId);
-      const canvas = document.getElementById("qrCanvas");
-
-      QRCode.toCanvas(
-        canvas,
-        url.toString(),
-        {
-          width: 300,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
-        },
-        (err) => {
-          btn.innerHTML = originalText;
-          btn.disabled = false;
-
-          if (err) {
-            console.error("QR Code generation error:", err);
-            alert("Gagal membuat QR Code. Silakan coba lagi.");
-            return;
-          }
-
-          document.getElementById("qrLink").textContent = url.toString();
-          new bootstrap.Modal(document.getElementById("qrModal")).show();
+      const container = document.getElementById("qrCanvasContainer");
+      if (container) {
+        container.innerHTML = "";
+        try {
+          new QRCode(container, {
+            text: url.toString(),
+            width: 280,
+            height: 280,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        } catch (err) {
+          console.error("QR Code generation error:", err);
+          container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(url.toString())}" style="width:280px;height:280px;" alt="QR Code" />`;
         }
-      );
+      }
+
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      document.getElementById("qrLink").textContent = url.toString();
+      new bootstrap.Modal(document.getElementById("qrModal")).show();
     };
+
     document.getElementById("btn-download-qr").onclick = () => {
-      const canvas = document.getElementById("qrCanvas");
-      if (!canvas) return;
-      canvas.toBlob((blob) => {
-        if (!blob) return alert("QR belum siap.");
-        const ev = EVENTS.find((e) => e.id === currentEventId);
-        downloadBlob(
-          `qr-form-${slug(ev?.title) || "acara"}-${currentEventId.slice(0, 8)}.png`,
-          blob
-        );
-      }, "image/png");
+      const container = document.getElementById("qrCanvasContainer");
+      const canvas = container ? container.querySelector("canvas") : null;
+      const ev = EVENTS.find((e) => e.id === currentEventId);
+      const fileName = `qr-form-${slug(ev?.title) || "acara"}-${currentEventId.slice(0, 8)}.png`;
+
+      if (canvas && canvas.toBlob) {
+        canvas.toBlob((blob) => {
+          if (!blob) return alert("QR belum siap.");
+          downloadBlob(fileName, blob);
+        }, "image/png");
+      } else {
+        const img = container ? container.querySelector("img") : null;
+        if (img && img.src) {
+          const a = document.createElement("a");
+          a.href = img.src;
+          a.download = fileName;
+          a.click();
+        } else {
+          alert("QR belum siap diunduh.");
+        }
+      }
     };
 
     // Signature settings functionality
