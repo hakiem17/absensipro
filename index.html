@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Memuat...</title>
+    <meta http-equiv="refresh" content="0; url=pilih-acara.html" />
+    <script>
+      (function () {
+        try {
+          var target = "pilih-acara.html";
+          // Jika URL sudah mengandung query (mis. ?event=...), tetap arahkan ke pilih-acara.html
+          window.location.replace(target + window.location.search);
+        } catch (_) {
+          window.location.href = "pilih-acara.html";
+        }
+      })();
+    </script>
+    <style>
+      html, body { height: 100%; }
+      body { display: flex; align-items: center; justify-content: center; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+      .msg { color: #555; }
+    </style>
+  </head>
+  <body>
+    <div class="msg">Mengalihkan ke halaman pilih acara…</div>
+  </body>
+  </html>
+
+
+
+

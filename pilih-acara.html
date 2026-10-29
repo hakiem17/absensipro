@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pilih Acara - Portal Presensi AbsensiPro</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+      :root {
+        --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --navy-950: #061021;
+        --navy-900: #0a192f;
+        --navy-800: #0f2547;
+        --navy-700: #163563;
+        --navy-600: #1e40af;
+        --navy-500: #2563eb;
+        --navy-400: #38bdf8;
+        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        --gradient-navy: linear-gradient(135deg, #071326 0%, #0f2547 55%, #1e3a8a 100%);
+        --gradient-primary: linear-gradient(135deg, #0f2547 0%, #1e40af 55%, #2563eb 100%);
+      }
+
+      :root[data-theme="light"] {
+        --bg-main: #f1f5f9;
+        --bg-card: #ffffff;
+        --bg-subtle: #f8fafc;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --border-hover: #93c5fd;
+        --shadow-sm: 0 2px 8px -2px rgba(10, 25, 47, 0.06), 0 1px 3px 0 rgba(10, 25, 47, 0.04);
+        --shadow-md: 0 10px 24px -4px rgba(10, 25, 47, 0.1), 0 4px 8px -2px rgba(10, 25, 47, 0.05);
+        --shadow-lg: 0 18px 36px -6px rgba(10, 25, 47, 0.14);
+      }
+
+      :root[data-theme="dark"] {
+        --bg-main: #060d1a;
+        --bg-card: #0d1b2e;
+        --bg-subtle: #11223a;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border-color: #1e324f;
+        --border-hover: #38bdf8;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+        --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.45);
+        --shadow-lg: 0 18px 36px rgba(0, 0, 0, 0.6);
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: var(--font-sans);
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg-main);
+        color: var(--text-primary);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      @media (min-width: 992px) {
+        body {
+          height: 100vh;
+          overflow: hidden;
+        }
+      }
+
+      /* --- TOP EXECUTIVE NAVBAR --- */
+      .portal-navbar {
+        background: var(--gradient-navy);
+        border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+        padding: 0.55rem 1.5rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 16px rgba(6, 16, 33, 0.2);
+        position: relative;
+        z-index: 100;
+      }
+
+      .portal-navbar-inner {
+        max-width: 1320px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .portal-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: #ffffff;
+      }
+
+      .portal-brand:hover {
+        color: #ffffff;
+        opacity: 0.95;
+      }
+
+      .portal-brand-logo {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 3px;
+        border-radius: 9px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      }
+
+      .portal-brand-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+      }
+
+      .portal-brand-title {
+        font-weight: 800;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+        color: #ffffff;
+      }
+
+      .portal-brand-sub {
+        font-size: 0.68rem;
+        color: #93c5fd;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .portal-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+      }
+
+      .portal-date-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #e2e8f0;
+        font-size: 0.74rem;
+        font-weight: 600;
+      }
+
+      .btn-portal-nav {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        border-radius: 9px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.76rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        text-decoration: none;
+        transition: var(--transition);
+        cursor: pointer;
+      }
+
+      .btn-portal-nav:hover {
+        background: rgba(56, 189, 248, 0.22);
+        border-color: #38bdf8;
+        color: #ffffff;
+        transform: translateY(-1px);
+      }
+
+      /* --- MAIN CONTAINER --- */
+      .portal-main {
+        flex: 1;
+        min-height: 0;
+        max-width: 1320px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0.85rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+
+      /* --- HERO BANNER STRIP --- */
+      .portal-hero-banner {
+        background: var(--gradient-navy);
+        border-radius: 14px;
+        padding: 0.75rem 1.2rem;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(56, 189, 248, 0.22);
+        flex-shrink: 0;
+      }
+
+      .portal-hero-banner::before {
+        content: "";
+        position: absolute;
+        top: -60%;
+        right: -5%;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .portal-hero-row {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .portal-hero-info h1 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin: 0 0 0.12rem 0;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .portal-hero-info p {
+        margin: 0;
+        font-size: 0.76rem;
+        color: rgba(226, 232, 240, 0.85);
+      }
+
+      .portal-kpi-pills {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .portal-kpi-pill {
+        background: rgba(15, 23, 42, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 10px;
+        padding: 0.32rem 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .portal-kpi-pill .kpi-num {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #38bdf8;
+      }
+
+      .portal-kpi-pill.emerald .kpi-num {
+        color: #34d399;
+      }
+
+      .portal-kpi-pill .kpi-lbl {
+        font-size: 0.7rem;
+        color: #cbd5e1;
+        font-weight: 600;
+      }
+
+      /* --- FILTER & SEARCH TOOLBAR --- */
+      .portal-toolbar {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 13px;
+        padding: 0.5rem 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        box-shadow: var(--shadow-sm);
+        flex-shrink: 0;
+      }
+
+      .portal-status-tabs {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: var(--bg-subtle);
+        padding: 0.2rem;
+        border-radius: 9px;
+        border: 1px solid var(--border-color);
+      }
+
+      .portal-tab-btn {
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.28rem 0.68rem;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .portal-tab-btn:hover {
+        color: var(--text-primary);
+      }
+
+      .portal-tab-btn.active {
+        background: var(--gradient-navy);
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(10, 25, 47, 0.22);
+      }
+
+      .portal-search-box {
+        position: relative;
+        flex: 1;
+        min-width: 220px;
+        max-width: 380px;
+      }
+
+      .portal-search-box i {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.82rem;
+      }
+
+      .portal-search-input {
+        width: 100%;
+        padding: 0.35rem 0.75rem 0.35rem 2.15rem;
+        font-size: 0.8rem;
+        border-radius: 9px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-subtle);
+        color: var(--text-primary);
+        transition: var(--transition);
+      }
+
+      .portal-search-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: var(--bg-card);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+      }
+
+      .portal-view-toggle {
+        display: inline-flex;
+        background: var(--bg-subtle);
+        padding: 0.2rem;
+        border-radius: 9px;
+        border: 1px solid var(--border-color);
+        gap: 0.15rem;
+      }
+
+      .portal-view-btn {
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.26rem 0.55rem;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .portal-view-btn.active {
+        background: var(--bg-card);
+        color: #2563eb;
+        box-shadow: var(--shadow-sm);
+      }
+
+      :root[data-theme="dark"] .portal-view-btn.active {
+        color: #38bdf8;
+      }
+
+      /* --- EVENTS DISPLAY AREA --- */
+      .portal-content-wrap {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      /* Grid Mode (3 columns x 2 rows = 6 cards per page) */
+      .portal-events-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 0.75rem;
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        align-content: start;
+        padding: 0.1rem;
+      }
+
+      @media (min-width: 768px) {
+        .portal-events-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 992px) {
+        .portal-events-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      .portal-event-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 0.9rem 1.05rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+      }
+
+      .portal-event-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3.5px;
+        background: var(--gradient-primary);
+      }
+
+      .portal-event-card.is-active::before {
+        background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+      }
+
+      .portal-event-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--border-hover);
+      }
+
+      .portal-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .portal-date-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.73rem;
+        font-weight: 700;
+        color: #1e40af;
+        background: rgba(37, 99, 235, 0.08);
+        padding: 0.22rem 0.55rem;
+        border-radius: 7px;
+      }
+
+      :root[data-theme="dark"] .portal-date-tag {
+        color: #60a5fa;
+        background: rgba(56, 189, 248, 0.14);
+      }
+
+      .portal-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.32rem;
+        font-size: 0.66rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+      }
+
+      .portal-status-badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+
+      .portal-status-badge.active {
+        background: rgba(16, 185, 129, 0.14);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.28);
+      }
+
+      .portal-status-badge.active .dot {
+        background: #10b981;
+        box-shadow: 0 0 6px #10b981;
+      }
+
+      .portal-status-badge.upcoming {
+        background: rgba(37, 99, 235, 0.12);
+        color: #2563eb;
+        border: 1px solid rgba(37, 99, 235, 0.24);
+      }
+
+      .portal-status-badge.upcoming .dot {
+        background: #3b82f6;
+      }
+
+      :root[data-theme="dark"] .portal-status-badge.active {
+        color: #34d399;
+      }
+
+      :root[data-theme="dark"] .portal-status-badge.upcoming {
+        color: #60a5fa;
+      }
+
+      .portal-event-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        line-height: 1.32;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.4rem;
+      }
+
+      .portal-event-loc {
+        display: flex;
+        align-items: center;
+        gap: 0.38rem;
+        font-size: 0.76rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.15rem;
+      }
+
+      .portal-event-loc i {
+        color: #2563eb;
+        flex-shrink: 0;
+      }
+
+      :root[data-theme="dark"] .portal-event-loc i {
+        color: #38bdf8;
+      }
+
+      .portal-card-actions {
+        margin-top: auto;
+        padding-top: 0.5rem;
+        border-top: 1px dashed var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .btn-fill-attendance {
+        flex: 1;
+        background: var(--gradient-primary);
+        color: #ffffff;
+        text-decoration: none;
+        padding: 0.42rem 0.75rem;
+        border-radius: 9px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        transition: var(--transition);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+      }
+
+      .btn-fill-attendance:hover {
+        background: linear-gradient(135deg, #0a192f 0%, #1d4ed8 100%);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+      }
+
+      /* Table Mode (10 Acara per Halaman) */
+      .portal-table-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .portal-table-wrap {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+
+      .portal-table {
+        width: 100%;
+        margin-bottom: 0;
+      }
+
+      .portal-table thead th {
+        background: var(--bg-subtle);
+        color: var(--text-primary);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.45rem 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+
+      .portal-table tbody td {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.79rem;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+        background: transparent;
+      }
+
+      .portal-table tbody tr:hover td {
+        background: rgba(37, 99, 235, 0.05);
+      }
+
+      /* --- PAGINATION BAR --- */
+      .portal-pagination-bar {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 0.45rem 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        flex-shrink: 0;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .pagination .page-link {
+        color: var(--text-primary);
+        background: var(--bg-subtle);
+        border-color: var(--border-color);
+        font-size: 0.76rem;
+        font-weight: 600;
+        padding: 0.25rem 0.6rem;
+        border-radius: 7px;
+        margin: 0 2px;
+      }
+
+      .pagination .page-item.active .page-link {
+        background: var(--gradient-primary);
+        border-color: transparent;
+        color: #ffffff;
+      }
+
+      /* --- EMPTY STATE --- */
+      .portal-empty {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 2.5rem 1rem;
+        text-align: center;
+        margin: auto 0;
+      }
+
+      /* --- FOOTER --- */
+      .portal-footer {
+        background: var(--gradient-navy);
+        color: rgba(226, 232, 240, 0.9);
+        padding: 0.6rem 1.5rem;
+        text-align: center;
+        font-size: 0.76rem;
+        border-top: 1px solid rgba(56, 189, 248, 0.18);
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      (function () {
+        const t = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", t);
+        document.documentElement.setAttribute("data-bs-theme", t);
+      })();
+    </script>
+
+    <!-- TOP EXECUTIVE NAVBAR -->
+    <header class="portal-navbar">
+      <div class="portal-navbar-inner">
+        <a href="pilih-acara.html" class="portal-brand">
+          <img
+            src="assets/img/logo_hst.png"
+            alt="Logo HST"
+            class="portal-brand-logo"
+            onerror="this.style.display='none'"
+          />
+          <div class="portal-brand-text">
+            <span class="portal-brand-title">AbsensiPro</span>
+            <span class="portal-brand-sub">Portal Presensi Digital • Kab. HST</span>
+          </div>
+        </a>
+
+        <div class="portal-nav-actions">
+          <span class="portal-date-pill d-none d-md-inline-flex">
+            <i class="bi bi-calendar3 text-info"></i>
+            <span id="portal-today-date">Memuat tanggal...</span>
+          </span>
+          <button id="theme-toggle" class="btn-portal-nav" type="button" title="Mode Gelap / Terang">
+            <i class="bi bi-moon-fill"></i>
+            <span class="d-none d-sm-inline" id="theme-label">Mode Gelap</span>
+          </button>
+          <a href="admin-dashboard.html" class="btn-portal-nav" title="Buka Panel Admin">
+            <i class="bi bi-shield-lock"></i>
+            <span class="d-none d-sm-inline">Panel Admin</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="portal-main">
+      <!-- Compact Hero Strip -->
+      <section class="portal-hero-banner">
+        <div class="portal-hero-row">
+          <div class="portal-hero-info">
+            <h1>
+              <i class="bi bi-calendar2-check text-info"></i>
+              Pilih Acara & Isi Daftar Hadir
+            </h1>
+            <p>Pilih agenda kegiatan yang sedang berlangsung atau akan datang untuk mengisi presensi kehadiran digital.</p>
+          </div>
+          <div class="portal-kpi-pills">
+            <div class="portal-kpi-pill">
+              <span class="kpi-num" id="kpi-total">0</span>
+              <span class="kpi-lbl">Total Tersedia</span>
+            </div>
+            <div class="portal-kpi-pill emerald">
+              <span class="kpi-num" id="kpi-active">0</span>
+              <span class="kpi-lbl">Aktif</span>
+            </div>
+            <div class="portal-kpi-pill">
+              <span class="kpi-num" id="kpi-upcoming">0</span>
+              <span class="kpi-lbl">Akan Datang</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter, Search & View Mode Toolbar -->
+      <div class="portal-toolbar">
+        <div class="portal-status-tabs" id="status-tabs" role="group" aria-label="Filter Status Acara">
+          <button type="button" class="portal-tab-btn active" data-status="all">
+            <span>Semua Acara</span>
+          </button>
+          <button type="button" class="portal-tab-btn" data-status="active">
+            <i class="bi bi-broadcast text-success"></i>
+            <span>Sedang Aktif</span>
+          </button>
+          <button type="button" class="portal-tab-btn" data-status="upcoming">
+            <i class="bi bi-clock-history text-info"></i>
+            <span>Akan Datang</span>
+          </button>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end">
+          <div class="portal-search-box">
+            <i class="bi bi-search"></i>
+            <input
+              type="search"
+              id="search-input"
+              class="portal-search-input"
+              placeholder="Cari nama acara atau lokasi kegiatan..."
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="portal-view-toggle" id="view-toggle" role="group" aria-label="Mode Tampilan">
+            <button type="button" class="portal-view-btn active" data-view="grid" title="Tampilan Kartu (6 Acara / Hal)">
+              <i class="bi bi-grid-3x2-gap"></i>
+              <span class="d-none d-sm-inline">Kartu</span>
+            </button>
+            <button type="button" class="portal-view-btn" data-view="table" title="Tampilan Tabel (10 Acara / Hal)">
+              <i class="bi bi-table"></i>
+              <span class="d-none d-sm-inline">Tabel (10)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events Content Area -->
+      <div class="portal-content-wrap">
+        <!-- View 1: 3x2 Card Grid (6 Acara / Hal) -->
+        <div id="events-grid" class="portal-events-grid"></div>
+
+        <!-- View 2: Executive Table (10 Acara / Hal) -->
+        <div id="events-table-card" class="portal-table-card d-none">
+          <div class="portal-table-wrap">
+            <table class="table portal-table align-middle">
+              <thead>
+                <tr>
+                  <th style="width: 48px;">No</th>
+                  <th>Nama Kegiatan</th>
+                  <th>Waktu Pelaksanaan (WITA)</th>
+                  <th>Lokasi</th>
+                  <th style="width: 130px;">Status</th>
+                  <th style="width: 165px;">Presensi</th>
+                </tr>
+              </thead>
+              <tbody id="events-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty" class="portal-empty d-none">
+          <i class="bi bi-calendar-x fs-1 text-primary d-block mb-2"></i>
+          <h3 class="h6 fw-bold mb-1">Tidak ada acara ditemukan</h3>
+          <p class="text-muted small mb-0">Coba ubah filter status atau kata kunci pencarian Anda.</p>
+        </div>
+      </div>
+
+      <!-- Pinned Pagination Bar -->
+      <div class="portal-pagination-bar">
+        <div class="small text-muted fw-medium" id="portal-page-info">Menampilkan acara</div>
+        <nav aria-label="Navigasi halaman acara">
+          <ul class="pagination pagination-sm mb-0" id="portal-pagination"></ul>
+        </nav>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="portal-footer">
+      <div>
+        &copy; <span id="year"></span> Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. Hulu Sungai Tengah.
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+
+    <script>
+      // Tahun & Tanggal Hari Ini
+      document.getElementById("year").textContent = new Date().getFullYear();
+      const todayEl = document.getElementById("portal-today-date");
+      if (todayEl) {
+        todayEl.textContent = new Date().toLocaleDateString("id-ID", {
+          weekday: "long",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+      }
+
+      // Theme Logic
+      const themeBtn = document.getElementById("theme-toggle");
+      function syncThemeIcon() {
+        const t = document.documentElement.getAttribute("data-theme");
+        const isDark = t === "dark";
+        themeBtn.innerHTML = isDark
+          ? '<i class="bi bi-sun-fill text-warning"></i><span class="d-none d-sm-inline">Mode Terang</span>'
+          : '<i class="bi bi-moon-fill"></i><span class="d-none d-sm-inline">Mode Gelap</span>';
+      }
+      syncThemeIcon();
+
+      themeBtn.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme");
+        const next = cur === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        document.documentElement.setAttribute("data-bs-theme", next);
+        localStorage.setItem("theme", next);
+        syncThemeIcon();
+      });
+
+      // State & Elements
+      const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      const $grid = document.getElementById("events-grid");
+      const $tableCard = document.getElementById("events-table-card");
+      const $tbody = document.getElementById("events-tbody");
+      const $empty = document.getElementById("empty");
+      const $pageInfo = document.getElementById("portal-page-info");
+      const $pagination = document.getElementById("portal-pagination");
+      const searchInput = document.getElementById("search-input");
+
+      let allEvents = [];
+      let statusFilter = "all";
+      let searchTerm = "";
+      let viewMode = "grid"; // 'grid' (6/hal) or 'table' (10/hal)
+      let currentPage = 1;
+
+      function esc(s) {
+        return String(s ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function fmtDate(iso) {
+        if (!iso) return "-";
+        const d = new Date(iso);
+        const tgl = d.toLocaleDateString("id-ID", {
+          timeZone: "Asia/Makassar",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+        const jam = d
+          .toLocaleTimeString("id-ID", {
+            timeZone: "Asia/Makassar",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          })
+          .replace(":", ".");
+        return `${tgl} • ${jam} WITA`;
+      }
+
+      function getFilteredEvents() {
+        return allEvents.filter((ev) => {
+          if (statusFilter !== "all" && ev.status !== statusFilter) return false;
+          if (searchTerm) {
+            const matchTitle = (ev.title || "").toLowerCase().includes(searchTerm);
+            const matchLoc = (ev.location || "").toLowerCase().includes(searchTerm);
+            if (!matchTitle && !matchLoc) return false;
+          }
+          return true;
+        });
+      }
+
+      function renderEvents() {
+        const filtered = getFilteredEvents();
+        const pageSize = viewMode === "table" ? 10 : 6;
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        if (total === 0) {
+          $grid.classList.add("d-none");
+          $tableCard.classList.add("d-none");
+          $empty.classList.remove("d-none");
+          if ($pageInfo) $pageInfo.textContent = "Menampilkan 0 acara";
+          if ($pagination) $pagination.innerHTML = "";
+          return;
+        }
+
+        $empty.classList.add("d-none");
+        const startIdx = (currentPage - 1) * pageSize;
+        const paged = filtered.slice(startIdx, startIdx + pageSize);
+        const endNum = Math.min(startIdx + pageSize, total);
+
+        if ($pageInfo) {
+          $pageInfo.textContent = `Menampilkan ${startIdx + 1}–${endNum} dari ${total} acara (Halaman ${currentPage} / ${totalPages})`;
+        }
+
+        if (viewMode === "grid") {
+          $grid.classList.remove("d-none");
+          $tableCard.classList.add("d-none");
+          $grid.innerHTML = paged
+            .map((ev) => {
+              const href = `form-kehadiran.html?event=${encodeURIComponent(ev.id)}`;
+              const isActive = ev.status === "active";
+              const statusClass = isActive ? "active" : "upcoming";
+              const statusText = isActive ? "Sedang Aktif" : "Akan Datang";
+
+              return `
+                <div class="portal-event-card ${isActive ? "is-active" : ""}">
+                  <div class="portal-card-top">
+                    <span class="portal-date-tag">
+                      <i class="bi bi-calendar3"></i>
+                      <span>${fmtDate(ev.datetime)}</span>
+                    </span>
+                    <span class="portal-status-badge ${statusClass}">
+                      <span class="dot"></span>
+                      <span>${statusText}</span>
+                    </span>
+                  </div>
+                  <h3 class="portal-event-title" title="${esc(ev.title)}">${esc(ev.title)}</h3>
+                  <div class="portal-event-loc">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span class="text-truncate">${esc(ev.location || "Lokasi belum ditentukan")}</span>
+                  </div>
+                  <div class="portal-card-actions">
+                    <a href="${href}" class="btn-fill-attendance">
+                      <i class="bi bi-pencil-square"></i>
+                      <span>Isi Daftar Hadir</span>
+                      <i class="bi bi-arrow-right ms-auto"></i>
+                    </a>
+                  </div>
+                </div>
+              `;
+            })
+            .join("");
+        } else {
+          $grid.classList.add("d-none");
+          $tableCard.classList.remove("d-none");
+          $tbody.innerHTML = paged
+            .map((ev, i) => {
+              const href = `form-kehadiran.html?event=${encodeURIComponent(ev.id)}`;
+              const isActive = ev.status === "active";
+              const statusClass = isActive ? "active" : "upcoming";
+              const statusText = isActive ? "Sedang Aktif" : "Akan Datang";
+
+              return `
+                <tr>
+                  <td class="text-muted fw-semibold">${startIdx + i + 1}</td>
+                  <td class="fw-bold">${esc(ev.title)}</td>
+                  <td><span class="portal-date-tag"><i class="bi bi-calendar3"></i> ${fmtDate(ev.datetime)}</span></td>
+                  <td><i class="bi bi-geo-alt text-primary me-1"></i>${esc(ev.location || "-")}</td>
+                  <td>
+                    <span class="portal-status-badge ${statusClass}">
+                      <span class="dot"></span>
+                      <span>${statusText}</span>
+                    </span>
+                  </td>
+                  <td>
+                    <a href="${href}" class="btn-fill-attendance py-1 px-2" style="font-size: 0.74rem;">
+                      <i class="bi bi-pencil-square"></i>
+                      <span>Isi Presensi</span>
+                    </a>
+                  </td>
+                </tr>
+              `;
+            })
+            .join("");
+        }
+
+        renderPagination(totalPages);
+      }
+
+      function renderPagination(totalPages) {
+        if (!$pagination) return;
+        let html = `
+          <li class="page-item ${currentPage <= 1 ? "disabled" : ""}">
+            <button class="page-link" type="button" data-page="${currentPage - 1}">&laquo;</button>
+          </li>
+        `;
+        for (let p = 1; p <= totalPages; p++) {
+          html += `
+            <li class="page-item ${p === currentPage ? "active" : ""}">
+              <button class="page-link" type="button" data-page="${p}">${p}</button>
+            </li>
+          `;
+        }
+        html += `
+          <li class="page-item ${currentPage >= totalPages ? "disabled" : ""}">
+            <button class="page-link" type="button" data-page="${currentPage + 1}">&raquo;</button>
+          </li>
+        `;
+        $pagination.innerHTML = html;
+      }
+
+      // Event Listeners
+      $pagination?.addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-page]");
+        if (!btn || btn.closest(".disabled")) return;
+        const p = parseInt(btn.getAttribute("data-page"), 10);
+        if (!isNaN(p) && p !== currentPage) {
+          currentPage = p;
+          renderEvents();
+        }
+      });
+
+      searchInput?.addEventListener("input", (e) => {
+        searchTerm = (e.target.value || "").trim().toLowerCase();
+        currentPage = 1;
+        renderEvents();
+      });
+
+      document.getElementById("status-tabs")?.addEventListener("click", (e) => {
+        const btn = e.target.closest(".portal-tab-btn");
+        if (!btn) return;
+        document.querySelectorAll(".portal-tab-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        statusFilter = btn.getAttribute("data-status") || "all";
+        currentPage = 1;
+        renderEvents();
+      });
+
+      document.getElementById("view-toggle")?.addEventListener("click", (e) => {
+        const btn = e.target.closest(".portal-view-btn");
+        if (!btn) return;
+        const v = btn.getAttribute("data-view");
+        if (!v || v === viewMode) return;
+        document.querySelectorAll(".portal-view-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        viewMode = v;
+        currentPage = 1;
+        renderEvents();
+      });
+
+      async function loadEvents() {
+        $grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 2.5rem;">
+            <div class="spinner-border text-primary mb-2" role="status"></div>
+            <p class="text-muted small mb-0">Memuat jadwal kegiatan...</p>
+          </div>
+        `;
+
+        try {
+          const [a, u] = await Promise.all([
+            sb.from("events").select("*").eq("status", "active").order("datetime", { ascending: false }),
+            sb.from("events").select("*").eq("status", "upcoming").order("datetime", { ascending: false }),
+          ]);
+
+          const activeList = a.data || [];
+          const upcomingList = u.data || [];
+          allEvents = [...activeList, ...upcomingList];
+
+          const elTotal = document.getElementById("kpi-total");
+          const elActive = document.getElementById("kpi-active");
+          const elUpcoming = document.getElementById("kpi-upcoming");
+          if (elTotal) elTotal.textContent = allEvents.length;
+          if (elActive) elActive.textContent = activeList.length;
+          if (elUpcoming) elUpcoming.textContent = upcomingList.length;
+
+          renderEvents();
+        } catch (error) {
+          console.error(error);
+          $grid.innerHTML = `<p class="text-danger text-center w-100 py-4">Gagal memuat data acara.</p>`;
+        }
+      }
+
+      loadEvents();
+    </script>
+  </body>
+</html>

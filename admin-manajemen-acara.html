@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manajemen Acara - Admin Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+</head>
+
+<body>
+  <script>
+    (function () {
+      const t = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", t);
+      document.documentElement.setAttribute("data-bs-theme", t);
+    })();
+  </script>
+
+  <!-- Sidebar Overlay for Mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Mobile Hamburger Menu Button - Always Visible -->
+  <button class="sidebar-toggle mobile-hamburger" id="sidebarToggle" aria-label="Toggle Sidebar">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <div class="main-wrapper">
+    <!-- Modern Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-brand">
+          <i class="bi bi-shield-check"></i>
+          <span>Admin Panel</span>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="admin-dashboard.html">
+              <i class="bi bi-house-door"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="admin-manajemen-acara.html">
+              <i class="bi bi-calendar-event"></i>
+              <span>Manajemen Acara</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin-daftar-hadir.html">
+              <i class="bi bi-people"></i>
+              <span>Daftar Hadir</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin-print-daftar-hadir.html">
+              <i class="bi bi-printer"></i>
+              <span>Print Daftar Hadir</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin-notulen-acara.html">
+              <i class="bi bi-file-text"></i>
+              <span>Notulen Acara</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="display-qr.html" target="_blank" rel="noopener">
+              <i class="bi bi-projector"></i>
+              <span>Display QR Proyektor</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin-backup.html">
+              <i class="bi bi-database-gear"></i>
+              <span>Backup & Restore</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="btn-master-ttd" data-bs-toggle="modal" data-bs-target="#modalMasterTTD">
+              <i class="bi bi-pen"></i>
+              <span>Master Tanda Tangan</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Theme Toggle di Sidebar -->
+      <div style="padding: 0.5rem 0.75rem;">
+        <button id="theme-toggle" class="sidebar-theme-toggle">
+          <i class="bi bi-sun-fill"></i>
+          <span>Mode Gelap/Terang</span>
+        </button>
+      </div>
+
+      <!-- User Info di Footer Sidebar -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-avatar">
+            <i class="bi bi-person-circle"></i>
+          </div>
+          <div class="sidebar-user-details">
+            <div class="sidebar-user-name">Admin User</div>
+            <div class="sidebar-user-role">Administrator</div>
+          </div>
+          <button id="btn-logout" class="sidebar-logout-btn" title="Logout">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content-wrapper">
+      <!-- Modern Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <div class="header-search">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search..." class="search-input" />
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button id="theme-toggle-header" class="header-icon-btn" title="Toggle Theme">
+            <i class="bi bi-sun-fill"></i>
+          </button>
+          <div class="header-notification">
+            <button class="header-icon-btn notification-btn" title="Notifications">
+              <i class="bi bi-bell"></i>
+              <span class="notification-badge">3</span>
+            </button>
+          </div>
+          <div class="header-user-profile">
+            <div class="user-avatar-small">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <span class="user-name-header">Admin</span>
+            <i class="bi bi-chevron-down"></i>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Executive Navy Banner Strip -->
+        <div class="dashboard-hero">
+          <div class="dashboard-hero-content">
+            <div class="dashboard-hero-left">
+              <h2 class="dashboard-hero-title">
+                <i class="bi bi-calendar2-week text-info"></i>
+                Manajemen Jadwal & Acara
+              </h2>
+              <span class="dashboard-hero-badge">
+                <span class="pulse-dot"></span>
+                <span>10 Acara / Halaman</span>
+              </span>
+            </div>
+            <div class="dashboard-hero-actions">
+              <div class="hero-filter-box">
+                <label for="year-filter" class="form-label"><i class="bi bi-calendar3 me-1"></i>Tahun:</label>
+                <select id="year-filter" class="form-select form-select-sm" aria-label="Filter Tahun">
+                  <option value="">Memuat...</option>
+                </select>
+              </div>
+              <button class="btn-hero-action" type="button" data-bs-toggle="modal" data-bs-target="#modalEvent">
+                <i class="bi bi-plus-circle-fill"></i>
+                <span>Tambah Acara Baru</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unified Filter, Status Tabs & View Mode Toolbar -->
+        <div class="manajemen-filter-bar d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <!-- Status Filter Pills -->
+          <div class="status-filter-pills" id="status-filter-group" role="group" aria-label="Filter Status Acara">
+            <button type="button" class="status-pill-btn active" data-status="">
+              <span>Semua</span>
+              <span class="status-pill-count" id="count-all">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-status="active">
+              <span>Aktif</span>
+              <span class="status-pill-count" id="count-active">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-status="upcoming">
+              <span>Upcoming</span>
+              <span class="status-pill-count" id="count-upcoming">0</span>
+            </button>
+            <button type="button" class="status-pill-btn" data-status="done">
+              <span>Selesai</span>
+              <span class="status-pill-count" id="count-done">0</span>
+            </button>
+          </div>
+
+          <!-- Search + View Switcher -->
+          <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end" style="max-width: 520px;">
+            <div class="position-relative flex-grow-1">
+              <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 0.8rem;"></i>
+              <input id="search" type="search" class="form-control form-control-sm ps-4"
+                placeholder="Cari judul atau lokasi acara..."
+                style="border-radius: 9px; font-size: 0.8rem;" />
+            </div>
+            <div class="view-mode-switcher" id="view-mode-group" role="group" aria-label="Mode Tampilan">
+              <button type="button" class="view-mode-btn active" data-view="table" title="Tampilan Tabel (10 Acara/Hal)">
+                <i class="bi bi-table"></i>
+                <span class="d-none d-md-inline">Tabel</span>
+              </button>
+              <button type="button" class="view-mode-btn" data-view="grid" title="Tampilan Kartu (6 Acara/Hal)">
+                <i class="bi bi-grid-3x2-gap"></i>
+                <span class="d-none d-md-inline">Kartu</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Events Container Card (Table & Grid Views + Pinned Pagination) -->
+        <div class="card mb-0 d-flex flex-column" id="events-container" style="flex: 1; min-height: 0;">
+          <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0" style="font-size: 0.86rem;">
+              <i class="bi bi-list-ul text-primary me-1"></i>
+              Daftar Agenda Kegiatan
+            </h5>
+            <span class="badge bg-primary-subtle text-primary border" id="events-page-badge">Halaman 1 / 1</span>
+          </div>
+
+          <div class="card-body p-0 d-flex flex-column" style="flex: 1; min-height: 0; overflow: hidden;">
+            <!-- View 1: Executive Table (Default - 10 Acara per Halaman) -->
+            <div id="events-table-wrap" class="table-responsive" style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: auto;">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th style="width: 48px;">No</th>
+                    <th>Nama Acara & Lokasi</th>
+                    <th style="width: 185px;">Jadwal (WITA)</th>
+                    <th style="width: 115px;">Status</th>
+                    <th style="width: 125px;">Peserta</th>
+                    <th style="width: 320px;">Aksi Cepat</th>
+                  </tr>
+                </thead>
+                <tbody id="events-tbody">
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-4">Memuat data acara...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- View 2: Executive Card Grid (6 Acara per Halaman) -->
+            <div id="events-grid" class="events-grid p-3 d-none" style="flex: 1; min-height: 0; overflow-y: auto; align-content: start; margin-bottom: 0;">
+              <!-- Event cards will be injected here -->
+            </div>
+
+            <!-- Pinned Footer Pagination Bar -->
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top mt-auto" style="background: var(--bg-secondary); flex-shrink: 0;">
+              <div class="small text-muted" id="events-total-info">Menampilkan data acara</div>
+              <nav aria-label="Pagination">
+                <ul class="pagination pagination-sm justify-content-center mb-0" id="pagination">
+                  <!-- Pagination items will be injected here -->
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Modal Master Tanda Tangan -->
+      <div class="modal fade" id="modalMasterTTD" tabindex="-1" aria-labelledby="modalMasterTTDLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalMasterTTDLabel">
+                <i class="bi bi-pen me-2"></i>
+                Master Tanda Tangan
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <!-- Tabel Data Master TTD -->
+              <div class="mb-4">
+                <h6 class="mb-3">Data Master Tanda Tangan yang Tersimpan</h6>
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover" id="table-master-ttd">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Nama</th>
+                        <th>Jabatan</th>
+                        <th>Instansi</th>
+                        <th>Golongan</th>
+                        <th>NIP</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody-master-ttd">
+                      <tr>
+                        <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <hr>
+
+              <!-- Form Input/Edit -->
+              <h6 class="mb-3">Form Master Tanda Tangan</h6>
+              <form id="form-master-ttd">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="ttd-nama" class="form-label">Nama <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="ttd-nama" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="ttd-jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="ttd-jabatan" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="ttd-instansi" class="form-label">Instansi <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="ttd-instansi" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="ttd-golongan" class="form-label">Golongan</label>
+                    <input type="text" class="form-control" id="ttd-golongan">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="ttd-nip" class="form-label">NIP</label>
+                    <input type="text" class="form-control" id="ttd-nip">
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+              <button type="button" class="btn btn-primary" id="btn-save-master-ttd">
+                <i class="bi bi-save me-2"></i>
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modern Footer -->
+      <footer class="footer-professional">
+        <div class="footer-divider"></div>
+        <div class="text-center">
+          &copy; <span id="copyright-year"></span> Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. HST.
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal Tambah/Edit -->
+  <div class="modal fade" id="modalEvent" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <span id="modal-title-text">Tambah Acara</span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <form id="form-event">
+          <div class="modal-body">
+            <input type="hidden" id="event-id" />
+            <div class="mb-3">
+              <label class="form-label">Judul Acara</label>
+              <input type="text" class="form-control" id="event-title" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tanggal & Waktu</label>
+              <input type="datetime-local" class="form-control" id="event-datetime" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Lokasi</label>
+              <input type="text" class="form-control" id="event-location" placeholder="Ruang Rapat Diskominfo HST" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Status</label>
+              <select id="event-status" class="form-select">
+                <option value="upcoming">upcoming</option>
+                <option value="active">active</option>
+                <option value="done">done</option>
+              </select>
+            </div>
+            <div class="form-text">
+              Link absensi otomatis tersedia setelah disimpan.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+              Batal
+            </button>
+            <button type="submit" class="btn btn-primary" id="btn-save-event">
+              <i class="bi bi-check2 me-2"></i>Simpan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Libs -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/auth.js"></script>
+
+  <script>
+    // Tahun
+    document.getElementById("copyright-year").textContent =
+      new Date().getFullYear();
+    // Theme toggle handled by admin-common.js
+
+    // Supabase & Auth
+    const sb = supabase.createClient(
+      window.SUPABASE_URL,
+      window.SUPABASE_ANON_KEY
+    );
+    AdminAuth.requireAdmin();
+    document
+      .getElementById("btn-logout")
+      ?.addEventListener("click", () => AdminAuth.logout());
+
+
+    // Elemen
+    const $container = document.getElementById("events-container");
+    const $tableWrap = document.getElementById("events-table-wrap");
+    const $tbody = document.getElementById("events-tbody");
+    const $grid = document.getElementById("events-grid");
+    const $pagination = document.getElementById("pagination");
+    const $search = document.getElementById("search");
+    const $modalEl = document.getElementById("modalEvent");
+    const modal = new bootstrap.Modal($modalEl);
+    const $eventId = document.getElementById("event-id");
+    const $title = document.getElementById("event-title");
+    const $dt = document.getElementById("event-datetime");
+    const $loc = document.getElementById("event-location");
+    const $status = document.getElementById("event-status");
+    const $modalTitle = document.getElementById("modal-title-text");
+
+    let currentPage = 1,
+      viewMode = "table", // 'table' (10/hal) or 'grid' (6/hal)
+      pageSize = 10,
+      lastQuery = "",
+      selectedStatus = "",
+      loading = false,
+      totalEvents = 0,
+      totalPages = 0,
+      selectedYear = 2026; // Default filter tahun 2026
+
+    function fmtDate(d) {
+      if (!d) return "-";
+      const date = new Date(d);
+      const tanggal = date.toLocaleDateString("id-ID", {
+        timeZone: "Asia/Makassar",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+      const waktu = date.toLocaleTimeString("id-ID", {
+        timeZone: "Asia/Makassar",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      const waktuFormatted = waktu.replace(":", ".");
+      return `${tanggal} • ${waktuFormatted}`;
+    }
+
+    function toLocalDatetimeInput(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return "";
+      const tzOffset = d.getTimezoneOffset() * 60000;
+      return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+    }
+
+    function esc(s) {
+      return (s ?? "").toString().replace(
+        /[&<>"']/g,
+        (m) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        }[m])
+      );
+    }
+
+    function statusPillHtml(st) {
+      const s = st === "done" ? "done" : st === "active" ? "active" : "upcoming";
+      const label = s === "done" ? "Selesai" : s === "active" ? "Aktif" : "Upcoming";
+      return `<span class="event-status-pill ${s}" data-status-val="${s}">
+        <span class="status-dot"></span>
+        <span class="status-label">${label}</span>
+      </span>`;
+    }
+
+    function rowTpl(ev, index, count) {
+      const viewUrl = `admin-daftar-hadir.html?event=${encodeURIComponent(ev.id)}`;
+      const formUrl = `${location.origin}/form-kehadiran.html?event=${encodeURIComponent(ev.id)}`;
+      const isDone = ev.status === "done";
+      return `
+        <tr class="event-item" data-id="${esc(ev.id)}" data-status="${esc(ev.status || "upcoming")}">
+          <td class="text-muted fw-semibold">${index}</td>
+          <td>
+            <div class="fw-bold text-truncate" style="max-width: 340px; color: var(--text-primary);" title="${esc(ev.title)}">
+              ${esc(ev.title)}
+            </div>
+            <div class="text-muted" style="font-size: 0.72rem;">
+              <i class="bi bi-geo-alt me-1 text-primary"></i>${esc(ev.location || "Lokasi belum ditentukan")}
+            </div>
+          </td>
+          <td>
+            <span class="small fw-medium" style="color: var(--text-secondary);">
+              <i class="bi bi-calendar3 me-1 text-muted"></i>${fmtDate(ev.datetime)}
+            </span>
+          </td>
+          <td>${statusPillHtml(ev.status)}</td>
+          <td>
+            <a href="${viewUrl}" class="attendee-count-pill" title="Lihat Daftar Hadir Peserta">
+              <i class="bi bi-people-fill"></i>
+              <span>${count} Peserta</span>
+            </a>
+          </td>
+          <td>
+            <div class="event-action-group">
+              <a class="btn-event-act act-primary" href="${viewUrl}" title="Buka Daftar Hadir">
+                <i class="bi bi-people"></i><span>Hadir</span>
+              </a>
+              <button type="button" class="btn-event-act act-copy" data-action="copy-link" data-url="${formUrl}" title="Salin Link Presensi">
+                <i class="bi bi-link-45deg"></i><span>Link</span>
+              </button>
+              <button type="button" class="btn-event-act act-status" data-action="toggle-done" title="${isDone ? "Tandai Aktif" : "Tandai Selesai"}">
+                <i class="bi bi-check2-circle"></i><span>${isDone ? "Aktifkan" : "Selesai"}</span>
+              </button>
+              <button type="button" class="btn-event-act act-edit" data-action="edit" title="Edit Acara">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button type="button" class="btn-event-act act-delete" data-action="delete" title="Hapus Acara">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>`;
+    }
+
+    function cardTpl(ev, count) {
+      const viewUrl = `admin-daftar-hadir.html?event=${encodeURIComponent(ev.id)}`;
+      const formUrl = `${location.origin}/form-kehadiran.html?event=${encodeURIComponent(ev.id)}`;
+      const isDone = ev.status === "done";
+      return `
+        <div class="event-card event-item ${esc(ev.status || "upcoming")}" data-id="${esc(ev.id)}" data-status="${esc(ev.status || "upcoming")}">
+          <div class="event-header">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <h3 class="event-title" title="${esc(ev.title)}">${esc(ev.title)}</h3>
+              ${statusPillHtml(ev.status)}
+            </div>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-calendar3"></i>
+                <span>${fmtDate(ev.datetime)}</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-geo-alt"></i>
+                <span class="text-truncate" style="max-width: 180px;">${esc(ev.location || "-")}</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-people-fill"></i>
+                <span class="fw-semibold">${count} peserta</span>
+              </div>
+            </div>
+          </div>
+          <div class="event-actions">
+            <a class="btn-event-act act-primary" href="${viewUrl}">
+              <i class="bi bi-people"></i><span>Daftar Hadir</span>
+            </a>
+            <button type="button" class="btn-event-act act-copy" data-action="copy-link" data-url="${formUrl}">
+              <i class="bi bi-link-45deg"></i><span>Salin Link</span>
+            </button>
+            <button type="button" class="btn-event-act act-status" data-action="toggle-done">
+              <i class="bi bi-check2-circle"></i><span>${isDone ? "Aktifkan" : "Selesai"}</span>
+            </button>
+            <button type="button" class="btn-event-act act-edit" data-action="edit" title="Edit Acara">
+              <i class="bi bi-pencil-square"></i><span>Edit</span>
+            </button>
+            <button type="button" class="btn-event-act act-delete" data-action="delete" title="Hapus Acara">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>`;
+    }
+
+    async function countAttendeesBulk(ids) {
+      if (!ids || !ids.length) return new Map();
+      const res = await sb.from("attendees").select("event_id").in("event_id", ids);
+      const map = new Map(ids.map((id) => [id, 0]));
+      if (res.data) {
+        for (const r of res.data) {
+          if (map.has(r.event_id))
+            map.set(r.event_id, (map.get(r.event_id) || 0) + 1);
+        }
+      }
+      return map;
+    }
+
+    // Isi dropdown filter tahun (2020 s/d tahun berjalan+2, default 2026)
+    function populateYearFilter() {
+      const sel = document.getElementById("year-filter");
+      if (!sel) return;
+      const end = new Date().getFullYear() + 2;
+      const start = 2020;
+      sel.innerHTML = '<option value="">Semua Tahun</option>';
+      for (let y = end; y >= start; y--) {
+        const opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+        if (y === selectedYear) opt.selected = true;
+        sel.appendChild(opt);
+      }
+      if (!sel.value && selectedYear) selectedYear = null;
+    }
+
+    // Helper: terapkan filter tahun ke query
+    function applyYearFilter(query) {
+      if (selectedYear == null || selectedYear === "") return query;
+      const y = parseInt(selectedYear, 10);
+      if (isNaN(y)) return query;
+      return query
+        .gte("datetime", `${y}-01-01T00:00:00.000Z`)
+        .lte("datetime", `${y}-12-31T23:59:59.999Z`);
+    }
+
+    // Hitung ringkasan status (Semua, Aktif, Upcoming, Selesai) & total filtered
+    async function updateStatusSummaryAndTotal() {
+      const q = lastQuery.trim();
+      let baseQuery = sb.from("events").select("id,status");
+      if (q) {
+        baseQuery = baseQuery.or(`title.ilike.%${q}%,location.ilike.%${q}%`);
+      }
+      baseQuery = applyYearFilter(baseQuery);
+
+      const { data, error } = await baseQuery;
+      if (error || !data) {
+        console.error("Error counting events:", error);
+        return 0;
+      }
+
+      const cAll = data.length;
+      const cActive = data.filter((e) => e.status === "active").length;
+      const cDone = data.filter((e) => e.status === "done").length;
+      const cUpcoming = data.filter((e) => e.status !== "active" && e.status !== "done").length;
+
+      const elAll = document.getElementById("count-all");
+      const elAct = document.getElementById("count-active");
+      const elUpc = document.getElementById("count-upcoming");
+      const elDon = document.getElementById("count-done");
+      if (elAll) elAll.textContent = cAll;
+      if (elAct) elAct.textContent = cActive;
+      if (elUpc) elUpc.textContent = cUpcoming;
+      if (elDon) elDon.textContent = cDone;
+
+      if (selectedStatus === "active") return cActive;
+      if (selectedStatus === "done") return cDone;
+      if (selectedStatus === "upcoming") return cUpcoming;
+      return cAll;
+    }
+
+    // Fungsi untuk render pagination
+    function renderPagination() {
+      const $badge = document.getElementById("events-page-badge");
+      const $totalInfo = document.getElementById("events-total-info");
+      const safeTotalPages = Math.max(1, totalPages);
+
+      if ($badge) {
+        $badge.textContent = `Halaman ${currentPage} / ${safeTotalPages}`;
+      }
+      if ($totalInfo) {
+        const startNum = totalEvents > 0 ? (currentPage - 1) * pageSize + 1 : 0;
+        const endNum = Math.min(currentPage * pageSize, totalEvents);
+        $totalInfo.textContent = totalEvents > 0
+          ? `Menampilkan ${startNum}–${endNum} dari ${totalEvents} acara (Halaman ${currentPage} / ${safeTotalPages})`
+          : "Tidak ada acara yang sesuai filter";
+      }
+
+      if (totalEvents === 0) {
+        $pagination.innerHTML = "";
+        return;
+      }
+
+      let html = "";
+      const maxVisible = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+      let endPage = Math.min(safeTotalPages, startPage + maxVisible - 1);
+
+      if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+      }
+
+      html += `<li class="page-item ${currentPage <= 1 ? "disabled" : ""}">
+          <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>`;
+
+      if (startPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>`;
+        if (startPage > 2) {
+          html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<li class="page-item ${i === currentPage ? "active" : ""}">
+            <a class="page-link" href="#" data-page="${i}">${i}</a>
+          </li>`;
+      }
+
+      if (endPage < safeTotalPages) {
+        if (endPage < safeTotalPages - 1) {
+          html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+        html += `<li class="page-item"><a class="page-link" href="#" data-page="${safeTotalPages}">${safeTotalPages}</a></li>`;
+      }
+
+      html += `<li class="page-item ${currentPage >= safeTotalPages ? "disabled" : ""}">
+          <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>`;
+
+      $pagination.innerHTML = html;
+    }
+
+    async function loadPage(page = null) {
+      if (loading) return;
+      loading = true;
+
+      if (page !== null) {
+        currentPage = page;
+      }
+
+      if (viewMode === "table") {
+        $tableWrap.classList.remove("d-none");
+        $grid.classList.add("d-none");
+        $tbody.innerHTML = '<tr><td colspan="6" class="text-secondary py-4 text-center">Memuat data acara…</td></tr>';
+      } else {
+        $tableWrap.classList.add("d-none");
+        $grid.classList.remove("d-none");
+        $grid.innerHTML = '<div class="text-secondary py-4 text-center w-100">Memuat data acara…</div>';
+      }
+
+      const q = lastQuery.trim();
+
+      // Hitung total events & update badge status
+      totalEvents = await updateStatusSummaryAndTotal();
+      totalPages = Math.ceil(totalEvents / pageSize);
+
+      if (totalPages === 0) {
+        if (viewMode === "table") {
+          $tbody.innerHTML = `<tr><td colspan="6" class="text-secondary py-4 text-center"><i class="bi bi-calendar-x me-2"></i>Tidak ada data acara.</td></tr>`;
+        } else {
+          $grid.innerHTML = `<div class="text-secondary py-4 text-center w-100"><i class="bi bi-calendar-x me-2"></i>Tidak ada data acara.</div>`;
+        }
+        renderPagination();
+        loading = false;
+        return;
+      }
+
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const offset = (currentPage - 1) * pageSize;
+      let query = sb
+        .from("events")
+        .select("id,title,datetime,location,status")
+        .order("datetime", { ascending: false })
+        .range(offset, offset + pageSize - 1);
+
+      if (q) {
+        query = query.or(`title.ilike.%${q}%,location.ilike.%${q}%`);
+      }
+      if (selectedStatus) {
+        query = query.eq("status", selectedStatus);
+      }
+      query = applyYearFilter(query);
+
+      const { data, error } = await query;
+      if (error) {
+        if (viewMode === "table") {
+          $tbody.innerHTML = `<tr><td colspan="6" class="text-danger py-4 text-center">Gagal memuat data acara.</td></tr>`;
+        } else {
+          $grid.innerHTML = `<div class="text-danger py-4 text-center w-100">Gagal memuat data acara.</div>`;
+        }
+        loading = false;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        if (viewMode === "table") {
+          $tbody.innerHTML = `<tr><td colspan="6" class="text-secondary py-4 text-center">Tidak ada data acara.</td></tr>`;
+        } else {
+          $grid.innerHTML = `<div class="text-secondary py-4 text-center w-100">Tidak ada data acara.</div>`;
+        }
+        renderPagination();
+        loading = false;
+        return;
+      }
+
+      // Hitung jumlah peserta
+      const ids = data.map((d) => d.id);
+      const counts = await countAttendeesBulk(ids);
+
+      $tbody.innerHTML = "";
+      $grid.innerHTML = "";
+
+      data.forEach((ev, idx) => {
+        const c = counts.get(ev.id) ?? 0;
+        const rowNum = offset + idx + 1;
+        if (viewMode === "table") {
+          $tbody.insertAdjacentHTML("beforeend", rowTpl(ev, rowNum, c));
+        } else {
+          $grid.insertAdjacentHTML("beforeend", cardTpl(ev, c));
+        }
+      });
+
+      renderPagination();
+      loading = false;
+    }
+
+    // Search (debounce)
+    let tSearch;
+    $search.addEventListener("input", () => {
+      clearTimeout(tSearch);
+      tSearch = setTimeout(() => {
+        lastQuery = $search.value || "";
+        currentPage = 1;
+        loadPage();
+      }, 300);
+    });
+
+    // Filter tahun
+    const $yearFilter = document.getElementById("year-filter");
+    if ($yearFilter) {
+      $yearFilter.addEventListener("change", (e) => {
+        const v = e.target.value;
+        selectedYear = v ? parseInt(v, 10) : null;
+        currentPage = 1;
+        loadPage();
+      });
+    }
+
+    // Filter Status Pills
+    const $statusFilterGroup = document.getElementById("status-filter-group");
+    if ($statusFilterGroup) {
+      $statusFilterGroup.addEventListener("click", (e) => {
+        const btn = e.target.closest(".status-pill-btn");
+        if (!btn) return;
+        $statusFilterGroup.querySelectorAll(".status-pill-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedStatus = btn.getAttribute("data-status") || "";
+        currentPage = 1;
+        loadPage();
+      });
+    }
+
+    // View Mode Switcher (Table 10/hal vs Grid 6/hal)
+    const $viewModeGroup = document.getElementById("view-mode-group");
+    if ($viewModeGroup) {
+      $viewModeGroup.addEventListener("click", (e) => {
+        const btn = e.target.closest(".view-mode-btn");
+        if (!btn) return;
+        const targetView = btn.getAttribute("data-view");
+        if (!targetView || targetView === viewMode) return;
+        $viewModeGroup.querySelectorAll(".view-mode-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        viewMode = targetView;
+        pageSize = viewMode === "table" ? 10 : 6;
+        currentPage = 1;
+        loadPage();
+      });
+    }
+
+    // Pagination click handler
+    $pagination.addEventListener("click", (e) => {
+      e.preventDefault();
+      const pageLink = e.target.closest(".page-link");
+      if (!pageLink || pageLink.closest(".disabled")) return;
+      const page = parseInt(pageLink.dataset.page, 10);
+      if (page && page !== currentPage) {
+        loadPage(page);
+      }
+    });
+
+    // Delegated Actions for both Table and Card Grid
+    $container.addEventListener("click", async (e) => {
+      const item = e.target.closest(".event-item");
+      if (!item) return;
+      const id = item.dataset.id;
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+
+      if (btn.dataset.action === "copy-link") {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.url);
+          const origHtml = btn.innerHTML;
+          btn.innerHTML = '<i class="bi bi-clipboard-check"></i><span>Tersalin</span>';
+          setTimeout(() => {
+            btn.innerHTML = origHtml;
+          }, 1400);
+        } catch (_) { }
+      } else if (btn.dataset.action === "toggle-done") {
+        const currentSt = item.dataset.status || "upcoming";
+        const newStatus = currentSt === "done" ? "active" : "done";
+        const { error } = await sb
+          .from("events")
+          .update({ status: newStatus })
+          .eq("id", id);
+        if (!error) {
+          await loadPage();
+        }
+      } else if (btn.dataset.action === "edit") {
+        const { data, error } = await sb
+          .from("events")
+          .select("*")
+          .eq("id", id)
+          .single();
+        if (error || !data) return;
+        document.getElementById("event-id").value = data.id;
+        document.getElementById("event-title").value = data.title || "";
+        document.getElementById("event-datetime").value = toLocalDatetimeInput(data.datetime);
+        document.getElementById("event-location").value = data.location || "";
+        document.getElementById("event-status").value = data.status || "upcoming";
+        document.getElementById("modal-title-text").textContent = "Edit Acara";
+        modal.show();
+      } else if (btn.dataset.action === "delete") {
+        if (!confirm("Hapus acara ini? Data kehadiran tetap tersimpan."))
+          return;
+        const { error } = await sb.from("events").delete().eq("id", id);
+        if (!error) {
+          await loadPage();
+        }
+      }
+    });
+
+    // Simpan (Tambah/Edit)
+    document
+      .getElementById("form-event")
+      .addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const payload = {
+          title: $title.value.trim(),
+          datetime: new Date($dt.value).toISOString(),
+          location: $loc.value.trim() || null,
+          status: $status.value,
+        };
+        const id = $eventId.value;
+        let res;
+        if (id) {
+          res = await sb
+            .from("events")
+            .update(payload)
+            .eq("id", id)
+            .select()
+            .single();
+        } else {
+          res = await sb.from("events").insert(payload).select().single();
+        }
+        if (res.error) {
+          alert("Gagal menyimpan.");
+          return;
+        }
+        modal.hide();
+        $eventId.value = "";
+        e.target.reset();
+        $modalTitle.textContent = "Tambah Acara";
+        currentPage = 1;
+        await loadPage();
+      });
+
+    // Reset modal saat ditutup
+    $modalEl.addEventListener("hidden.bs.modal", () => {
+      document.getElementById("form-event").reset();
+      $eventId.value = "";
+      $modalTitle.textContent = "Tambah Acara";
+    });
+
+
+    // Init
+    (async () => {
+      populateYearFilter();
+      currentPage = 1;
+      await loadPage();
+    })();
+
+    // Sidebar and theme toggle handled by admin-common.js
+  </script>
+  <script src="assets/js/admin-common.js"></script>
+  <script>
+    // ===== MASTER TANDA TANGAN =====
+    let masterTTD = null;
+
+    function updateMasterTTDTable(data) {
+      const tbody = document.getElementById("tbody-master-ttd");
+      if (!tbody) return;
+
+      if (data) {
+        tbody.innerHTML = `
+            <tr>
+              <td>${escapeHtml(data.nama || "-")}</td>
+              <td>${escapeHtml(data.jabatan || "-")}</td>
+              <td>${escapeHtml(data.instansi || "-")}</td>
+              <td>${escapeHtml(data.golongan || "-")}</td>
+              <td>${escapeHtml(data.nip || "-")}</td>
+            </tr>
+          `;
+      } else {
+        tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center text-muted">Tidak ada data</td>
+            </tr>
+          `;
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return "";
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function loadMasterTTD() {
+      try {
+        const { data, error } = await sb
+          .from("master_tanda_tangan")
+          .select("*")
+          .limit(1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error loading master TTD:", error);
+          updateMasterTTDTable(null);
+          return;
+        }
+
+        if (data) {
+          masterTTD = data;
+          updateMasterTTDTable(data);
+          document.getElementById("ttd-nama").value = data.nama || "";
+          document.getElementById("ttd-jabatan").value = data.jabatan || "";
+          document.getElementById("ttd-instansi").value = data.instansi || "";
+          document.getElementById("ttd-golongan").value = data.golongan || "";
+          document.getElementById("ttd-nip").value = data.nip || "";
+        } else {
+          updateMasterTTDTable(null);
+          document.getElementById("ttd-nama").value = "";
+          document.getElementById("ttd-jabatan").value = "";
+          document.getElementById("ttd-instansi").value = "";
+          document.getElementById("ttd-golongan").value = "";
+          document.getElementById("ttd-nip").value = "";
+        }
+      } catch (error) {
+        console.error("Error loading master TTD:", error);
+        updateMasterTTDTable(null);
+      }
+    }
+
+    async function saveMasterTTD() {
+      const nama = document.getElementById("ttd-nama").value.trim();
+      const jabatan = document.getElementById("ttd-jabatan").value.trim();
+      const instansi = document.getElementById("ttd-instansi").value.trim();
+      const golongan = document.getElementById("ttd-golongan").value.trim();
+      const nip = document.getElementById("ttd-nip").value.trim();
+
+      if (!nama || !jabatan || !instansi) {
+        alert("Nama, Jabatan, dan Instansi wajib diisi!");
+        return;
+      }
+
+      try {
+        const dataToSave = {
+          nama,
+          jabatan,
+          instansi,
+          golongan: golongan || null,
+          nip: nip || null,
+          updated_at: new Date().toISOString()
+        };
+
+        if (masterTTD && masterTTD.id) {
+          const { data, error } = await sb
+            .from("master_tanda_tangan")
+            .update(dataToSave)
+            .eq("id", masterTTD.id)
+            .select()
+            .single();
+
+          if (error) throw error;
+          masterTTD = data;
+          updateMasterTTDTable(data);
+          alert("Master tanda tangan berhasil diperbarui!");
+        } else {
+          const { data, error } = await sb
+            .from("master_tanda_tangan")
+            .insert(dataToSave)
+            .select()
+            .single();
+
+          if (error) throw error;
+          masterTTD = data;
+          updateMasterTTDTable(data);
+          alert("Master tanda tangan berhasil disimpan!");
+        }
+
+        await loadMasterTTD();
+        const modal = bootstrap.Modal.getInstance(document.getElementById("modalMasterTTD"));
+        if (modal) modal.hide();
+      } catch (error) {
+        console.error("Error saving master TTD:", error);
+        alert("Gagal menyimpan master tanda tangan: " + error.message);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const btnSave = document.getElementById("btn-save-master-ttd");
+      const modal = document.getElementById("modalMasterTTD");
+
+      if (btnSave) {
+        btnSave.addEventListener("click", saveMasterTTD);
+      }
+
+      if (modal) {
+        modal.addEventListener("show.bs.modal", loadMasterTTD);
+      }
+    });
+  </script>
+</body>
+
+</html>
