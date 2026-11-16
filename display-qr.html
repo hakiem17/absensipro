@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark" data-bs-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Display QR Proyektor & Standing Banner - AbsensiPro</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    :root {
+      --navy-950: #060d1a;
+      --navy-900: #0a192f;
+      --navy-850: #0f2442;
+      --navy-800: #132f57;
+      --navy-700: #1e3a8a;
+      --blue-600: #2563eb;
+      --blue-500: #3b82f6;
+      --sky-400: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --card-bg: rgba(15, 36, 66, 0.85);
+      --card-border: rgba(56, 189, 248, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 50% 10%, #173868 0%, var(--navy-900) 45%, var(--navy-950) 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Subtle background grid pattern */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .display-container {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0.75rem 1.75rem 0.75rem 1.75rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Top Control Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue-600), var(--sky-400));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.45);
+    }
+
+    .brand-title {
+      font-size: 1.12rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      font-size: 0.7rem;
+      color: var(--sky-400);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: nowrap;
+    }
+    @media (max-width: 991.98px) {
+      .controls-group {
+        flex-wrap: wrap;
+      }
+    }
+
+    .event-dropdown {
+      min-width: 180px;
+      max-width: 260px;
+      background: rgba(10, 25, 47, 0.85);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      font-size: 0.82rem;
+      border-radius: 9px;
+      padding: 0.38rem 0.75rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .event-dropdown:focus {
+      border-color: var(--sky-400);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+      background: #0a192f;
+      color: #fff;
+    }
+
+    .btn-control {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      border-radius: 9px;
+      padding: 0.38rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-control:hover {
+      background: rgba(56, 189, 248, 0.16);
+      border-color: var(--sky-400);
+      color: #fff;
+    }
+
+    .btn-control-primary {
+      background: linear-gradient(135deg, var(--blue-600), var(--sky-400));
+      border: none;
+      color: #fff;
+    }
+    .btn-control-primary:hover {
+      background: linear-gradient(135deg, #1d4ed8, #0284c7);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* Live Digital Clock */
+    .live-clock-box {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #38bdf8;
+      white-space: nowrap;
+    }
+
+    /* Main Display Stage */
+    .hero-display {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem 0;
+      min-height: 0;
+    }
+
+    .stage-frame {
+      width: 100%;
+      background: linear-gradient(145deg, rgba(15, 36, 66, 0.72) 0%, rgba(10, 25, 47, 0.88) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: 24px;
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      padding: 2.25rem 2.75rem;
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 991.98px) {
+      .stage-frame {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+        gap: 1.75rem;
+      }
+    }
+
+    /* Stage Left Column */
+    .stage-left {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .status-badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #4ade80;
+      width: fit-content;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 10px #22c55e;
+      animation: pulse 1.6s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .display-event-title {
+      font-size: clamp(1.65rem, 3vw, 2.35rem);
+      font-weight: 800;
+      line-height: 1.22;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+      margin: 0;
+    }
+
+    .metadata-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+
+    .meta-pill {
+      background: rgba(10, 25, 47, 0.75);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 12px;
+      padding: 0.55rem 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .meta-pill i {
+      font-size: 1.05rem;
+      color: var(--sky-400);
+    }
+
+    .stage-bottom-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: stretch;
+      margin-top: 0.35rem;
+    }
+
+    @media (max-width: 650px) {
+      .stage-bottom-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .counter-card {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.75), rgba(15, 36, 66, 0.95));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 16px;
+      padding: 1rem 1.35rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 190px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .counter-info-title {
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--sky-400);
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .counter-number {
+      font-size: 2.4rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #38bdf8;
+      line-height: 1;
+      margin: 0.15rem 0;
+    }
+
+    .counter-info-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .stage-guide-box {
+      background: rgba(10, 25, 47, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 0.95rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+
+    .guide-box-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .guide-box-title i {
+      color: var(--sky-400);
+    }
+
+    .guide-box-text {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    /* Stage Right Column (QR Card) */
+    .stage-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-card {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 1.4rem;
+      box-shadow: 
+        0 0 45px rgba(56, 189, 248, 0.3),
+        0 20px 45px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      max-width: 380px;
+      width: 100%;
+      border: 4px solid rgba(255, 255, 255, 0.95);
+      transition: transform 0.3s ease;
+    }
+    .qr-card:hover {
+      transform: scale(1.015);
+    }
+
+    .qr-canvas-wrapper {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 250px;
+      min-height: 250px;
+    }
+
+    .qr-canvas-wrapper canvas,
+    .qr-canvas-wrapper img {
+      max-width: 100%;
+      height: auto !important;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .qr-scan-badge {
+      margin-top: 0.85rem;
+      background: linear-gradient(135deg, var(--navy-900), var(--navy-800));
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 0.45rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      letter-spacing: 0.02em;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+    .qr-scan-badge i {
+      font-size: 1.05rem;
+      color: var(--sky-400);
+    }
+
+    .qr-url-box {
+      margin-top: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      color: #475569;
+      background: #f1f5f9;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .qr-url-box:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    /* Standing Display Footer Instructions */
+    .display-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .steps-row {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      flex-wrap: wrap;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--sky-400);
+      color: var(--navy-950);
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Print Mode Styles (Standing Banner A4 / Roll-Up) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      body::before, .top-bar, .controls-group, .display-footer {
+        display: none !important;
+      }
+      .display-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .hero-display {
+        display: block !important;
+        padding: 0 !important;
+      }
+      .stage-frame {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        text-align: center !important;
+        padding: 1.5rem !important;
+        gap: 1.5rem !important;
+      }
+      .stage-bottom-row, .stage-guide-box {
+        display: none !important;
+      }
+      .display-event-title {
+        color: #0a192f !important;
+        font-size: 28pt !important;
+      }
+      .metadata-badges {
+        justify-content: center !important;
+      }
+      .meta-pill {
+        background: #f1f5f9 !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+      }
+      .counter-card {
+        display: none !important;
+      }
+      .qr-card {
+        box-shadow: none !important;
+        border: 2px solid #000000 !important;
+        transform: scale(1.15) !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="display-container">
+    <!-- Top Control Bar -->
+    <header class="top-bar">
+      <div class="brand-box">
+        <div class="brand-icon">
+          <i class="bi bi-projector-fill"></i>
+        </div>
+        <div>
+          <h1 class="brand-title">AbsensiPro Display</h1>
+          <span class="brand-subtitle">Standing Banner & Layar Proyektor</span>
+        </div>
+      </div>
+
+      <div class="controls-group">
+        <!-- Event Dropdown -->
+        <select id="event-selector" class="event-dropdown" aria-label="Pilih Acara">
+          <option value="">Memuat daftar agenda...</option>
+        </select>
+
+        <!-- Live Clock -->
+        <div class="live-clock-box">
+          <i class="bi bi-clock-fill"></i>
+          <span id="live-clock">--:--:-- WITA</span>
+        </div>
+
+        <!-- Fullscreen Button -->
+        <button id="btn-fullscreen" class="btn-control" type="button" title="Mode Layar Penuh">
+          <i class="bi bi-arrows-fullscreen"></i>
+          <span class="d-none d-sm-inline">Layar Penuh</span>
+        </button>
+
+        <!-- Print Banner Button -->
+        <button id="btn-print-banner" class="btn-control" type="button" title="Cetak Stand Banner">
+          <i class="bi bi-printer-fill"></i>
+          <span class="d-none d-sm-inline">Cetak</span>
+        </button>
+
+        <!-- Back to Admin Dashboard -->
+        <a href="admin-dashboard.html" class="btn-control btn-control-primary" title="Kembali ke Dashboard">
+          <i class="bi bi-arrow-left"></i>
+          <span>Dashboard</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Display Section -->
+    <main class="hero-display">
+      <div class="stage-frame">
+        <!-- Stage Left: Event Information & Participation -->
+        <section class="stage-left">
+          <div class="status-badge-live" id="event-status-badge">
+            <span class="pulse-dot"></span>
+            <span id="event-status-text">Presensi Aktif</span>
+          </div>
+
+          <h2 class="display-event-title" id="display-title">
+            Pilih Acara untuk Membuka Layar Presensi
+          </h2>
+
+          <div class="metadata-badges">
+            <div class="meta-pill">
+              <i class="bi bi-calendar3"></i>
+              <span id="display-date">Memuat tanggal...</span>
+            </div>
+            <div class="meta-pill">
+              <i class="bi bi-clock"></i>
+              <span id="display-time">Memuat waktu...</span>
+            </div>
+            <div class="meta-pill">
+              <i class="bi bi-geo-alt-fill text-danger"></i>
+              <span id="display-location">Memuat lokasi...</span>
+            </div>
+          </div>
+
+          <!-- Bottom Row on Left: Live Attendee Counter & Guide -->
+          <div class="stage-bottom-row">
+            <div class="counter-card" id="counter-card">
+              <div class="counter-info-title">
+                <i class="bi bi-people-fill"></i>
+                <span>Partisipasi Hadir</span>
+              </div>
+              <div class="counter-number" id="display-attendees-count">0</div>
+              <div class="counter-info-sub">Peserta terverifikasi</div>
+            </div>
+
+            <div class="stage-guide-box">
+              <div class="guide-box-title">
+                <i class="bi bi-shield-check"></i>
+                <span>Presensi Digital Resmi</span>
+              </div>
+              <p class="guide-box-text">
+                Arahkan kamera smartphone ke QR Code di samping. Tanda tangan digital akan langsung tersimpan di lembar absensi resmi.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Stage Right: Ultra Crisp QR Code Card -->
+        <section class="stage-right">
+          <div class="qr-card">
+            <div class="qr-canvas-wrapper" id="qr-container">
+              <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+            </div>
+
+            <div class="qr-scan-badge">
+              <i class="bi bi-qr-code-scan"></i>
+              <span>Scan QR untuk Hadir</span>
+            </div>
+
+            <div class="qr-url-box" id="qr-url-text" title="Klik untuk menyalin link">
+              Memuat link presensi...
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Standing Display Footer Instructions -->
+    <footer class="display-footer">
+      <div class="steps-row">
+        <div class="step-item">
+          <span class="step-number">1</span>
+          <span>Buka kamera ponsel</span>
+        </div>
+        <div class="step-item">
+          <span class="step-number">2</span>
+          <span>Arahkan ke QR Code</span>
+        </div>
+        <div class="step-item">
+          <span class="step-number">3</span>
+          <span>Isi formulir & bubuhkan tanda tangan</span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <span class="text-secondary small">Didukung oleh <strong>AbsensiPro</strong></span>
+        <a id="btn-open-form" href="#" target="_blank" rel="noopener" class="text-decoration-none text-info small fw-semibold">
+          Buka Form Mandiri <i class="bi bi-box-arrow-up-right ms-1"></i>
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/qrcode.min.js"></script>
+  <script src="assets/js/config.js"></script>
+
+  <script>
+    // Initialize Supabase Client
+    const sb = window.sb || supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+    // Live Clock
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: "Asia/Makassar"
+      });
+      const el = document.getElementById("live-clock");
+      if (el) el.textContent = `${timeStr} WITA`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Elements
+    const $selector = document.getElementById("event-selector");
+    const $title = document.getElementById("display-title");
+    const $date = document.getElementById("display-date");
+    const $time = document.getElementById("display-time");
+    const $location = document.getElementById("display-location");
+    const $attendeesCount = document.getElementById("display-attendees-count");
+    const $statusBadge = document.getElementById("event-status-badge");
+    const $statusText = document.getElementById("event-status-text");
+    const $qrContainer = document.getElementById("qr-container");
+    const $qrUrlText = document.getElementById("qr-url-text");
+    const $btnOpenForm = document.getElementById("btn-open-form");
+
+    // Robust QR Code Renderer (Local library with reliable fallback)
+    function renderQRCode(container, text, size = 300) {
+      if (!container) return;
+      container.innerHTML = "";
+
+      // Try 1: Local QRCode.js (Davidshimjs)
+      if (typeof QRCode !== "undefined") {
+        try {
+          new QRCode(container, {
+            text: text,
+            width: size,
+            height: size,
+            colorDark: "#0a192f",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+          });
+
+          // Style canvas or image generated by QRCode.js
+          setTimeout(() => {
+            const img = container.querySelector("img");
+            const canvas = container.querySelector("canvas");
+            if (img) {
+              img.style.borderRadius = "10px";
+              img.style.maxWidth = "100%";
+              img.style.height = "auto";
+            }
+            if (canvas) {
+              canvas.style.borderRadius = "10px";
+              canvas.style.maxWidth = "100%";
+              canvas.style.height = "auto";
+            }
+          }, 50);
+          return;
+        } catch (e) {
+          console.warn("Local QRCode rendering failed, using fallback:", e);
+        }
+      }
+
+      // Try 2: High Reliability QR Server Image Fallback
+      const fallbackImg = document.createElement("img");
+      fallbackImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&color=0a192f&bgcolor=ffffff&margin=1`;
+      fallbackImg.alt = "QR Code Presensi";
+      fallbackImg.style.width = `${size}px`;
+      fallbackImg.style.maxWidth = "100%";
+      fallbackImg.style.height = "auto";
+      fallbackImg.style.borderRadius = "10px";
+      container.appendChild(fallbackImg);
+    }
+
+    let EVENTS = [];
+    let currentEventId = null;
+    let pollInterval = null;
+
+    const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    // Format Date & Time
+    function formatDateTimeParts(iso) {
+      if (!iso) return { dateStr: "-", timeStr: "-" };
+      const d = new Date(iso);
+      const dateStr = d.toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "Asia/Makassar"
+      });
+      const timeStr = d.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Makassar"
+      }) + " WITA";
+      return { dateStr, timeStr };
+    }
+
+    // Load Events from Supabase
+    async function loadEvents() {
+      try {
+        const { data, error } = await sb
+          .from("events")
+          .select("id,title,datetime,location,status")
+          .order("datetime", { ascending: false });
+
+        if (error) throw error;
+        EVENTS = data || [];
+
+        if (!EVENTS.length) {
+          $selector.innerHTML = '<option value="">Tidak ada acara ditemukan</option>';
+          $title.textContent = "Belum Ada Acara Terdaftar";
+          return;
+        }
+
+        // Populate Dropdown
+        $selector.innerHTML = EVENTS.map((ev) => {
+          const statusTag = ev.status === "active" ? "🟢 [Aktif]" : ev.status === "done" ? "⚪ [Selesai]" : "🔵 [Upcoming]";
+          return `<option value="${ev.id}">${statusTag} ${esc(ev.title)}</option>`;
+        }).join("");
+
+        // Determine which event to show initially
+        const urlParams = new URLSearchParams(window.location.search);
+        const paramEventId = urlParams.get("event");
+
+        let targetEvent = null;
+        if (paramEventId && EVENTS.some(e => e.id === paramEventId)) {
+          targetEvent = EVENTS.find(e => e.id === paramEventId);
+        } else {
+          // Priority: 1st Active event, else 1st event
+          targetEvent = EVENTS.find(e => e.status === "active") || EVENTS[0];
+        }
+
+        if (targetEvent) {
+          $selector.value = targetEvent.id;
+          displayEvent(targetEvent.id);
+        }
+      } catch (err) {
+        console.error("Gagal memuat agenda:", err);
+        $title.textContent = "Gagal Memuat Acara: " + err.message;
+      }
+    }
+
+    // Display Selected Event
+    async function displayEvent(eventId) {
+      currentEventId = eventId;
+      const ev = EVENTS.find(e => e.id === eventId);
+      if (!ev) return;
+
+      // Update URL without reloading
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set("event", eventId);
+      window.history.replaceState({}, "", newUrl.toString());
+
+      // Update texts
+      $title.textContent = ev.title || "Acara Tanpa Judul";
+      const { dateStr, timeStr } = formatDateTimeParts(ev.datetime);
+      $date.textContent = dateStr;
+      $time.textContent = timeStr;
+      $location.textContent = ev.location || "Lokasi Ditentukan Panitia";
+
+      // Status Badge
+      if (ev.status === "active") {
+        $statusBadge.style.background = "rgba(34, 197, 94, 0.15)";
+        $statusBadge.style.borderColor = "rgba(34, 197, 94, 0.4)";
+        $statusBadge.style.color = "#4ade80";
+        $statusText.textContent = "Presensi Aktif (Live)";
+      } else if (ev.status === "done") {
+        $statusBadge.style.background = "rgba(148, 163, 184, 0.15)";
+        $statusBadge.style.borderColor = "rgba(148, 163, 184, 0.3)";
+        $statusBadge.style.color = "#94a3b8";
+        $statusText.textContent = "Acara Selesai";
+      } else {
+        $statusBadge.style.background = "rgba(56, 189, 248, 0.15)";
+        $statusBadge.style.borderColor = "rgba(56, 189, 248, 0.4)";
+        $statusBadge.style.color = "#38bdf8";
+        $statusText.textContent = "Upcoming";
+      }
+
+      // Generate Attendance URL
+      const formUrl = new URL("form-kehadiran.html", window.location.href);
+      formUrl.searchParams.set("event", eventId);
+      const targetFormLink = formUrl.toString();
+
+      $qrUrlText.textContent = targetFormLink;
+      $btnOpenForm.href = targetFormLink;
+
+      // Render QR Code
+      const qrSize = window.innerWidth > 768 ? 320 : 260;
+      renderQRCode($qrContainer, targetFormLink, qrSize);
+
+      // Fetch Attendees Count immediately & periodically
+      fetchAttendeeCount(eventId);
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = setInterval(() => {
+        fetchAttendeeCount(currentEventId);
+      }, 7000);
+    }
+
+    // Fetch Attendee Count for the Event
+    async function fetchAttendeeCount(eventId) {
+      if (!eventId) return;
+      try {
+        const { count, error } = await sb
+          .from("attendees")
+          .select("id", { count: "exact", head: true })
+          .eq("event_id", eventId);
+
+        if (!error && count !== null) {
+          $attendeesCount.textContent = count;
+        }
+      } catch (err) {
+        console.warn("Error fetching attendee count:", err);
+      }
+    }
+
+    // Event Dropdown Change Listener
+    $selector.addEventListener("change", (e) => {
+      if (e.target.value) {
+        displayEvent(e.target.value);
+      }
+    });
+
+    // Copy QR URL on click
+    $qrUrlText.addEventListener("click", () => {
+      const text = $qrUrlText.textContent;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          const original = $qrUrlText.textContent;
+          $qrUrlText.textContent = "✓ Link presensi berhasil disalin!";
+          setTimeout(() => { $qrUrlText.textContent = original; }, 2000);
+        });
+      }
+    });
+
+    // Fullscreen Toggle
+    document.getElementById("btn-fullscreen").addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    });
+
+    // Print Standing Banner
+    document.getElementById("btn-print-banner").addEventListener("click", () => {
+      window.print();
+    });
+
+    // Start
+    loadEvents();
+  </script>
+</body>
+
+</html>
+

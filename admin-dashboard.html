@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard - AbsensiPro Admin Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+</head>
+
+<body>
+  <script>
+    (function () {
+      const t = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", t);
+      document.documentElement.setAttribute("data-bs-theme", t);
+    })();
+  </script>
+
+  <!-- Sidebar Overlay for Mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Mobile Hamburger Menu Button - Always Visible -->
+  <button class="sidebar-toggle mobile-hamburger" id="sidebarToggle" aria-label="Toggle Sidebar">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <div class="main-wrapper">
+    <!-- Modern Navy Executive Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="admin-dashboard.html" class="sidebar-brand">
+          <img src="assets/img/logo_hst.png" alt="Logo HST" class="sidebar-brand-logo"
+            onerror="this.style.display='none'" />
+          <div class="sidebar-brand-text">
+            <span class="sidebar-brand-title">AbsensiPro</span>
+            <span class="sidebar-brand-subtitle">Admin Panel • HST</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="admin-dashboard.html">
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin-manajemen-acara.html">
+              <i class="bi bi-calendar-event"></i>
+              <span>Manajemen Acara</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin-daftar-hadir.html">
+              <i class="bi bi-people"></i>
+              <span>Daftar Hadir</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin-print-daftar-hadir.html">
+              <i class="bi bi-printer"></i>
+              <span>Print Daftar Hadir</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin-notulen-acara.html">
+              <i class="bi bi-file-earmark-text"></i>
+              <span>Notulen Acara</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="display-qr.html" target="_blank" rel="noopener">
+              <i class="bi bi-projector"></i>
+              <span>Display QR Proyektor</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin-backup.html">
+              <i class="bi bi-database-gear"></i>
+              <span>Backup & Restore</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="btn-master-ttd" data-bs-toggle="modal" data-bs-target="#modalMasterTTD">
+              <i class="bi bi-pen"></i>
+              <span>Master Tanda Tangan</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Theme Toggle di Sidebar -->
+      <div style="padding: 0.25rem 0;">
+        <button id="theme-toggle" class="sidebar-theme-toggle">
+          <i class="bi bi-sun-fill"></i>
+          <span>Mode Gelap / Terang</span>
+        </button>
+      </div>
+
+      <!-- User Info di Footer Sidebar -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-avatar">
+            <i class="bi bi-person-badge-fill"></i>
+          </div>
+          <div class="sidebar-user-details">
+            <div class="sidebar-user-name">Administrator</div>
+            <div class="sidebar-user-role">Diskominfo SP HST</div>
+          </div>
+          <button id="btn-logout" class="sidebar-logout-btn" title="Logout">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content-wrapper">
+      <!-- Hidden Legacy Header (kept for JS compatibility) -->
+      <header class="top-header">
+        <div class="header-left">
+          <div class="header-search">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search..." class="search-input" />
+          </div>
+        </div>
+        <div class="header-right">
+          <button id="theme-toggle-header" class="header-icon-btn" title="Toggle Theme">
+            <i class="bi bi-sun-fill"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Compact Single-Line Executive Navy Hero Bar -->
+        <section class="dashboard-hero fade-in">
+          <div class="dashboard-hero-content">
+            <div class="dashboard-hero-left">
+              <h1 class="dashboard-hero-title">Dashboard Eksekutif</h1>
+              <div class="hero-badge-pill">
+                <span class="hero-badge-dot"></span>
+                <span id="current-date-display">Panel Kendali Absensi</span>
+              </div>
+            </div>
+
+            <div class="dashboard-hero-actions">
+              <div class="hero-filter-box">
+                <label for="year-filter">
+                  <i class="bi bi-calendar3"></i>
+                  Tahun:
+                </label>
+                <select id="year-filter" class="form-select form-select-sm">
+                  <option value="">Memuat...</option>
+                </select>
+              </div>
+
+              <a class="btn-hero-outline" href="pilih-acara.html" target="_blank" rel="noopener">
+                <i class="bi bi-globe2"></i>
+                <span>Portal Peserta</span>
+              </a>
+
+              <a class="btn-hero-action" href="admin-manajemen-acara.html?add=true">
+                <i class="bi bi-plus-circle-fill"></i>
+                <span>Tambah Acara</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Modern KPI Stats Grid -->
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card fade-in">
+            <div class="stat-card-top">
+              <div>
+                <div class="stat-label">
+                  <span class="tooltip-wrapper">
+                    Total Acara
+                    <span class="tooltip-text">Jumlah total semua acara pada tahun terpilih</span>
+                  </span>
+                </div>
+                <div class="stat-value" id="stat-events">
+                  <div class="skeleton skeleton-value"></div>
+                </div>
+              </div>
+              <div class="stat-icon">
+                <i class="bi bi-calendar2-range-fill"></i>
+              </div>
+            </div>
+            <div class="stat-meta">
+              <i class="bi bi-layers text-primary"></i>
+              <span>Seluruh agenda terdaftar</span>
+            </div>
+          </div>
+
+          <div class="stat-card success fade-in" style="animation-delay: 0.08s">
+            <div class="stat-card-top">
+              <div>
+                <div class="stat-label">
+                  <span class="tooltip-wrapper">
+                    Aktif / Akan Datang
+                    <span class="tooltip-text">Acara yang sedang berjalan atau dijadwalkan</span>
+                  </span>
+                </div>
+                <div class="stat-value" id="stat-events-active">
+                  <div class="skeleton skeleton-value"></div>
+                </div>
+              </div>
+              <div class="stat-icon">
+                <i class="bi bi-broadcast-pin"></i>
+              </div>
+            </div>
+            <div class="stat-meta">
+              <i class="bi bi-lightning-charge-fill text-success"></i>
+              <span>Siap menerima presensi peserta</span>
+            </div>
+          </div>
+
+          <div class="stat-card warning fade-in" style="animation-delay: 0.16s">
+            <div class="stat-card-top">
+              <div>
+                <div class="stat-label">
+                  <span class="tooltip-wrapper">
+                    Acara Selesai
+                    <span class="tooltip-text">Acara yang telah selesai dilaksanakan</span>
+                  </span>
+                </div>
+                <div class="stat-value" id="stat-events-done">
+                  <div class="skeleton skeleton-value"></div>
+                </div>
+              </div>
+              <div class="stat-icon">
+                <i class="bi bi-patch-check-fill"></i>
+              </div>
+            </div>
+            <div class="stat-meta">
+              <i class="bi bi-check2-all text-warning"></i>
+              <span>Rekap & laporan siap dicetak</span>
+            </div>
+          </div>
+
+          <div class="stat-card info fade-in" style="animation-delay: 0.24s">
+            <div class="stat-card-top">
+              <div>
+                <div class="stat-label">
+                  <span class="tooltip-wrapper">
+                    Total Peserta
+                    <span class="tooltip-text">Akumulasi peserta yang mengisi daftar hadir</span>
+                  </span>
+                </div>
+                <div class="stat-value" id="stat-attendees">
+                  <div class="skeleton skeleton-value"></div>
+                </div>
+              </div>
+              <div class="stat-icon">
+                <i class="bi bi-people-fill"></i>
+              </div>
+            </div>
+            <div class="stat-meta">
+              <i class="bi bi-person-check-fill text-info" id="stat-attendees-meta-icon"></i>
+              <span id="stat-attendees-meta">Tanda tangan digital terverifikasi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menu Pintasan & Modul Administrasi (Satu Jendela Penuh) -->
+        <div class="dashboard-paged-area">
+          <div class="section-header-bar fade-in">
+            <div>
+              <h2 class="section-header-title mb-0">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Menu Pintasan & Modul Administrasi</span>
+              </h2>
+              <p class="section-header-subtitle">Pilih modul untuk mengelola kegiatan, daftar hadir, laporan, dan sistem</p>
+            </div>
+            <a id="top-event-badge" href="#" class="top-event-pill d-none" title="Buka Daftar Hadir Acara Rekor Ini">
+              <span class="top-event-tag">
+                <i class="bi bi-trophy-fill"></i>
+                <span>Rekor Agenda</span>
+              </span>
+              <span class="top-event-title" id="top-event-title">-</span>
+              <span class="top-event-count" id="top-event-count">
+                <i class="bi bi-people-fill me-1"></i>0 Peserta
+              </span>
+              <i class="bi bi-chevron-right top-event-arrow"></i>
+            </a>
+          </div>
+
+          <div class="quick-menu-grid fade-in">
+            <a href="admin-manajemen-acara.html" class="quick-menu-card">
+              <div class="quick-menu-icon">
+                <i class="bi bi-calendar-event-fill"></i>
+              </div>
+              <div class="quick-menu-info">
+                <div class="quick-menu-badge">Modul 01 • Utama</div>
+                <h3 class="quick-menu-title">Manajemen Acara</h3>
+                <p class="quick-menu-desc">Buat, edit & atur status acara</p>
+              </div>
+              <i class="bi bi-chevron-right quick-menu-arrow"></i>
+            </a>
+
+            <a href="admin-daftar-hadir.html" class="quick-menu-card">
+              <div class="quick-menu-icon accent-sky">
+                <i class="bi bi-person-lines-fill"></i>
+              </div>
+              <div class="quick-menu-info">
+                <div class="quick-menu-badge">Modul 02 • Presensi</div>
+                <h3 class="quick-menu-title">Daftar Hadir Peserta</h3>
+                <p class="quick-menu-desc">Kelola presensi, QR & CSV</p>
+              </div>
+              <i class="bi bi-chevron-right quick-menu-arrow"></i>
+            </a>
+
+            <a href="admin-print-daftar-hadir.html" class="quick-menu-card">
+              <div class="quick-menu-icon">
+                <i class="bi bi-printer-fill"></i>
+              </div>
+              <div class="quick-menu-info">
+                <div class="quick-menu-badge">Modul 03 • Laporan</div>
+                <h3 class="quick-menu-title">Print Daftar Hadir</h3>
+                <p class="quick-menu-desc">Cetak & unduh PDF resmi</p>
+              </div>
+              <i class="bi bi-chevron-right quick-menu-arrow"></i>
+            </a>
+
+            <a href="admin-notulen-acara.html" class="quick-menu-card">
+              <div class="quick-menu-icon accent-amber">
+                <i class="bi bi-journal-richtext"></i>
+              </div>
+              <div class="quick-menu-info">
+                <div class="quick-menu-badge">Modul 04 • Arsip</div>
+                <h3 class="quick-menu-title">Notulen Acara</h3>
+                <p class="quick-menu-desc">Upload dokumen rapat Word/PDF</p>
+              </div>
+              <i class="bi bi-chevron-right quick-menu-arrow"></i>
+            </a>
+
+            <a href="#" class="quick-menu-card" data-bs-toggle="modal" data-bs-target="#modalMasterTTD">
+              <div class="quick-menu-icon accent-sky">
+                <i class="bi bi-pen-fill"></i>
+              </div>
+              <div class="quick-menu-info">
+                <div class="quick-menu-badge">Modul 05 • Otorisasi</div>
+                <h3 class="quick-menu-title">Master Tanda Tangan</h3>
+                <p class="quick-menu-desc">Pejabat pengesahan laporan</p>
+              </div>
+              <i class="bi bi-chevron-right quick-menu-arrow"></i>
+            </a>
+
+            <a href="admin-backup.html" class="quick-menu-card">
+              <div class="quick-menu-icon">
+                <i class="bi bi-database-fill-gear"></i>
+              </div>
+              <div class="quick-menu-info">
+                <div class="quick-menu-badge">Modul 06 • Sistem</div>
+                <h3 class="quick-menu-title">Backup & Restore</h3>
+                <p class="quick-menu-desc">Cadangkan & pulihkan data</p>
+              </div>
+              <i class="bi bi-chevron-right quick-menu-arrow"></i>
+            </a>
+
+            <a href="pilih-acara.html" target="_blank" rel="noopener" class="quick-menu-card">
+              <div class="quick-menu-icon accent-emerald">
+                <i class="bi bi-qr-code-scan"></i>
+              </div>
+              <div class="quick-menu-info">
+                <div class="quick-menu-badge">Modul 07 • Publik</div>
+                <h3 class="quick-menu-title">Form Absensi Publik</h3>
+                <p class="quick-menu-desc">Portal pengisian peserta</p>
+              </div>
+              <i class="bi bi-box-arrow-up-right quick-menu-arrow"></i>
+            </a>
+
+            <a href="display-qr.html" target="_blank" rel="noopener" class="quick-menu-card">
+              <div class="quick-menu-icon accent-emerald">
+                <i class="bi bi-projector-fill"></i>
+              </div>
+              <div class="quick-menu-info">
+                <div class="quick-menu-badge">Modul 08 • Display</div>
+                <h3 class="quick-menu-title">Display QR Proyektor</h3>
+                <p class="quick-menu-desc">Standing banner & layar aula</p>
+              </div>
+              <i class="bi bi-box-arrow-up-right quick-menu-arrow"></i>
+            </a>
+          </div>
+        </div>
+      </main>
+
+      <!-- Modal Master Tanda Tangan -->
+      <div class="modal fade" id="modalMasterTTD" tabindex="-1" aria-labelledby="modalMasterTTDLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content border-0 shadow-lg" style="border-radius: 18px; overflow: hidden;">
+            <div class="modal-header text-white border-0"
+              style="background: linear-gradient(135deg, #071326 0%, #0f2547 60%, #1e40af 100%); padding: 1.25rem 1.5rem;">
+              <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="modalMasterTTDLabel">
+                <i class="bi bi-pen-fill text-info"></i>
+                <span>Master Pejabat Tanda Tangan</span>
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+              <!-- Tabel Data Master TTD -->
+              <div class="mb-4">
+                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                  <i class="bi bi-card-checklist text-primary"></i>
+                  <span>Data Pejabat Penandatangan Saat Ini</span>
+                </h6>
+                <div class="table-responsive rounded-3 border">
+                  <table class="table table-hover mb-0" id="table-master-ttd">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Nama</th>
+                        <th>Jabatan</th>
+                        <th>Instansi</th>
+                        <th>Golongan</th>
+                        <th>NIP</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbody-master-ttd">
+                      <tr>
+                        <td colspan="5" class="text-center text-muted py-3">Tidak ada data</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <hr class="my-4">
+
+              <!-- Form Input/Edit -->
+              <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-pencil-square text-primary"></i>
+                <span>Perbarui Data Master Tanda Tangan</span>
+              </h6>
+              <form id="form-master-ttd">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="ttd-nama" class="form-label fw-medium">Nama Lengkap & Gelar <span
+                        class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="ttd-nama" placeholder="Contoh: Drs. H. Ahmad, M.AP"
+                      required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="ttd-jabatan" class="form-label fw-medium">Jabatan <span
+                        class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="ttd-jabatan" placeholder="Contoh: Kepala Dinas"
+                      required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="ttd-instansi" class="form-label fw-medium">Instansi <span
+                        class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="ttd-instansi"
+                      placeholder="Contoh: Diskominfo SP Kab. HST" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="ttd-golongan" class="form-label fw-medium">Pangkat / Golongan</label>
+                    <input type="text" class="form-control" id="ttd-golongan"
+                      placeholder="Contoh: Pembina Utama Muda (IV/c)">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <label for="ttd-nip" class="form-label fw-medium">NIP</label>
+                    <input type="text" class="form-control" id="ttd-nip" placeholder="Contoh: 19750101 200003 1 001">
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer border-top px-4 py-3">
+              <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+              <button type="button" class="btn btn-primary" id="btn-save-master-ttd">
+                <i class="bi bi-check2-circle me-1"></i>
+                Simpan Perubahan
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modern Navy Footer -->
+      <footer class="footer-professional">
+        <div class="footer-divider"></div>
+        <div class="text-center">
+          &copy; <span id="copyright-year"></span> Dinas Komunikasi, Informatika, Statistik, dan Persandian Kab. Hulu
+          Sungai Tengah.
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/admin-common.js"></script>
+  <script src="assets/js/admin-dashboard.js"></script>
+  <script>
+    // ===== MASTER TANDA TANGAN =====
+    let masterTTD = null;
+
+    function getSupabaseClient() {
+      if (window.sb) return window.sb;
+      if (typeof supabase !== "undefined" && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+        window.sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+        return window.sb;
+      }
+      return null;
+    }
+
+    // Update tabel Master TTD
+    function updateMasterTTDTable(data) {
+      const tbody = document.getElementById("tbody-master-ttd");
+      if (!tbody) return;
+
+      if (data) {
+        tbody.innerHTML = `
+            <tr>
+              <td class="fw-semibold">${escapeHtml(data.nama || "-")}</td>
+              <td>${escapeHtml(data.jabatan || "-")}</td>
+              <td>${escapeHtml(data.instansi || "-")}</td>
+              <td>${escapeHtml(data.golongan || "-")}</td>
+              <td><span class="badge bg-secondary bg-opacity-10 text-body">${escapeHtml(data.nip || "-")}</span></td>
+            </tr>
+          `;
+      } else {
+        tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center text-muted py-3">Tidak ada data</td>
+            </tr>
+          `;
+      }
+    }
+
+    // Helper function untuk escape HTML
+    function escapeHtml(text) {
+      if (!text) return "";
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Load master tanda tangan
+    async function loadMasterTTD() {
+      const client = getSupabaseClient();
+      if (!client) return;
+      try {
+        const { data, error } = await client
+          .from("master_tanda_tangan")
+          .select("*")
+          .limit(1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error loading master TTD:", error);
+          updateMasterTTDTable(null);
+          return;
+        }
+
+        if (data) {
+          masterTTD = data;
+          updateMasterTTDTable(data);
+          document.getElementById("ttd-nama").value = data.nama || "";
+          document.getElementById("ttd-jabatan").value = data.jabatan || "";
+          document.getElementById("ttd-instansi").value = data.instansi || "";
+          document.getElementById("ttd-golongan").value = data.golongan || "";
+          document.getElementById("ttd-nip").value = data.nip || "";
+        } else {
+          updateMasterTTDTable(null);
+          document.getElementById("ttd-nama").value = "";
+          document.getElementById("ttd-jabatan").value = "";
+          document.getElementById("ttd-instansi").value = "";
+          document.getElementById("ttd-golongan").value = "";
+          document.getElementById("ttd-nip").value = "";
+        }
+      } catch (error) {
+        console.error("Error loading master TTD:", error);
+        updateMasterTTDTable(null);
+      }
+    }
+
+    // Save master tanda tangan
+    async function saveMasterTTD() {
+      const client = getSupabaseClient();
+      if (!client) return;
+
+      const nama = document.getElementById("ttd-nama").value.trim();
+      const jabatan = document.getElementById("ttd-jabatan").value.trim();
+      const instansi = document.getElementById("ttd-instansi").value.trim();
+      const golongan = document.getElementById("ttd-golongan").value.trim();
+      const nip = document.getElementById("ttd-nip").value.trim();
+
+      if (!nama || !jabatan || !instansi) {
+        alert("Nama, Jabatan, dan Instansi wajib diisi!");
+        return;
+      }
+
+      try {
+        const dataToSave = {
+          nama,
+          jabatan,
+          instansi,
+          golongan: golongan || null,
+          nip: nip || null,
+          updated_at: new Date().toISOString()
+        };
+
+        if (masterTTD && masterTTD.id) {
+          const { data, error } = await client
+            .from("master_tanda_tangan")
+            .update(dataToSave)
+            .eq("id", masterTTD.id)
+            .select()
+            .single();
+
+          if (error) throw error;
+          masterTTD = data;
+          updateMasterTTDTable(data);
+          alert("Master tanda tangan berhasil diperbarui!");
+        } else {
+          const { data, error } = await client
+            .from("master_tanda_tangan")
+            .insert(dataToSave)
+            .select()
+            .single();
+
+          if (error) throw error;
+          masterTTD = data;
+          updateMasterTTDTable(data);
+          alert("Master tanda tangan berhasil disimpan!");
+        }
+
+        await loadMasterTTD();
+        const modal = bootstrap.Modal.getInstance(document.getElementById("modalMasterTTD"));
+        if (modal) modal.hide();
+      } catch (error) {
+        console.error("Error saving master TTD:", error);
+        alert("Gagal menyimpan master tanda tangan: " + error.message);
+      }
+    }
+
+    // Event listeners
+    document.addEventListener("DOMContentLoaded", function () {
+      const btnSave = document.getElementById("btn-save-master-ttd");
+      const modal = document.getElementById("modalMasterTTD");
+
+      if (btnSave) {
+        btnSave.addEventListener("click", saveMasterTTD);
+      }
+
+      if (modal) {
+        modal.addEventListener("show.bs.modal", loadMasterTTD);
+      }
+    });
+  </script>
+</body>
+
+</html>
