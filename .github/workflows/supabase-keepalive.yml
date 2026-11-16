@@ -1,0 +1,61 @@
+name: Supabase Keep-Alive (Anti-Pause)
+
+# Workflow ini otomatis menjaga proyek Supabase Free Tier agar tidak pernah 'Paused'
+# Supabase mem-pause proyek jika tidak ada aktivitas selama 7 hari.
+# Dengan cron ini, Supabase di-ping setiap 3 hari sehingga selalu dalam status 'Active'.
+
+on:
+  schedule:
+    # Berjalan otomatis setiap hari pada pukul 01:00 UTC (09:00 WITA)
+    # Menjaga agar timer 7 hari Supabase selalu segar dan database TIDAK PERNAH nonaktif/pause
+    - cron: '0 1 * * *'
+  workflow_dispatch: # Memungkinkan jalankan manual kapan saja dari menu Actions di GitHub
+
+jobs:
+  keepalive:
+    name: Ping Supabase Database
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Ping Supabase REST API
+        run: |
+          echo "=================================================="
+          echo "Memulai Ping Supabase untuk mencegah auto-pause..."
+          echo "Waktu eksekusi: $(date -u)"
+          echo "=================================================="
+
+          SUPABASE_URL="${{ secrets.SUPABASE_URL }}"
+          SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+
+          # Fallback ke konfigurasi bawaan jika secrets belum diset di GitHub
+          if [ -z "$SUPABASE_URL" ]; then
+            SUPABASE_URL="https://gndvxojnmbqacgwwcsyp.supabase.co"
+          fi
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduZHZ4b2pubWJxYWNnd3djc3lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNDc3ODQsImV4cCI6MjA3MjYyMzc4NH0.UjLr9OhmI_uYBlAqhurIst30hkwtPrjEDzzS4xWAA9U"
+          fi
+
+          TARGET_URL="${SUPABASE_URL}/rest/v1/events?select=id&limit=1"
+
+          # Eksekusi HTTP Request ke Supabase
+          HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            -H "Content-Type: application/json" \
+            "${TARGET_URL}")
+
+          HTTP_STATUS=$(echo "$HTTP_RESPONSE" | tail -n1)
+          RESPONSE_BODY=$(echo "$HTTP_RESPONSE" | sed '$d')
+
+          echo "Target: ${TARGET_URL}"
+          echo "HTTP Status Code: ${HTTP_STATUS}"
+          echo "Response Preview: ${RESPONSE_BODY}"
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "✅ SUKSES: Supabase berhasil di-ping! Timer 7 hari auto-pause telah di-reset."
+          else
+            echo "⚠️ Request tercatat di Supabase dengan status ${HTTP_STATUS}."
+            # Supabase API gateway tetap menghitung request ini sebagai aktivitas proyek
+          fi

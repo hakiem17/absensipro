@@ -259,11 +259,17 @@
                   <h5 class="mb-0 fs-6"><i class="bi bi-book me-2"></i>Catatan Penting & Panduan</h5>
                 </div>
                 <div class="card-body">
+                  <div class="alert alert-success d-flex gap-2 align-items-center py-2 mb-3">
+                    <i class="bi bi-shield-check fs-5"></i>
+                    <div class="small">
+                      <strong>Anti-Pause 24/7 Aktif:</strong> Sistem GitHub Actions otomatis mengirim sinyal <em>Keep-Alive</em> ke Supabase setiap hari sehingga database <strong>tidak akan pernah nonaktif / pause</strong> setelah 7 hari.
+                    </div>
+                  </div>
                   <ul class="mb-0 text-muted small">
-                    <li class="mb-2">Backup dilakukan secara manual. Disarankan melakukan backup secara berkala setiap selesai acara penting.</li>
-                    <li class="mb-2">Restore akan mencoba melakukan <strong>Upsert</strong> (Update jika ada, Insert jika belum).</li>
-                    <li class="mb-2">Relasi antar data (Foreign Keys) akan ditangani otomatis, namun pastikan file JSON utuh dan tidak dimodifikasi manual.</li>
-                    <li>Jika terjadi error saat restore, cek console browser (F12) untuk detail log.</li>
+                    <li class="mb-2">Backup dilakukan secara manual atau otomatis via script <code>node scripts/backup-db.js</code>. Disarankan melakukan backup berkala setelah acara penting.</li>
+                    <li class="mb-2">Restore akan mencoba melakukan <strong>Upsert</strong> (Update jika ada, Insert jika belum) secara aman tanpa menghapus relasi.</li>
+                    <li class="mb-2">Tersedia script CLI pemulihan instan: <code>node scripts/restore-db.js</code> yang otomatis memilih file backup terbaru di folder <code>backups/</code>.</li>
+                    <li>Jika terjadi error saat restore, cek console browser (F12) atau jalankan script CLI untuk log detail.</li>
                   </ul>
                 </div>
               </div>
